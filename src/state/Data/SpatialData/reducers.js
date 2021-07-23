@@ -42,7 +42,7 @@ const add = (state, action) => {
 	};
 };
 
-const addWithIndex = (state, action) => {
+const addWithTiledIndex = (state, action) => {
 	const updatedByDataSourceKey = getUpdatedByDataSourceKey(
 		state,
 		action.dataByDataSourceKey,
@@ -170,7 +170,7 @@ export default (state = INITIAL_STATE, action) => {
 		case ActionTypes.DATA.SPATIAL_DATA.ADD:
 			return add(state, action);
 		case ActionTypes.DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX:
-			return addWithIndex(state, action);
+			return addWithTiledIndex(state, action);
 		case ActionTypes.DATA.SPATIAL_DATA.INDEX.ADD:
 			return addIndex(state, action);
 		case ActionTypes.DATA.SPATIAL_DATA.INDEX.REMOVE:

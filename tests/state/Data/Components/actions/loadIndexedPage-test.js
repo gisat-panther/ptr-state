@@ -303,7 +303,7 @@ describe('state/Data/Components/actions/loadIndexedPage', function () {
 					changedOn: null,
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_TILED_INDEX',
 					filter: relationsFilter,
 					limit: 100,
 					order: null,

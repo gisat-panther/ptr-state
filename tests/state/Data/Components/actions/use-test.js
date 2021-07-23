@@ -378,7 +378,7 @@ describe('state/Data/Components/actions/use', function () {
 					type: 'DATA.ATTRIBUTE_RELATIONS.INDEX.ADD',
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_TILED_INDEX',
 					filter: {
 						modifiers: {applicationKey: 'testKey'},
 						attributeFilter: {
@@ -570,7 +570,7 @@ describe('state/Data/Components/actions/use', function () {
 					type: 'DATA.ATTRIBUTE_RELATIONS.INDEX.ADD',
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_TILED_INDEX',
 					filter: {
 						modifiers: {applicationKey: 'testKey'},
 						attributeFilter: {
@@ -593,7 +593,7 @@ describe('state/Data/Components/actions/use', function () {
 					changedOn: null,
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_TILED_INDEX',
 					filter: {
 						modifiers: {applicationKey: 'testKey'},
 						attributeFilter: {
@@ -616,7 +616,7 @@ describe('state/Data/Components/actions/use', function () {
 					changedOn: null,
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_TILED_INDEX',
 					filter: {
 						modifiers: {applicationKey: 'testKey'},
 						attributeFilter: {

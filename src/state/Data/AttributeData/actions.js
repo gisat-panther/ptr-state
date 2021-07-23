@@ -338,7 +338,7 @@ function actionAddDataAndIndex(
 	limit
 ) {
 	return {
-		type: actionTypes.ADD_WITH_INDEX,
+		type: actionTypes.ADD_WITH_TILED_INDEX,
 		filter: attributeDataFilter,
 		order,
 		total,

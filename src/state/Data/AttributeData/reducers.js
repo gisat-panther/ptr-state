@@ -105,7 +105,7 @@ const addWithSpatialIndex = (
  * @param limit {Number} Limitation for loading data
  * @return {Object}
  */
-const addWithIndex = (
+const addWithTiledIndex = (
 	state,
 	index,
 	data,
@@ -201,8 +201,8 @@ export default (state = INITIAL_STATE, action) => {
 				action.indexData,
 				action.changedOn
 			);
-		case ActionTypes.DATA.ATTRIBUTE_DATA.ADD_WITH_INDEX:
-			return addWithIndex(
+		case ActionTypes.DATA.ATTRIBUTE_DATA.ADD_WITH_TILED_INDEX:
+			return addWithTiledIndex(
 				state,
 				action.index,
 				action.data,
