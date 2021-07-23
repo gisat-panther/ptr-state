@@ -95,7 +95,7 @@ function addLoadingIndex(filter, order, level, tiles) {
 // ============ helpers ============
 
 /**
- * Get data for indexing
+ * Get data for indexing for tiledVector type
  * @param spatialDataByDataSourceKey {Object} [dataSourceKey]: {data: Object, spatialIndex: Object}
  * @return {Object}
  */
@@ -126,6 +126,22 @@ function getTiledIndexData(spatialDataByDataSourceKey) {
 	}
 
 	return indexByLevelByTileByDataSourceKey;
+}
+
+/**
+ * Get data for indexing fot vector type
+ * @param spatialDataByDataSourceKey {Object} [dataSourceKey]: {data: Object}
+ * @return {Object}
+ */
+function getIndexData(spatialDataByDataSourceKey) {
+	const indexByDataSourceKey = {};
+	for (const [dsKey, datasource] of Object.entries(
+		spatialDataByDataSourceKey
+	)) {
+		indexByDataSourceKey[dsKey] = [...Object.keys(datasource.data)];
+	}
+
+	return indexByDataSourceKey;
 }
 
 // ============ actions ============
@@ -178,6 +194,7 @@ const updateStore = common.updateStore(
 export default {
 	addLoadingIndex,
 	getTiledIndexData,
+	getIndexData,
 	removeIndex: actionRemoveIndex,
 	receiveIndexed,
 	updateStore,
