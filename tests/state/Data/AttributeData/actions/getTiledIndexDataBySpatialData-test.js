@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import actions from '../../../../../src/state/Data/AttributeData/actions';
 
-describe('state/Data/AttributeData/actions/getIndexDataBySpatialData', function () {
+describe('state/Data/AttributeData/actions/getTiledIndexDataBySpatialData', function () {
 	it('get index for one datasource on one tile', function () {
 		const spatialData = {
 			'85e35be5-1706-402a-86ad-851397bae7aa': {
@@ -34,7 +34,10 @@ describe('state/Data/AttributeData/actions/getIndexDataBySpatialData', function 
 			},
 		};
 
-		const index = actions.getIndexDataBySpatialData(spatialData, attributeData);
+		const index = actions.getTiledIndexDataBySpatialData(
+			spatialData,
+			attributeData
+		);
 
 		assert.deepEqual(index, {
 			7: {
@@ -102,7 +105,10 @@ describe('state/Data/AttributeData/actions/getIndexDataBySpatialData', function 
 			},
 		};
 
-		const index = actions.getIndexDataBySpatialData(spatialData, attributeData);
+		const index = actions.getTiledIndexDataBySpatialData(
+			spatialData,
+			attributeData
+		);
 
 		assert.deepEqual(index, {
 			7: {
@@ -201,7 +207,10 @@ describe('state/Data/AttributeData/actions/getIndexDataBySpatialData', function 
 			},
 		};
 
-		const index = actions.getIndexDataBySpatialData(spatialData, attributeData);
+		const index = actions.getTiledIndexDataBySpatialData(
+			spatialData,
+			attributeData
+		);
 
 		assert.deepEqual(index, {
 			7: {
@@ -308,7 +317,10 @@ describe('state/Data/AttributeData/actions/getIndexDataBySpatialData', function 
 			},
 		};
 
-		const index = actions.getIndexDataBySpatialData(spatialData, attributeData);
+		const index = actions.getTiledIndexDataBySpatialData(
+			spatialData,
+			attributeData
+		);
 
 		assert.deepEqual(index, {
 			6: {
