@@ -266,6 +266,20 @@ function getTiledIndexDataBySpatialData(spatialData, attributeData) {
 	return indexByLevelByTileByDataSourceKey;
 }
 
+/**
+ * Get data for indexing for vector spatial data
+ * @param {Object} attributeData
+ * @return {Object}
+ */
+function getIndexData(attributeData) {
+	const indexByDataSourceKey = {};
+	for (const [dsKey, data] of Object.entries(attributeData)) {
+		indexByDataSourceKey[dsKey] = [...Object.keys(data)];
+	}
+
+	return indexByDataSourceKey;
+}
+
 // ============ actions ============
 function actionRemoveSpatialIndex(filter, order) {
 	return {
@@ -396,6 +410,7 @@ export default {
 	addLoadingIndex,
 	addLoadingSpatialIndex,
 	getTiledIndexDataBySpatialData,
+	getIndexData,
 	receiveIndexedWithSpatialIndex,
 	receiveIndexed,
 	removeSpatialIndex: actionRemoveSpatialIndex,
