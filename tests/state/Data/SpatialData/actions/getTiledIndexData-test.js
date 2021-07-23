@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import actions from '../../../../../src/state/Data/SpatialData/actions';
 
-describe('state/Data/SpatialData/actions/getIndexData', function () {
+describe('state/Data/SpatialData/actions/getTiledIndexData', function () {
 	it('Create index for one datasource', function () {
 		const spatialData = {
 			'85e35be5-1706-402a-86ad-851397bae7aa': {
@@ -13,7 +13,7 @@ describe('state/Data/SpatialData/actions/getIndexData', function () {
 			},
 		};
 
-		const index = actions.getIndexData(spatialData);
+		const index = actions.getTiledIndexData(spatialData);
 
 		assert.deepEqual(
 			index,
@@ -46,7 +46,7 @@ describe('state/Data/SpatialData/actions/getIndexData', function () {
 			},
 		};
 
-		const index = actions.getIndexData(spatialData);
+		const index = actions.getTiledIndexData(spatialData);
 
 		assert.deepEqual(index, {
 			7: {
@@ -76,7 +76,7 @@ describe('state/Data/SpatialData/actions/getIndexData', function () {
 			},
 		};
 
-		const index = actions.getIndexData(spatialData);
+		const index = actions.getTiledIndexData(spatialData);
 
 		assert.deepEqual(index, {
 			7: {
@@ -113,7 +113,7 @@ describe('state/Data/SpatialData/actions/getIndexData', function () {
 			},
 		};
 
-		const index = actions.getIndexData(spatialData);
+		const index = actions.getTiledIndexData(spatialData);
 
 		assert.deepEqual(index, {
 			7: {

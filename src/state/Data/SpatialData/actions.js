@@ -38,7 +38,7 @@ function addDataAndIndex(
 	changedOn
 ) {
 	return dispatch => {
-		const indexByLevelByTileByDataSourceKey = getIndexData(
+		const indexByLevelByTileByDataSourceKey = getTiledIndexData(
 			spatialDataAndIndexByDataSourceKey
 		);
 
@@ -99,7 +99,7 @@ function addLoadingIndex(filter, order, level, tiles) {
  * @param spatialDataByDataSourceKey {Object} [dataSourceKey]: {data: Object, spatialIndex: Object}
  * @return {Object}
  */
-function getIndexData(spatialDataByDataSourceKey) {
+function getTiledIndexData(spatialDataByDataSourceKey) {
 	const indexByLevelByTileByDataSourceKey = {};
 	for (const [dsKey, datasource] of Object.entries(
 		spatialDataByDataSourceKey
@@ -177,7 +177,7 @@ const updateStore = common.updateStore(
 
 export default {
 	addLoadingIndex,
-	getIndexData,
+	getTiledIndexData,
 	removeIndex: actionRemoveIndex,
 	receiveIndexed,
 	updateStore,
