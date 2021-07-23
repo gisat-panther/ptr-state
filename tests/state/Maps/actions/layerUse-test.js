@@ -556,7 +556,7 @@ describe('state/Maps/actions/layerUse', function () {
 					type: 'DATA.SPATIAL_DATA_SOURCES.INDEX.ADD',
 				},
 				{
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					dataByDataSourceKey: {
 						'848e2559-936d-4262-a808-4c87aa60217d': {
 							18502: {

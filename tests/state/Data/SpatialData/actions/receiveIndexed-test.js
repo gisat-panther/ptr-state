@@ -81,7 +81,7 @@ const tests = [
 			const attributeDataFilter = {appKey: 'testKey'};
 			return [
 				{
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					dataByDataSourceKey: {
 						'85e35be5-1706-402a-86ad-851397bae7aa': {
 							18502: {
@@ -191,7 +191,7 @@ const tests = [
 
 			return [
 				{
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					dataByDataSourceKey: {
 						'85e35be5-1706-402a-86ad-851397bae7aa': {
 							18502: {
@@ -292,7 +292,7 @@ const tests = [
 						},
 					},
 					level: '2',
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					order: null,
 					filter: {},
 					changedOn: null,
@@ -373,7 +373,7 @@ const tests = [
 					},
 					level: '2',
 					order: null,
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					filter: {},
 					indexData: [
 						{

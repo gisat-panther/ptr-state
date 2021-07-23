@@ -1,6 +1,7 @@
 import ActionTypes from '../../../constants/ActionTypes';
 import {isEmpty as _isEmpty, forIn as _forIn, reduce as _reduce} from 'lodash';
 import {tileAsString} from '../helpers';
+import helpers from './helpers';
 import common from '../../_common/actions';
 import Select from '../../Select';
 
@@ -38,6 +39,9 @@ function addDataAndIndex(
 	changedOn
 ) {
 	return dispatch => {
+		const spatialDataTiled = helpers.isSpatialDataTiled(
+			spatialDataAndIndexByDataSourceKey
+		);
 		if (spatialDataTiled) {
 			const indexByLevelByTileByDataSourceKey = getTiledIndexData(
 				spatialDataAndIndexByDataSourceKey
@@ -55,7 +59,7 @@ function addDataAndIndex(
 			);
 
 			dispatch(
-				actionAddDataAndIndex(
+				actionAddDataAndTiledIndex(
 					spatialDataByDataSourceKey,
 					level,
 					filter,
@@ -65,7 +69,21 @@ function addDataAndIndex(
 				)
 			);
 		} else {
-			//non tiled
+			const spatialDataByDataSourceKey = getIndexData(
+				spatialDataAndIndexByDataSourceKey
+			);
+
+			// TODO add non tiled data
+			// dispatch(
+			// 	actionAddDataAndIndex(
+			// 		spatialDataByDataSourceKey,
+			// 		level,
+			// 		filter,
+			// 		order,
+			// 		[indexByLevelByTileByDataSourceKey],
+			// 		changedOn
+			// 	)
+			// );
 		}
 	};
 }
@@ -157,7 +175,7 @@ function actionRemoveIndex(filter, order) {
 	};
 }
 
-function actionAddDataAndIndex(
+function actionAddDataAndTiledIndex(
 	dataByDataSourceKey,
 	level,
 	filter,
@@ -166,7 +184,7 @@ function actionAddDataAndIndex(
 	changedOn
 ) {
 	return {
-		type: actionTypes.ADD_WITH_INDEX,
+		type: actionTypes.ADD_WITH_TILED_INDEX,
 		dataByDataSourceKey,
 		level,
 		filter,

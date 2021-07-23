@@ -169,7 +169,7 @@ export default (state = INITIAL_STATE, action) => {
 	switch (action.type) {
 		case ActionTypes.DATA.SPATIAL_DATA.ADD:
 			return add(state, action);
-		case ActionTypes.DATA.SPATIAL_DATA.ADD_WITH_INDEX:
+		case ActionTypes.DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX:
 			return addWithIndex(state, action);
 		case ActionTypes.DATA.SPATIAL_DATA.INDEX.ADD:
 			return addIndex(state, action);

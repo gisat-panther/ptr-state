@@ -274,7 +274,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 					filter: {
 						layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
 					},
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 				},
 			]);
 		});
@@ -693,7 +693,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 					type: 'DATA.SPATIAL_DATA_SOURCES.INDEX.ADD',
 				},
 				{
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					dataByDataSourceKey: {
 						'85e35be5-1706-402a-86ad-851397bae7aa': {
 							18502: {
