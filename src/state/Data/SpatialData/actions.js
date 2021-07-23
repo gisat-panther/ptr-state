@@ -38,31 +38,35 @@ function addDataAndIndex(
 	changedOn
 ) {
 	return dispatch => {
-		const indexByLevelByTileByDataSourceKey = getTiledIndexData(
-			spatialDataAndIndexByDataSourceKey
-		);
+		if (spatialDataTiled) {
+			const indexByLevelByTileByDataSourceKey = getTiledIndexData(
+				spatialDataAndIndexByDataSourceKey
+			);
 
-		// spatialData should be only from one level
-		const level = Object.keys(indexByLevelByTileByDataSourceKey)[0];
+			// spatialData should be only from one level
+			const level = Object.keys(indexByLevelByTileByDataSourceKey)[0];
 
-		let spatialDataByDataSourceKey = {};
-		_forIn(
-			spatialDataAndIndexByDataSourceKey,
-			(value, spatialDataSourceKey) => {
-				spatialDataByDataSourceKey[spatialDataSourceKey] = value.data;
-			}
-		);
+			let spatialDataByDataSourceKey = {};
+			_forIn(
+				spatialDataAndIndexByDataSourceKey,
+				(value, spatialDataSourceKey) => {
+					spatialDataByDataSourceKey[spatialDataSourceKey] = value.data;
+				}
+			);
 
-		dispatch(
-			actionAddDataAndIndex(
-				spatialDataByDataSourceKey,
-				level,
-				filter,
-				order,
-				[indexByLevelByTileByDataSourceKey],
-				changedOn
-			)
-		);
+			dispatch(
+				actionAddDataAndIndex(
+					spatialDataByDataSourceKey,
+					level,
+					filter,
+					order,
+					[indexByLevelByTileByDataSourceKey],
+					changedOn
+				)
+			);
+		} else {
+			//non tiled
+		}
 	};
 }
 
