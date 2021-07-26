@@ -77,7 +77,7 @@ describe('addWithSpatialIndex-test', function () {
 		};
 
 		const action = {
-			type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+			type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 			data: {
 				feature7: 'A',
 			},
