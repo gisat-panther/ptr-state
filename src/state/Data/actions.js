@@ -855,7 +855,7 @@ function processResult(
 
 		if (result.spatialData && result.attributeData) {
 			const changes = null;
-			const spatialIndexData = attributeData.getIndexDataBySpatialData(
+			const spatialIndexData = attributeData.getTiledIndexDataBySpatialData(
 				result.spatialData,
 				result.attributeData
 			);
@@ -970,6 +970,8 @@ function composeDataEndpointPayload(
 			//should response contain attribute or spatial relations
 			attribute: !!loadAttributeRelations,
 			spatial: !!loadSpatialRelations,
+			//FIXME temporary force add area relations true
+			area: true,
 		},
 
 		data: {
