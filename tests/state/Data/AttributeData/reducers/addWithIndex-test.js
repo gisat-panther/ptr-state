@@ -3,7 +3,7 @@ import reducers, {
 	INITIAL_STATE,
 } from '../../../../../src/state/Data/AttributeData/reducers';
 
-describe('addWithTiledIndex-test', function () {
+describe('addWithIndex-test', function () {
 	const state = {
 		...INITIAL_STATE,
 		byDataSourceKey: {
@@ -52,7 +52,7 @@ describe('addWithTiledIndex-test', function () {
 		};
 
 		const action = {
-			type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_TILED_INDEX',
+			type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_INDEX',
 			data: {
 				dataSourceKey3: {
 					feature7: 'A',
@@ -102,7 +102,7 @@ describe('addWithTiledIndex-test', function () {
 		};
 
 		const action = {
-			type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_TILED_INDEX',
+			type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_INDEX',
 			data: {
 				dataSourceKey1: {
 					feature2: 5,

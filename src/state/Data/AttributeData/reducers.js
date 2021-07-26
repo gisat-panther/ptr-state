@@ -61,7 +61,7 @@ const update = (state, attributeDataSourceKey, data) => {
  * @param changedOn {string}
  * @return {Object}
  */
-const addWithSpatialIndex = (
+const addWithSpatialTiledIndex = (
 	state,
 	attributeDataSourceKey,
 	data,
@@ -105,7 +105,7 @@ const addWithSpatialIndex = (
  * @param limit {Number} Limitation for loading data
  * @return {Object}
  */
-const addWithTiledIndex = (
+const addWithIndex = (
 	state,
 	index,
 	data,
@@ -191,8 +191,8 @@ export default (state = INITIAL_STATE, action) => {
 	switch (action.type) {
 		case ActionTypes.DATA.ATTRIBUTE_DATA.ADD:
 			return add(state, action.key, action.data);
-		case ActionTypes.DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX:
-			return addWithSpatialIndex(
+		case ActionTypes.DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX:
+			return addWithSpatialTiledIndex(
 				state,
 				action.attributeDataSourceKey,
 				action.data,
@@ -201,8 +201,8 @@ export default (state = INITIAL_STATE, action) => {
 				action.indexData,
 				action.changedOn
 			);
-		case ActionTypes.DATA.ATTRIBUTE_DATA.ADD_WITH_TILED_INDEX:
-			return addWithTiledIndex(
+		case ActionTypes.DATA.ATTRIBUTE_DATA.ADD_WITH_INDEX:
+			return addWithIndex(
 				state,
 				action.index,
 				action.data,
