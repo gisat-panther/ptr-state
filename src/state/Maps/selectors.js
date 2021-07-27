@@ -177,7 +177,6 @@ const getViewByMapKey = createCachedSelector(
 
 const getViewByMapKeyObserver = createRecomputeObserver(getViewByMapKey);
 
-//TODO @vlach1989 tests
 /**
  * @param state {Object}
  * @param mapKey {string}
@@ -1001,6 +1000,8 @@ export default {
 	getMapSets,
 	getMapSetView,
 	getMapSetViewLimits,
+
+	getPreviousViewByMapKey,
 
 	getVisibleTilesByMapKey,
 	getSpatialRelationsFilterFromLayerState,

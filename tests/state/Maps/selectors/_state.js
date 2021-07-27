@@ -101,6 +101,9 @@ export const MapsSelectorsState = {
 							url: 'http://back.ground',
 						},
 					},
+					previousView: {
+						boxRange: 1000000,
+					},
 				},
 			},
 		},
