@@ -5,7 +5,7 @@ import common from '../_common/selectors';
 
 const getSubstate = state => state.areaRelations;
 const getAll = common.getAll(getSubstate);
-
+const getIndex = common.getIndex(getSubstate);
 /**
  * @return {Array|null}
  */
@@ -66,7 +66,7 @@ const getFilteredDataSourceKeysGroupedByLayerKey = createCachedSelector(
 
 export default {
 	getSubstate,
-
+	getIndex,
 	getFilteredData,
 	getFilteredDataSourceKeysGroupedByLayerKey,
 };

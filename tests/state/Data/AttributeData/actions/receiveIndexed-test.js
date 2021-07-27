@@ -27,7 +27,7 @@ describe('state/Data/AttributeData/actions/receiveIndexed', function () {
 			changedOn
 		);
 		assert.deepEqual(action, {
-			type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_TILED_INDEX',
+			type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_INDEX',
 			filter: {
 				appKey: 'testKey',
 			},

@@ -206,6 +206,7 @@ describe('state/Maps/actions/use', function () {
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {
@@ -255,6 +256,7 @@ describe('state/Maps/actions/use', function () {
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {
@@ -308,6 +310,7 @@ describe('state/Maps/actions/use', function () {
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {

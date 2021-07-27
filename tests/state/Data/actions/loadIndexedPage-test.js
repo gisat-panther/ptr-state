@@ -63,7 +63,9 @@ describe('state/Data/actions/loadIndexedPage', function () {
 		const spatialIndex = null;
 		const spatialFilter = null;
 		const loadGeometry = null;
-		const loadRelations = null;
+		const loadAttributeRelations = false;
+		const loadSpatialRelations = false;
+		const loadAreaRelations = false;
 		const order = null;
 		const spatialRelationsFilter = null;
 		const attributeRelationsFilter = null;
@@ -75,7 +77,9 @@ describe('state/Data/actions/loadIndexedPage', function () {
 				spatialIndex,
 				spatialFilter,
 				loadGeometry,
-				loadRelations,
+				loadAttributeRelations,
+				loadSpatialRelations,
+				loadAreaRelations,
 				order,
 				spatialRelationsFilter,
 				attributeRelationsFilter,
@@ -125,6 +129,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 						limit: 100,
 						attribute: false,
 						spatial: false,
+						area: false,
 					},
 					data: {
 						spatialFilter: {
@@ -168,6 +173,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 		const loadGeometry = true;
 		const loadAttributeRelations = false;
 		const loadSpatialRelations = false;
+		const loadAreaRelations = false;
 		const order = null;
 		const spatialRelationsFilter = {
 			layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
@@ -183,6 +189,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 				loadGeometry,
 				loadAttributeRelations,
 				loadSpatialRelations,
+				loadAreaRelations,
 				order,
 				spatialRelationsFilter,
 				attributeRelationsFilter,
@@ -237,7 +244,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 						},
 					],
 					order: null,
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 				},
 				{
 					changedOn: null,
@@ -325,6 +332,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 						limit: 100,
 						attribute: true,
 						spatial: true,
+						area: false,
 					},
 					data: {
 						featureKeys: [18502],
@@ -381,6 +389,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 		const loadGeometry = true;
 		const loadAttributeRelations = true;
 		const loadSpatialRelations = true;
+		const loadAreaRelations = false;
 		const order = null;
 		const layerTemplateKey = '11c7cc1b-9834-4e85-aba6-eab5571705e4';
 		const spatialRelationsFilter = {
@@ -404,6 +413,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 				loadGeometry,
 				loadAttributeRelations,
 				loadSpatialRelations,
+				loadAreaRelations,
 				order,
 				spatialRelationsFilter,
 				attributeRelationsFilter,
@@ -542,7 +552,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 					type: 'DATA.ATTRIBUTE_DATA_SOURCES.INDEX.ADD',
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 					attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 					data: {
 						18502: '27',
@@ -764,6 +774,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 						limit: 100,
 						attribute: false,
 						spatial: false,
+						area: false,
 					},
 					data: {
 						spatialFilter: {
@@ -809,6 +820,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 		const loadGeometry = false;
 		const loadAttributeRelations = false;
 		const loadSpatialRelations = false;
+		const loadAreaRelations = false;
 		const order = null;
 		const spatialRelationsFilter = {
 			layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
@@ -824,6 +836,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 				loadGeometry,
 				loadAttributeRelations,
 				loadSpatialRelations,
+				loadAreaRelations,
 				order,
 				spatialRelationsFilter,
 				attributeRelationsFilter,
@@ -863,7 +876,7 @@ describe('state/Data/actions/loadIndexedPage', function () {
 						},
 					],
 					order: null,
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 				},
 			]);
 		});

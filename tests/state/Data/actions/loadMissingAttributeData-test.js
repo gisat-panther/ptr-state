@@ -1,5 +1,4 @@
-import {createStore, combineReducers, applyMiddleware} from 'redux';
-import thunk from 'redux-thunk';
+import {createStore, combineReducers} from 'redux';
 import {assert} from 'chai';
 import _ from 'lodash';
 import slash from 'slash';
@@ -180,6 +179,7 @@ describe('state/Data/actions/loadMissingAttributeData', function () {
 							limit: 1,
 							attribute: true,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialFilter: {
@@ -237,6 +237,7 @@ describe('state/Data/actions/loadMissingAttributeData', function () {
 							limit: 1,
 							attribute: false,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialIndex: {tiles: [['0', '2']]},
@@ -494,7 +495,7 @@ describe('state/Data/actions/loadMissingAttributeData', function () {
 					type: 'DATA.ATTRIBUTE_DATA_SOURCES.INDEX.ADD',
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 					attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 					data: {
 						18502: '27',
@@ -519,7 +520,7 @@ describe('state/Data/actions/loadMissingAttributeData', function () {
 					changedOn: null,
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 					attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 					data: {
 						18503: '30',
@@ -758,6 +759,7 @@ describe('state/Data/actions/loadMissingAttributeData', function () {
 							limit: 1,
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {
@@ -816,6 +818,7 @@ describe('state/Data/actions/loadMissingAttributeData', function () {
 							limit: 1,
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {tiles: [['0', '2']]},
@@ -957,7 +960,7 @@ describe('state/Data/actions/loadMissingAttributeData', function () {
 					changedOn: null,
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 					attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 					data: {
 						18502: '27',
@@ -982,7 +985,7 @@ describe('state/Data/actions/loadMissingAttributeData', function () {
 					changedOn: null,
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 					attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 					data: {
 						18503: '30',

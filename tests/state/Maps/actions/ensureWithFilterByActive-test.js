@@ -232,6 +232,7 @@ describe('state/Maps/actions/ensureWithFilterByActive', function () {
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {

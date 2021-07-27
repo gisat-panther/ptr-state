@@ -45,6 +45,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 		const attributeRelationsFilter = {};
 		const attributeRelationsCount = 0;
 		const spatialRelationsCount = 0;
+		const areaRelationsCount = 0;
 		const preloadedSpatialDataSources = [];
 		const attributeDataFilter = {};
 
@@ -58,6 +59,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 				attributeRelationsFilter,
 				attributeRelationsCount,
 				spatialRelationsCount,
+				areaRelationsCount,
 				preloadedSpatialDataSources,
 				attributeDataFilter
 			)
@@ -114,6 +116,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 						limit: 1,
 						attribute: false,
 						spatial: true,
+						area: false,
 					},
 					data: {
 						spatialIndex: {
@@ -191,6 +194,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 		const order = null;
 		const attributeRelationsCount = 1;
 		const spatialRelationsCount = 2;
+		const areaRelationsCount = 0;
 		const preloadedSpatialDataSources = [];
 		dispatch(
 			actions.loadMissingRelationsAndData(
@@ -202,6 +206,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 				attributeRelationsFilter,
 				attributeRelationsCount,
 				spatialRelationsCount,
+				areaRelationsCount,
 				preloadedSpatialDataSources,
 				attributeDataFilter
 			)
@@ -247,7 +252,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 					changedOn: null,
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 					attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 					data: {
 						18502: '27',
@@ -443,6 +448,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 							limit: 1,
 							attribute: false,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialIndex: {
@@ -503,6 +509,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 						relations: {
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {
@@ -582,6 +589,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 		const order = null;
 		const attributeRelationsCount = 1;
 		const spatialRelationsCount = 2;
+		const areaRelationsCount = 0;
 		const preloadedSpatialDataSources = [];
 		dispatch(
 			actions.loadMissingRelationsAndData(
@@ -593,6 +601,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 				attributeRelationsFilter,
 				attributeRelationsCount,
 				spatialRelationsCount,
+				areaRelationsCount,
 				preloadedSpatialDataSources,
 				attributeDataFilter
 			)
@@ -707,7 +716,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 					changedOn: null,
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 					attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 					data: {
 						18502: '27',
@@ -922,7 +931,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 					changedOn: null,
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 					attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 					data: {
 						18503: '30',

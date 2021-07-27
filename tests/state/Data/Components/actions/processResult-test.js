@@ -275,7 +275,7 @@ describe('state/Data/Components/actions/processResult', function () {
 		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
 			assert.deepStrictEqual(storeHelpers.getDispatchedActions(), [
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_TILED_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_INDEX',
 					filter: relationsFilter,
 					order: null,
 					total: 1,
@@ -413,7 +413,7 @@ describe('state/Data/Components/actions/processResult', function () {
 					changedOn: null,
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_TILED_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_INDEX',
 					filter: relationsFilter,
 					order: null,
 					total: 1,

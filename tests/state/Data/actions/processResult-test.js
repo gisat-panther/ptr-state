@@ -26,6 +26,7 @@ const tests = [
 				const loadGeometry = true;
 				const loadAttributeRelations = true;
 				const loadSpatialRelations = true;
+				const loadAreaRelations = true;
 				const order = null;
 				const layerTemplateKey = '11c7cc1b-9834-4e85-aba6-eab5571705e4';
 				const spatialRelationsFilter = {
@@ -47,6 +48,7 @@ const tests = [
 						loadGeometry,
 						loadAttributeRelations,
 						loadSpatialRelations,
+						loadAreaRelations,
 						order,
 						spatialRelationsFilter,
 						attributeRelationsFilter,
@@ -61,7 +63,7 @@ const tests = [
 		},
 		dispatchedActions: [
 			{
-				type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+				type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 				attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 				data: {
 					18502: '27',
@@ -163,6 +165,7 @@ const tests = [
 				const loadGeometry = true;
 				const loadAttributeRelations = true;
 				const loadSpatialRelations = true;
+				const loadAreaRelations = false;
 				const order = null;
 				const layerTemplateKey = '11c7cc1b-9834-4e85-aba6-eab5571705e4';
 				const spatialRelationsFilter = {
@@ -184,6 +187,7 @@ const tests = [
 						loadGeometry,
 						loadAttributeRelations,
 						loadSpatialRelations,
+						loadAreaRelations,
 						order,
 						spatialRelationsFilter,
 						attributeRelationsFilter,
@@ -313,7 +317,7 @@ const tests = [
 					type: 'DATA.ATTRIBUTE_DATA_SOURCES.INDEX.ADD',
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
 					attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 					data: {
 						18502: '27',
