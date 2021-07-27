@@ -2,7 +2,7 @@ import {assert} from 'chai';
 import reducers, {INITIAL_STATE} from '../../../../src/state/Maps/reducers';
 import {MapReducersState as state} from './_state';
 
-describe('update-test', function () {
+describe('updateMapView-test', function () {
 	it('Should update map view', function () {
 		const update = {
 			center: {
@@ -22,6 +22,9 @@ describe('update-test', function () {
 						view: {
 							...state.maps.map2.data.view,
 							...update,
+						},
+						previousView: {
+							boxRange: 1000,
 						},
 					},
 				},
@@ -56,6 +59,7 @@ describe('update-test', function () {
 					data: {
 						...state.maps.map1.data,
 						view: update,
+						previousView: null,
 					},
 				},
 			},

@@ -185,7 +185,6 @@ const getTile = createRecomputeSelector(
 	recomputeSelectorOptions
 );
 
-// TODO @vlach1989 tests
 /**
  * Assemble vector data for all tiles
  * @param dataSourceKey {string} uuid

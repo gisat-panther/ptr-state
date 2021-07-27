@@ -11,6 +11,7 @@ describe('getTiles', function () {
 	const spatialDataSourceKey = 'spatialDataSource1',
 		fidColumnName = 'fid',
 		level = 6,
+		previousLevel = 7,
 		spatialRelationsFilter = {
 			modifiers: {
 				scopeKey: 'scope1',
@@ -93,6 +94,7 @@ describe('getTiles', function () {
 			spatialDataSourceKey,
 			fidColumnName,
 			level,
+			previousLevel,
 			tiles,
 			spatialRelationsFilter,
 			attributeRelationsFilter,
@@ -149,6 +151,7 @@ describe('getTiles', function () {
 			spatialDataSourceKey,
 			fidColumnName,
 			level,
+			previousLevel,
 			tiles,
 			spatialRelationsFilter,
 			attributeRelationsFilter,

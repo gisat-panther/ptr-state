@@ -668,7 +668,6 @@ const getAttributeRelationsFilterFromLayerState = createRecomputeSelector(
 	recomputeSelectorOptions
 );
 
-// TODO @vlach1989 tests
 /**
  * @param spatialDataSource {Object}
  * @param layerState {Object} layer definition from state or passed to the Map component
