@@ -378,6 +378,7 @@ const tests = [
 						relations: {
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {
@@ -434,6 +435,7 @@ const tests = [
 						relations: {
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {tiles: [['0', '2']]},
@@ -1119,6 +1121,7 @@ const tests = [
 							limit: 1,
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {
@@ -1177,6 +1180,7 @@ const tests = [
 							limit: 1,
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {tiles: [['0', '2']]},
@@ -1498,6 +1502,7 @@ const tests = [
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {
@@ -1555,6 +1560,7 @@ const tests = [
 							limit: 1,
 							attribute: false,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialIndex: {tiles: [['0', '2']]},

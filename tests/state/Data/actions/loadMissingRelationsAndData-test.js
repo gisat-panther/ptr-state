@@ -45,6 +45,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 		const attributeRelationsFilter = {};
 		const attributeRelationsCount = 0;
 		const spatialRelationsCount = 0;
+		const areaRelationsCount = 0;
 		const preloadedSpatialDataSources = [];
 		const attributeDataFilter = {};
 
@@ -58,6 +59,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 				attributeRelationsFilter,
 				attributeRelationsCount,
 				spatialRelationsCount,
+				areaRelationsCount,
 				preloadedSpatialDataSources,
 				attributeDataFilter
 			)
@@ -114,6 +116,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 						limit: 1,
 						attribute: false,
 						spatial: true,
+						area: false,
 					},
 					data: {
 						spatialIndex: {
@@ -191,6 +194,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 		const order = null;
 		const attributeRelationsCount = 1;
 		const spatialRelationsCount = 2;
+		const areaRelationsCount = 0;
 		const preloadedSpatialDataSources = [];
 		dispatch(
 			actions.loadMissingRelationsAndData(
@@ -202,6 +206,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 				attributeRelationsFilter,
 				attributeRelationsCount,
 				spatialRelationsCount,
+				areaRelationsCount,
 				preloadedSpatialDataSources,
 				attributeDataFilter
 			)
@@ -443,6 +448,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 							limit: 1,
 							attribute: false,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialIndex: {
@@ -503,6 +509,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 						relations: {
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {
@@ -582,6 +589,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 		const order = null;
 		const attributeRelationsCount = 1;
 		const spatialRelationsCount = 2;
+		const areaRelationsCount = 0;
 		const preloadedSpatialDataSources = [];
 		dispatch(
 			actions.loadMissingRelationsAndData(
@@ -593,6 +601,7 @@ describe('state/Data/actions/loadMissingRelationsAndData', function () {
 				attributeRelationsFilter,
 				attributeRelationsCount,
 				spatialRelationsCount,
+				areaRelationsCount,
 				preloadedSpatialDataSources,
 				attributeDataFilter
 			)

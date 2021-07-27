@@ -172,6 +172,7 @@ describe('state/Maps/actions/layerUse', function () {
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {

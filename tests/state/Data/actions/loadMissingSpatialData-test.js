@@ -150,6 +150,7 @@ describe('state/Data/actions/loadMissingSpatialData', function () {
 						relations: {
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {
@@ -206,6 +207,7 @@ describe('state/Data/actions/loadMissingSpatialData', function () {
 						relations: {
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {tiles: [['0', '2']]},

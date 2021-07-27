@@ -18,6 +18,7 @@ describe('state/Data/actions/composeDataEndpointPayload', function () {
 		const loadGeometry = true;
 		const loadAttributeRelations = true;
 		const loadSpatialRelations = true;
+		const loadAreaRelations = false;
 		const layerTemplateKey = '11c7cc1b-9834-4e85-aba6-eab5571705e4';
 		const spatialRelationsFilter = {
 			layerTemplateKey: layerTemplateKey,
@@ -54,6 +55,7 @@ describe('state/Data/actions/composeDataEndpointPayload', function () {
 			loadGeometry,
 			loadAttributeRelations,
 			loadSpatialRelations,
+			loadAreaRelations,
 			spatialFilter
 		);
 
@@ -74,6 +76,7 @@ describe('state/Data/actions/composeDataEndpointPayload', function () {
 			relations: {
 				attribute: true,
 				spatial: true,
+				area: false,
 			},
 			data: {
 				featureKeys: [18502],
@@ -107,6 +110,7 @@ describe('state/Data/actions/composeDataEndpointPayload', function () {
 		const loadGeometry = false;
 		const loadAttributeRelations = false;
 		const loadSpatialRelations = false;
+		const loadAreaRelations = false;
 		const spatialRelationsFilter = {};
 		const attributeRelationsFilter = {
 			...spatialRelationsFilter,
@@ -139,6 +143,7 @@ describe('state/Data/actions/composeDataEndpointPayload', function () {
 			loadGeometry,
 			loadAttributeRelations,
 			loadSpatialRelations,
+			loadAreaRelations,
 			spatialFilter
 		);
 
@@ -148,6 +153,7 @@ describe('state/Data/actions/composeDataEndpointPayload', function () {
 				limit: 5,
 				attribute: false,
 				spatial: false,
+				area: false,
 			},
 			data: {
 				featureKeys: [18502],

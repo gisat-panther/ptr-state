@@ -238,6 +238,7 @@ describe('state/Maps/actions/setMapBackgroundLayer', function () {
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {

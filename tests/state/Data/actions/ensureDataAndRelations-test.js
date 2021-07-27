@@ -131,6 +131,7 @@ describe('state/Data/actions/ensureDataAndRelations', function () {
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {
@@ -188,6 +189,7 @@ describe('state/Data/actions/ensureDataAndRelations', function () {
 							limit: 1,
 							attribute: false,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialIndex: {tiles: [['0', '2']]},

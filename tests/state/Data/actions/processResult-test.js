@@ -26,6 +26,7 @@ const tests = [
 				const loadGeometry = true;
 				const loadAttributeRelations = true;
 				const loadSpatialRelations = true;
+				const loadAreaRelations = true;
 				const order = null;
 				const layerTemplateKey = '11c7cc1b-9834-4e85-aba6-eab5571705e4';
 				const spatialRelationsFilter = {
@@ -47,6 +48,7 @@ const tests = [
 						loadGeometry,
 						loadAttributeRelations,
 						loadSpatialRelations,
+						loadAreaRelations,
 						order,
 						spatialRelationsFilter,
 						attributeRelationsFilter,
@@ -163,6 +165,7 @@ const tests = [
 				const loadGeometry = true;
 				const loadAttributeRelations = true;
 				const loadSpatialRelations = true;
+				const loadAreaRelations = false;
 				const order = null;
 				const layerTemplateKey = '11c7cc1b-9834-4e85-aba6-eab5571705e4';
 				const spatialRelationsFilter = {
@@ -184,6 +187,7 @@ const tests = [
 						loadGeometry,
 						loadAttributeRelations,
 						loadSpatialRelations,
+						loadAreaRelations,
 						order,
 						spatialRelationsFilter,
 						attributeRelationsFilter,
