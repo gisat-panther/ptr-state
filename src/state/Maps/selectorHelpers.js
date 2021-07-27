@@ -106,7 +106,6 @@ const getView = (map, set) => {
 	}
 };
 
-// TODO @vlach1989 tests
 /**
  * It returns merged previous view from map and associated map set based on synced params
  * @param map {Object}
