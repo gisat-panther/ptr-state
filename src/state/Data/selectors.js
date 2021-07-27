@@ -2,6 +2,7 @@ import {createSelector as createRecomputeSelector} from '@jvitela/recompute';
 import {map as _map, forIn as _forIn, forEach as _forEach} from 'lodash';
 import stringify from 'fast-stringify';
 import {CacheFifo} from '@gisatcz/ptr-utils';
+import {grid} from '@gisatcz/ptr-tile-grid';
 
 import attributeRelations from './AttributeRelations/selectors';
 import attributeDataSources from './AttributeDataSources/selectors';
@@ -184,11 +185,13 @@ const getTile = createRecomputeSelector(
 	recomputeSelectorOptions
 );
 
+// TODO @vlach1989 tests
 /**
  * Assemble vector data for all tiles
  * @param dataSourceKey {string} uuid
  * @param fidColumnName {string} name of property used as feature identifier
  * @param level {number}
+ * @param previousLevel {number}
  * @param tiles {Array} list of tiles definition points
  * @param spatialRelationsFilter {Object} getSpatialRelationsFilterFromLayerState
  * @param attributeRelationsFilter {Object} getAttributeRelationsFilterFromLayerState
@@ -202,6 +205,7 @@ const getTiles = createRecomputeSelector(
 		dataSourceKey,
 		fidColumnName,
 		level,
+		previousLevel,
 		tiles,
 		spatialRelationsFilter,
 		attributeRelationsFilter,
@@ -211,6 +215,9 @@ const getTiles = createRecomputeSelector(
 	) => {
 		if (tiles?.length) {
 			let populatedTiles = [];
+			let previousTiles = [];
+			let previousPopulatedTiles = [];
+
 			_forEach(tiles, tile => {
 				const populatedTile = getTile(
 					dataSourceKey,
@@ -225,9 +232,56 @@ const getTiles = createRecomputeSelector(
 				);
 				if (populatedTile) {
 					populatedTiles.push(populatedTile);
+				} else {
+					if (level > previousLevel) {
+						const parentTile = grid.getParentTile(level, tile);
+						if (parentTile) {
+							previousTiles.push(parentTile.tile);
+						}
+					} else if (level < previousLevel) {
+						const childTiles = grid.getChildTiles(level, tile);
+						if (childTiles) {
+							_forEach(childTiles, childTile =>
+								previousTiles.push(childTile.tile)
+							);
+						}
+					}
 				}
 			});
-			return populatedTiles.length ? populatedTiles : null;
+
+			if (previousTiles.length) {
+				const uniquePreviousTiles = previousTiles
+					.map(tile => JSON.stringify(tile))
+					.filter((item, index, tile) => tile.indexOf(item) === index)
+					.map(tile => JSON.parse(tile));
+
+				_forEach(uniquePreviousTiles, previousTile => {
+					const previousPopulatedTile = getTile(
+						dataSourceKey,
+						fidColumnName,
+						previousLevel,
+						previousTile,
+						spatialRelationsFilter,
+						attributeRelationsFilter,
+						attributeDataSourceKeyAttributeKeyPairs,
+						styleKey,
+						attributeDataFilter
+					);
+					if (previousPopulatedTile) {
+						previousPopulatedTiles.push(previousPopulatedTile);
+					}
+				});
+			}
+
+			if (populatedTiles.length && previousPopulatedTiles.length) {
+				return [...previousPopulatedTiles, ...populatedTiles];
+			} else if (populatedTiles.length) {
+				return populatedTiles;
+			} else if (previousPopulatedTiles.length) {
+				return previousPopulatedTiles;
+			} else {
+				return null;
+			}
 		} else {
 			return null;
 		}

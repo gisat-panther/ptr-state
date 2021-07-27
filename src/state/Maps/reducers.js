@@ -561,6 +561,7 @@ const updateMapView = (state, mapKey, updates) => {
 					...state.maps[mapKey],
 					data: {
 						...state.maps[mapKey].data,
+						previousView: state.maps[mapKey].data.view,
 						view: state.maps[mapKey].data.view
 							? {...state.maps[mapKey].data.view, ...updates}
 							: updates,
@@ -573,6 +574,7 @@ const updateMapView = (state, mapKey, updates) => {
 	}
 };
 
+// TODO @vlach1989 tests
 /**
  * Update map set view
  * @param state {Object}
@@ -590,6 +592,7 @@ const updateSetView = (state, setKey, updates) => {
 					...state.sets[setKey],
 					data: {
 						...state.sets[setKey].data,
+						previousView: state.sets[setKey].data.view,
 						view: state.sets[setKey].data.view
 							? {...state.sets[setKey].data.view, ...updates}
 							: updates,

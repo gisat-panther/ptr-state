@@ -106,6 +106,35 @@ const getView = (map, set) => {
 	}
 };
 
+// TODO @vlach1989 tests
+/**
+ * It returns merged previous view from map and associated map set based on synced params
+ * @param map {Object}
+ * @param set {Object}
+ * @return {Object|unknown} final map view
+ */
+const getPreviousView = (map, set) => {
+	if (map) {
+		if (set) {
+			let mapPreviousView = map.data?.previousView;
+
+			// omit synced view params from map
+			if (set.sync && !_.isEmpty(set.sync)) {
+				mapPreviousView = _.omitBy(mapPreviousView, (viewValue, viewKey) => {
+					return set.sync[viewKey];
+				});
+			}
+
+			let mapSetPreviousView = set.data?.previousView;
+			return mapUtils.view.mergeViews(mapSetPreviousView, mapPreviousView);
+		} else {
+			return map.data?.previousView;
+		}
+	} else {
+		return null;
+	}
+};
+
 /**
  * Get zoom level of current view represented by mapWidth, mapHeight and boxRange.
  */
@@ -167,6 +196,7 @@ const getTiles = createCachedSelector(
 export default {
 	getBackgroundLayerAsLayer,
 	getTiles,
+	getPreviousView,
 	getView,
 	getZoomLevel,
 	mergeBackgroundLayerWithLayers,
