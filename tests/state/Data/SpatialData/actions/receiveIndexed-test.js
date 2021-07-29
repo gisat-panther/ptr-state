@@ -391,6 +391,122 @@ const tests = [
 			];
 		},
 	},
+	{
+		name: 'receiveIndexed and addDataWithIndex for non tiled data',
+		action: (actions, actionTypes, options) => {
+			return (dispatch, getState) => {
+				const spatialData = {
+					'85e35be5-1706-402a-86ad-851397bae7aa': {
+						data: {
+							18502: {
+								type: 'MultiPolygon',
+								coordinates: [
+									[
+										[
+											[2.50647283, 50.63433838],
+											[2.5012393, 50.63986206],
+											[2.50829029, 50.64472198],
+											[2.50647283, 50.63433838],
+										],
+									],
+								],
+							},
+						},
+					},
+					'd8e72383-d72e-4a62-b23b-cc240e198d2e': {
+						data: {
+							18503: {
+								type: 'MultiPolygon',
+								coordinates: [
+									[
+										[
+											[2.50647283, 50.63433838],
+											[2.5012393, 50.63986206],
+											[2.50829029, 50.64472198],
+											[2.50647283, 50.63433838],
+										],
+									],
+								],
+							},
+						},
+					},
+				};
+
+				const attributeDataFilter = {appKey: 'testKey'};
+				const order = null;
+				const changedOn = null;
+
+				dispatch(
+					actions.receiveIndexed(
+						spatialData,
+						attributeDataFilter,
+						order,
+						changedOn
+					)
+				);
+			};
+		},
+		getState: (dataType, store) => () => {
+			return store.getState();
+		},
+		dispatchedActions: () => {
+			const attributeDataFilter = {appKey: 'testKey'};
+			const order = null;
+			const changedOn = null;
+
+			return [
+				{
+					filter: attributeDataFilter,
+					order: order,
+					type: 'DATA.SPATIAL_DATA.INDEX.REMOVE',
+				},
+				{
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					dataByDataSourceKey: {
+						'85e35be5-1706-402a-86ad-851397bae7aa': {
+							18502: {
+								type: 'MultiPolygon',
+								coordinates: [
+									[
+										[
+											[2.50647283, 50.63433838],
+											[2.5012393, 50.63986206],
+											[2.50829029, 50.64472198],
+											[2.50647283, 50.63433838],
+										],
+									],
+								],
+							},
+						},
+						'd8e72383-d72e-4a62-b23b-cc240e198d2e': {
+							18503: {
+								type: 'MultiPolygon',
+								coordinates: [
+									[
+										[
+											[2.50647283, 50.63433838],
+											[2.5012393, 50.63986206],
+											[2.50829029, 50.64472198],
+											[2.50647283, 50.63433838],
+										],
+									],
+								],
+							},
+						},
+					},
+					filter: attributeDataFilter,
+					order,
+					indexData: [
+						{
+							'85e35be5-1706-402a-86ad-851397bae7aa': ['18502'],
+							'd8e72383-d72e-4a62-b23b-cc240e198d2e': ['18503'],
+						},
+					],
+					changedOn,
+				},
+			];
+		},
+	},
 ];
 
 const dataType = null;

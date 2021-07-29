@@ -307,7 +307,7 @@ function actionAddDataAndIndexBasedOnSpatialData(
 	changedOn
 ) {
 	return {
-		type: actionTypes.ADD_WITH_SPATIAL_TILED_INDEX,
+		type: actionTypes.ADD_WITH_SPATIAL_INDEX,
 		attributeDataSourceKey,
 		data,
 		filter: attributeDataFilter,

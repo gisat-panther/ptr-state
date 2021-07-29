@@ -191,7 +191,7 @@ export default (state = INITIAL_STATE, action) => {
 	switch (action.type) {
 		case ActionTypes.DATA.ATTRIBUTE_DATA.ADD:
 			return add(state, action.key, action.data);
-		case ActionTypes.DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX:
+		case ActionTypes.DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX:
 			return addWithSpatialTiledIndex(
 				state,
 				action.attributeDataSourceKey,
