@@ -1,5 +1,6 @@
 import {
 	isEmpty as _isEmpty,
+	some as _some,
 	reduce as _reduce,
 	flattenDeep as _flattenDeep,
 	difference as _difference,
@@ -17,6 +18,7 @@ import spatialData from './SpatialData/actions';
 import areaRelations from '../AreaRelations/actions';
 import request from '../_common/request';
 import commonActions from '../_common/actions';
+import helpers from './SpatialData/helpers';
 
 import Select from '../Select';
 import {
@@ -26,7 +28,6 @@ import {
 	tileAsStringArray,
 } from './helpers';
 import {TILED_VECTOR_LAYER_TYPES} from './constants';
-import helpers from '../_common/helpers';
 
 const DEFAULT_RELATIONS_PAGE = {
 	offset: 0,
@@ -64,6 +65,84 @@ const getRestRelationsPages = (
 	}
 };
 
+// Check if all of spatialDataSources are tiled type.
+const checkAllDSAreTiled = spatialDataSources => {
+	const DSTILED = !_isEmpty(spatialDataSources)
+		? spatialDataSources.every(ds =>
+				TILED_VECTOR_LAYER_TYPES.includes(ds.data?.type)
+		  )
+		: false;
+	return DSTILED;
+};
+
+const checkSomeDSAreVector = spatialDataSources => {
+	const SDSvectorType = 'vector';
+	const someDSisVectorType = !_isEmpty(spatialDataSources)
+		? spatialDataSources.some(ds => ds.data?.type === SDSvectorType)
+		: false;
+	return someDSisVectorType;
+};
+
+const transformSDStoTypes = spatialDataSources => {
+	return !_isEmpty(spatialDataSources)
+		? spatialDataSources.map(sds => ({
+				data: {type: sds.data.type, key: sds.key},
+		  }))
+		: [];
+};
+
+/**
+ * Find spatialDataSources by spatialRelationsFilter and order. If All DS are by type vector, then return if theyr indexex are fully loaded.
+ * @param {Object} state
+ * @param {Object} spatialRelationsFilter
+ * @param {Array?} order
+ * @returns {Boolean}
+ */
+const getVectorSpatialDataSourcesLoadedStatus = (
+	state,
+	spatialRelationsFilter,
+	order
+) => {
+	const spatialDataSources = Select.data.spatialDataSources.getIndexed(
+		state,
+		spatialRelationsFilter,
+		order
+	);
+	const spatialDataSourcesIndex = Select.data.spatialDataSources.getIndex(
+		state,
+		spatialRelationsFilter,
+		order
+	);
+
+	let spatialDataSourcesLoaded = false;
+	if (spatialDataSourcesIndex) {
+		spatialDataSourcesLoaded =
+			spatialDataSourcesIndex.count === spatialDataSources?.length;
+	}
+	let allDSAreVector = false;
+	if (spatialDataSourcesLoaded) {
+		allDSAreVector = spatialDataSources.every(
+			spatialDataSource => spatialDataSource?.data?.type === 'vector'
+		);
+	}
+
+	let spatialDataIndexForDataSource = null;
+	let spatialDataIndexForDataSourceisEmpty = true;
+	if (allDSAreVector) {
+		// check if some features are loaded
+		// Get all data for given key. It caused performance issues when the data was passed as a parameter
+		spatialDataIndexForDataSource = Select.data.spatialData.getIndex(
+			state,
+			spatialRelationsFilter,
+			order
+		);
+
+		spatialDataIndexForDataSourceisEmpty = spatialDataIndexForDataSource.index.hasOwnProperty();
+	}
+
+	return !spatialDataIndexForDataSourceisEmpty;
+};
+
 /**
  * Helper function. Usually second step in requesting data.
  * Calculate if relations requests are missing based on attributeRelationsCount and spatialRelationsCount.
@@ -78,7 +157,7 @@ const getRestRelationsPages = (
  * @param {Number} attributeRelationsCount Count of known attribute relations. Used for determinate further requests.
  * @param {Number} spatialRelationsCount Count of known spatial relations. Used for determinate further requests.
  * @param {Number} areaRelationsCount Count of known area relations. Used for determinate further requests.
- * @param {Array} preloadedSpatialDataSources SpatialDataSources loaded by previous request.
+ * @param {Array} preloadedSpatialDataSourcesTypes SpatialDataSources loaded by previous request.
  * @param {Object} attributeDataFilter Filler object contains modifiers, layerTemplateKey or areaTreeLevelKey, styleKey, and optional values for attributeFilter, dataSourceKeys and featureKeys.
  * @return {function} Return promise.
  */
@@ -92,7 +171,7 @@ function loadMissingRelationsAndData(
 	attributeRelationsCount,
 	spatialRelationsCount,
 	areaRelationsCount,
-	preloadedSpatialDataSources = [],
+	preloadedSpatialDataSourcesTypes = [],
 	attributeDataFilter
 ) {
 	return (dispatch, getState) => {
@@ -179,39 +258,37 @@ function loadMissingRelationsAndData(
 		if (promises.length > 0) {
 			return Promise.all(promises).then((response = []) => {
 				// All relations are loaded at this moment.
-				// Check if all spatialDataSources relations from response and preloadedSpatialDataSources are type of "unsupported" like raster/wms/wmts.
+				// Check if all spatialDataSources relations from response and preloadedSpatialDataSourcesTypes are type of "unsupported" like raster/wms/wmts.
 				// If all spatialDataSources are unsupported, then received data are empty and indexes needs to be removed.
 				// If only some of spatialDataSources relations are unsupported, then loading status on index will be replaced by data.
 				const spatialDataSourcesTypes = _flattenDeep(
 					response.map(r =>
-						r?.spatialAttributeRelationsDataSources?.spatialDataSources?.map(
-							sds => ({
-								type: sds.data.type,
-								key: sds.key,
-							})
+						transformSDStoTypes(
+							r?.spatialAttributeRelationsDataSources?.spatialDataSources
 						)
 					)
 				);
 				const spatialDataSourcesPairs = [
 					...spatialDataSourcesTypes,
-					...preloadedSpatialDataSources,
+					...preloadedSpatialDataSourcesTypes,
 				];
 
 				//test spatialDataSources only if some come from BE
-				const allSourcesAreUnsupported = !_isEmpty(spatialDataSourcesPairs)
-					? spatialDataSourcesPairs.every(
-							ds => !TILED_VECTOR_LAYER_TYPES.includes(ds.type)
-					  )
-					: false;
+				const allDataSourcesTiled = checkAllDSAreTiled(spatialDataSourcesPairs);
 
-				// Check if all of returned spatialDataSources are unsupported type.
 				// Indexes for unsupported layers can be cleared.
-				if (allSourcesAreUnsupported) {
-					// AttributeData and spatialData index represented by spatialRelationsFilter, attributeRelationsFilter and order can be deleted
-					dispatch(spatialData.removeIndex(spatialRelationsFilter, order));
-					dispatch(
-						attributeData.removeSpatialIndex(attributeDataFilter, order)
-					);
+				// TODO -> what if only some DS should be cleared?
+				if (!_isEmpty(spatialDataSourcesPairs) && !allDataSourcesTiled) {
+					const clearIndexes = !checkSomeDSAreVector(spatialDataSourcesPairs);
+					if (clearIndexes) {
+						// Clear indexes for unsupported layer types like WMS, WMTS
+						// Do not clear indexes for type vector
+						// AttributeData and spatialData index represented by spatialRelationsFilter, attributeRelationsFilter and order can be deleted
+						dispatch(spatialData.removeIndex(spatialRelationsFilter, order));
+						dispatch(
+							attributeData.removeSpatialIndex(attributeDataFilter, order)
+						);
+					}
 				}
 			});
 		} else {
@@ -323,10 +400,9 @@ function loadMissingAttributeData(
 				const spatialDataSources =
 					response?.spatialAttributeRelationsDataSources?.spatialDataSources ||
 					[];
-				const preloadSpatialDataSources = spatialDataSources.map(sds => ({
-					type: sds.data.type,
-					key: sds.key,
-				}));
+				const preloadedSpatialDataSourcesTypes = transformSDStoTypes(
+					spatialDataSources
+				);
 
 				const attributeRelationsCount =
 					response.spatialAttributeRelationsDataSources.total
@@ -347,7 +423,7 @@ function loadMissingAttributeData(
 						attributeRelationsCount,
 						spatialRelationsCount,
 						areaRelationsCount,
-						preloadSpatialDataSources,
+						preloadedSpatialDataSourcesTypes,
 						attributeDataFilter
 					)
 				);
@@ -548,28 +624,28 @@ function ensureDataAndRelations(
 						response?.spatialAttributeRelationsDataSources
 							?.spatialDataSources || [];
 
-					//test spatialDataSources only if some come from BE
-					const allSourcesAreUnsupported = loadSpatialRelations
-						? spatialDataSources.every(
-								ds => !TILED_VECTOR_LAYER_TYPES.includes(ds.data?.type)
-						  )
-						: false;
+					const allDataSourcesTiled =
+						loadSpatialRelations || loadAreaRelations
+							? checkAllDSAreTiled(spatialDataSources)
+							: false;
 
-					// Check if all of returned spatialDataSources are unsupported type.
-					// If so, is no reason to make further requests.
-					// Indexes for unsupported layers can be cleared.
-					if (restRelationsPages === 0 && allSourcesAreUnsupported) {
-						// AttributeData and spatialData index represented by spatialRelationsFilter, attributeRelationsFilter and order can be deleted
-						dispatch(spatialData.removeIndex(spatialRelationsFilter, order));
-						dispatch(
-							attributeData.removeSpatialIndex(attributeDataFilter, order)
-						);
-						return;
+					if (restRelationsPages === 0 && !allDataSourcesTiled) {
+						// Stop getting next tiles if all DS is not tiled
+						const clearIndexes = !checkSomeDSAreVector(spatialDataSources);
+						if (clearIndexes) {
+							// Clear indexes for unsupported layer types like WMS, WMTS
+							// Do not clear indexes for type vector
+							// AttributeData and spatialData index represented by spatialRelationsFilter, attributeRelationsFilter and order can be deleted
+							dispatch(spatialData.removeIndex(spatialRelationsFilter, order));
+							dispatch(
+								attributeData.removeSpatialIndex(attributeDataFilter, order)
+							);
+						}
 					} else {
-						const preloadSpatialDataSources = spatialDataSources.map(sds => ({
-							type: sds.data.type,
-							key: sds.key,
-						}));
+						const preloadedSpatialDataSourcesTypes = transformSDStoTypes(
+							spatialDataSources
+						);
+
 						return dispatch(
 							loadMissingRelationsAndData(
 								loadGeometry,
@@ -581,7 +657,7 @@ function ensureDataAndRelations(
 								attributeRelationsCount,
 								spatialRelationsCount,
 								areaRelationsCount,
-								preloadSpatialDataSources,
+								preloadedSpatialDataSourcesTypes,
 								attributeDataFilter
 							)
 						);
@@ -690,8 +766,8 @@ function ensure(
 	attributeDataFilterExtension
 ) {
 	return (dispatch, getState) => {
+		const state = getState();
 		// Filter params - see Panther docs: Code/API/Data endpoint
-		const {areaTreeLevelKey, layerTemplateKey} = commonRelationsFilter;
 		const spatialRelationsFilter = commonRelationsFilter;
 		const attributeRelationsFilter = {...commonRelationsFilter, styleKey};
 		const attributeDataFilter = {
@@ -706,14 +782,11 @@ function ensure(
 		const order = null;
 
 		const spatialDataIndex =
-			Select.data.spatialData.getIndex(
-				getState(),
-				spatialRelationsFilter,
-				order
-			) || [];
+			Select.data.spatialData.getIndex(state, spatialRelationsFilter, order) ||
+			[];
 		const attributeDataIndex =
 			Select.data.attributeData.getIndex(
-				getState(),
+				state,
 				'spatialIndexes',
 				attributeDataFilter,
 				order
@@ -728,10 +801,20 @@ function ensure(
 		);
 
 		const filterHasSpatialOrAreaRelations = hasSpatialOrAreaRelations(
-			getState(),
+			state,
 			spatialRelationsFilter,
 			order
 		);
+
+		// Check if all DS are type of vector and whether all DS are loaded. In that case stop loading farther data cause all we need is loaded.
+		const isFullyLoadedVectorTypeDS = getVectorSpatialDataSourcesLoadedStatus(
+			state,
+			spatialRelationsFilter,
+			order
+		);
+		if (isFullyLoadedVectorTypeDS) {
+			return Promise.resolve();
+		}
 
 		const loadRelationsAndData =
 			!filterHasSpatialOrAreaRelations && missingSpatialData;
@@ -798,6 +881,7 @@ function ensure(
 		}
 
 		if (
+			missingAttributesData &&
 			!loadRelationsAndData &&
 			!_isEmpty(modifiedSpatialFilterForAttributes.tiles)
 		) {
@@ -888,10 +972,16 @@ function processResult(
 
 		if (result.spatialData && result.attributeData) {
 			const changes = null;
-			const spatialIndexData = attributeData.getTiledIndexDataBySpatialData(
-				result.spatialData,
-				result.attributeData
-			);
+			const spatialDataTiled = helpers.isSpatialDataTiled(result.spatialData);
+			let spatialIndexData = null;
+			if (spatialDataTiled) {
+				spatialIndexData = attributeData.getTiledIndexDataBySpatialData(
+					result.spatialData,
+					result.attributeData
+				);
+			} else {
+				spatialIndexData = attributeData.getIndexData(attributeData);
+			}
 			dispatch(
 				attributeData.receiveIndexedWithSpatialIndex(
 					result.attributeData,
@@ -936,7 +1026,8 @@ function processResult(
 					spatialRelationsFilter,
 					order,
 					start,
-					result.spatialAttributeRelationsDataSources.total.spatialRelations,
+					result.spatialAttributeRelationsDataSources.total.spatialRelations ||
+						result.spatialAttributeRelationsDataSources.total.areaRelations,
 					changes
 				)
 			);

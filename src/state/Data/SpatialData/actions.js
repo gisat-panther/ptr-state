@@ -69,21 +69,30 @@ function addDataAndIndex(
 				)
 			);
 		} else {
-			const spatialDataByDataSourceKey = getIndexData(
-				spatialDataAndIndexByDataSourceKey
-			);
+			// Case for non tiled geometry type
+			const index = getIndexData(spatialDataAndIndexByDataSourceKey);
 
-			// TODO add non tiled data
-			// dispatch(
-			// 	actionAddDataAndIndex(
-			// 		spatialDataByDataSourceKey,
-			// 		level,
-			// 		filter,
-			// 		order,
-			// 		[indexByLevelByTileByDataSourceKey],
-			// 		changedOn
-			// 	)
-			// );
+			const spatialDataByDataSourceKey = {};
+
+			for (const [dsKey, data] of Object.entries(
+				spatialDataAndIndexByDataSourceKey
+			)) {
+				spatialDataByDataSourceKey[dsKey] = data.data;
+			}
+
+			// Remove previous loading index
+			dispatch(actionRemoveIndex(filter, order));
+
+			// Add new index with data
+			dispatch(
+				actionAddDataAndIndex(
+					spatialDataByDataSourceKey,
+					filter,
+					order,
+					[index],
+					changedOn
+				)
+			);
 		}
 	};
 }
@@ -187,6 +196,23 @@ function actionAddDataAndTiledIndex(
 		type: actionTypes.ADD_WITH_TILED_INDEX,
 		dataByDataSourceKey,
 		level,
+		filter,
+		order,
+		indexData,
+		changedOn,
+	};
+}
+
+function actionAddDataAndIndex(
+	dataByDataSourceKey,
+	filter,
+	order,
+	indexData,
+	changedOn
+) {
+	return {
+		type: actionTypes.ADD_WITH_INDEX,
+		dataByDataSourceKey,
 		filter,
 		order,
 		indexData,
