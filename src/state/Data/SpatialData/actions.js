@@ -160,7 +160,7 @@ function getTiledIndexData(spatialDataByDataSourceKey) {
 }
 
 /**
- * Get data for indexing fot vector type
+ * Get data for indexing for vector type
  * @param spatialDataByDataSourceKey {Object} [dataSourceKey]: {data: Object}
  * @return {Object}
  */

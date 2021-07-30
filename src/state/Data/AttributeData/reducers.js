@@ -61,7 +61,7 @@ const update = (state, attributeDataSourceKey, data) => {
  * @param changedOn {string}
  * @return {Object}
  */
-const addWithSpatialTiledIndex = (
+const addWithSpatialIndex = (
 	state,
 	attributeDataSourceKey,
 	data,
@@ -192,7 +192,7 @@ export default (state = INITIAL_STATE, action) => {
 		case ActionTypes.DATA.ATTRIBUTE_DATA.ADD:
 			return add(state, action.key, action.data);
 		case ActionTypes.DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX:
-			return addWithSpatialTiledIndex(
+			return addWithSpatialIndex(
 				state,
 				action.attributeDataSourceKey,
 				action.data,
