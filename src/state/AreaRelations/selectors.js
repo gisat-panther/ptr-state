@@ -4,69 +4,74 @@ import _ from 'lodash';
 import common from '../_common/selectors';
 
 const getSubstate = state => state.areaRelations;
-const getAll = common.getAll(getSubstate);
+// const getAll = common.getAll(getSubstate);
 const getIndex = common.getIndex(getSubstate);
-/**
- * @return {Array|null}
- */
-const getAllData = createSelector([getAll], relations => {
-	if (relations) {
-		return _.map(relations, relation => relation.data);
-	} else {
-		return null;
-	}
-});
 
-/**
- * @param state {Object}
- * @param filter {Object}
- * @returns {Array|null}
- */
-const getFilteredData = createSelector(
-	[getAllData, (state, filter) => filter],
-	(relations, filter) => {
-		if (relations && relations.length > 0 && filter && !_.isEmpty(filter)) {
-			return _.filter(relations, filter);
-		} else {
-			return null;
-		}
-	}
-);
+//
+// UNUSED
+// TEMPORARY COMMENTED BEFORE REMOVE
+//
+// /**
+//  * @return {Array|null}
+//  */
+// const getAllData = createSelector([getAll], relations => {
+// 	if (relations) {
+// 		return _.map(relations, relation => relation.data);
+// 	} else {
+// 		return null;
+// 	}
+// });
 
-/**
- * @returns {Object}
- */
-const getFilteredDataSourceKeysGroupedByLayerKey = createCachedSelector(
-	[getAll, (state, layers) => layers],
-	(relations, layers) => {
-		if (relations && relations.length) {
-			let filteredGroupedByLayerKey = {};
+// /**
+//  * @param state {Object}
+//  * @param filter {Object}
+//  * @returns {Array|null}
+//  */
+// const getFilteredData = createSelector(
+// 	[getAllData, (state, filter) => filter],
+// 	(relations, filter) => {
+// 		if (relations && relations.length > 0 && filter && !_.isEmpty(filter)) {
+// 			return _.filter(relations, filter);
+// 		} else {
+// 			return null;
+// 		}
+// 	}
+// );
 
-			_.forEach(layers, layer => {
-				let filteredRelations = _.filter(relations, {data: layer.filter});
-				if (filteredRelations.length) {
-					filteredGroupedByLayerKey[layer.key] = filteredRelations.map(
-						relation => {
-							return {
-								spatialDataSourceKey: relation.data.spatialDataSourceKey,
-								fidColumnName: relation.data.fidColumnName,
-							};
-						}
-					);
-				}
-			});
-			return !_.isEmpty(filteredGroupedByLayerKey)
-				? filteredGroupedByLayerKey
-				: null;
-		} else {
-			return null;
-		}
-	}
-)((state, layers) => JSON.stringify(layers));
+// /**
+//  * @returns {Object}
+//  */
+// const getFilteredDataSourceKeysGroupedByLayerKey = createCachedSelector(
+// 	[getAll, (state, layers) => layers],
+// 	(relations, layers) => {
+// 		if (relations && relations.length) {
+// 			let filteredGroupedByLayerKey = {};
+
+// 			_.forEach(layers, layer => {
+// 				let filteredRelations = _.filter(relations, {data: layer.filter});
+// 				if (filteredRelations.length) {
+// 					filteredGroupedByLayerKey[layer.key] = filteredRelations.map(
+// 						relation => {
+// 							return {
+// 								spatialDataSourceKey: relation.data.spatialDataSourceKey,
+// 								fidColumnName: relation.data.fidColumnName,
+// 							};
+// 						}
+// 					);
+// 				}
+// 			});
+// 			return !_.isEmpty(filteredGroupedByLayerKey)
+// 				? filteredGroupedByLayerKey
+// 				: null;
+// 		} else {
+// 			return null;
+// 		}
+// 	}
+// )((state, layers) => JSON.stringify(layers));
 
 export default {
 	getSubstate,
 	getIndex,
-	getFilteredData,
-	getFilteredDataSourceKeysGroupedByLayerKey,
+	// getFilteredData,
+	// getFilteredDataSourceKeysGroupedByLayerKey,
 };
