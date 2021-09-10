@@ -184,6 +184,17 @@ const getMapSetActiveMapView = createCachedSelector(
  * @param state {Object}
  * @param setKey {string}
  */
+const getMapSetActiveMapViewport = createCachedSelector(
+	[getMapSetActiveMap],
+	map => {
+		return map?.data?.viewport || null;
+	}
+)((state, setKey) => setKey);
+
+/**
+ * @param state {Object}
+ * @param setKey {string}
+ */
 const getMapSetActiveMapLayers = createCachedSelector(
 	[getMapSetActiveMap],
 	map => {
@@ -977,6 +988,7 @@ export default {
 	getMapSetActiveMap,
 	getMapSetActiveMapKey,
 	getMapSetActiveMapView,
+	getMapSetActiveMapViewport,
 	getMapSetActiveMapLayers,
 	getMapSetBackgroundLayerStateByMapKey,
 	getMapSetByMapKey,
