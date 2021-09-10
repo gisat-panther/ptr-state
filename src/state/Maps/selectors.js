@@ -154,15 +154,40 @@ const getMapSetActiveMapKey = createSelector(
  * @param state {Object}
  * @param setKey {string}
  */
+const getMapSetActiveMap = createSelector(
+	[getMapsAsObject, getMapSetActiveMapKey],
+	(maps, mapKey) => {
+		if (!_isEmpty(maps) && mapKey) {
+			return maps[mapKey] || null;
+		} else {
+			return null;
+		}
+	}
+);
+
+/**
+ * @param state {Object}
+ * @param setKey {string}
+ */
 const getMapSetActiveMapView = createCachedSelector(
-	[getMapSetActiveMapKey, getMapSetByKey, getMapsAsObject],
-	(mapKey, set, maps) => {
-		let map = maps?.[mapKey];
+	[getMapSetByKey, getMapSetActiveMap],
+	(set, map) => {
 		if (map) {
 			return selectorHelpers.getView(map, set);
 		} else {
 			return null;
 		}
+	}
+)((state, setKey) => setKey);
+
+/**
+ * @param state {Object}
+ * @param setKey {string}
+ */
+const getMapSetActiveMapLayers = createCachedSelector(
+	[getMapSetActiveMap],
+	map => {
+		return map?.data?.layers || null;
 	}
 )((state, setKey) => setKey);
 
@@ -949,8 +974,10 @@ export default {
 	getMapLayersStateWithModifiersByMapKey,
 	getMapMetadataModifiersByMapKey,
 
+	getMapSetActiveMap,
 	getMapSetActiveMapKey,
 	getMapSetActiveMapView,
+	getMapSetActiveMapLayers,
 	getMapSetBackgroundLayerStateByMapKey,
 	getMapSetByMapKey,
 	getMapSetByKey,
