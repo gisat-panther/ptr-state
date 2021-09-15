@@ -67,12 +67,12 @@ const getRestRelationsPages = (
 
 // Check if all of spatialDataSources are tiled type.
 const checkAllDSAreTiled = spatialDataSources => {
-	const DSTILED = !_isEmpty(spatialDataSources)
+	const dsTiled = !_isEmpty(spatialDataSources)
 		? spatialDataSources.every(ds =>
 				TILED_VECTOR_LAYER_TYPES.includes(ds.data?.type)
 		  )
 		: false;
-	return DSTILED;
+	return dsTiled;
 };
 
 const checkSomeDSAreVector = spatialDataSources => {

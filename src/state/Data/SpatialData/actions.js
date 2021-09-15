@@ -12,7 +12,7 @@ const actionTypes = ActionTypes.DATA.SPATIAL_DATA;
  * It ensure adding index and adding received data from BE.
  * Add data to state only when spatialData received, in case of empty spatialData it adds only index.
  * @param {Object} spatialData Object received from BE contains under spatialDataKey object of data attributes [id]: {data, spatialIndex}.
- * @param {Object} filter Filler object contains modifiers and layerTemplateKey or areaTreeLevelKey.
+ * @param {Object} filter Filler object contains modifiers and areaTreeLevelKey.
  * @param {Array?} order
  * @param {string?} changedOn
  */
@@ -99,7 +99,7 @@ function addDataAndIndex(
 
 /**
  * Create new index based on given level and tiles with loading indicator.
- * @param {Object} filter Filler object contains modifiers and layerTemplateKey or areaTreeLevelKey.
+ * @param {Object} filter Filler object contains modifiers and areaTreeLevelKey.
  * @param {Array?} order
  * @param {Number} level
  * @param {Array.[Array]} tiles
