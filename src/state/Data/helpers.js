@@ -160,3 +160,64 @@ export function getPageSize(localConfig) {
 		localConfig?.requestPageSize || configDefaults.requestPageSize;
 	return PAGE_SIZE;
 }
+
+/**
+ * Pick nearest tiles for requested level.
+ * @param {number} level Required data for level. Search for closest tiles to this level.
+ * @param {Object} loadedHigher Set of levels with tiles from higher levels then requested level.
+ * @param {Object} loadedLower Set of levels with tiles from lower levels then requested level.
+ * @param {string} preferedLevelsDirection One of [LOWER, HIGHER]. If fit tile is found on same level distance from requested level from lower and higher loaded tiles, which one is prefered.
+ * @returns {Object}
+ */
+// TODO @vdubr add tests
+export function filterNearestTiles(
+	level,
+	loadedHigher = {},
+	loadedLower = {},
+	preferedLevelsDirection
+) {
+	const uniqueTiles = {};
+	const uniqueLoadedKeys = new Set([
+		...Object.keys(loadedHigher),
+		...Object.keys(loadedLower),
+	]);
+
+	for (const tileKey of uniqueLoadedKeys) {
+		const lowerTile = loadedLower[tileKey];
+		if (lowerTile) {
+			lowerTile.levelDistance = Math.abs(level - lowerTile.level);
+		}
+
+		const higherTile = loadedHigher[tileKey];
+		if (higherTile) {
+			higherTile.levelDistance = Math.abs(level - higherTile.level);
+		}
+		// tile only in higher or lower
+		if ((lowerTile && !higherTile) || (!lowerTile && higherTile)) {
+			uniqueTiles[tileKey] = lowerTile || higherTile;
+		} else {
+			//if tile occure in both, then choose nearest or by preferedLevelsDirection
+			if (lowerTile.levelDistance !== higherTile.levelDistance) {
+				// one of tiles is on closer level to the required "level"
+				const tileWithLessLevelDistance =
+					lowerTile.levelDistance < higherTile.levelDistance
+						? lowerTile
+						: higherTile;
+				uniqueTiles[tileKey] = tileWithLessLevelDistance;
+			} else {
+				// both tiles are on same levelDistance
+				if (preferedLevelsDirection === 'LOWER') {
+					uniqueTiles[tileKey] = lowerTile;
+				} else {
+					uniqueTiles[tileKey] = higherTile;
+				}
+			}
+		}
+	}
+
+	//remove levelDistance property
+	for (const tileKey of Object.keys(uniqueTiles)) {
+		delete uniqueTiles[tileKey].levelDistance;
+	}
+	return uniqueTiles;
+}

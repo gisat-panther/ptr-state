@@ -798,6 +798,7 @@ function ensure(
 		}
 
 		if (
+			missingAttributesData &&
 			!loadRelationsAndData &&
 			!_isEmpty(modifiedSpatialFilterForAttributes.tiles)
 		) {

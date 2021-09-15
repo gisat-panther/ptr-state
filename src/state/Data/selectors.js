@@ -1,8 +1,13 @@
 import {createSelector as createRecomputeSelector} from '@jvitela/recompute';
-import {map as _map, forIn as _forIn, forEach as _forEach} from 'lodash';
+import {
+	map as _map,
+	forIn as _forIn,
+	forEach as _forEach,
+	isEmpty as _isEmpty,
+} from 'lodash';
 import stringify from 'fast-stringify';
 import {CacheFifo} from '@gisatcz/ptr-utils';
-import {grid} from '@gisatcz/ptr-tile-grid';
+import {utils} from '@gisatcz/ptr-tile-grid';
 
 import attributeRelations from './AttributeRelations/selectors';
 import attributeDataSources from './AttributeDataSources/selectors';
@@ -11,7 +16,7 @@ import components from './Components/selectors';
 import spatialRelations from './SpatialRelations/selectors';
 import spatialDataSources from './SpatialDataSources/selectors';
 import spatialData from './SpatialData/selectors';
-import {tileAsString} from './helpers';
+import {tileAsString, filterNearestTiles} from './helpers';
 import {recomputeSelectorOptions} from '../_common/recomputeHelpers';
 
 let tilesCache = new CacheFifo(1000);
@@ -216,6 +221,7 @@ const getTiles = createRecomputeSelector(
 			let populatedTiles = [];
 			let previousTiles = [];
 			let previousPopulatedTiles = [];
+			const missingTiles = [];
 
 			_forEach(tiles, tile => {
 				const populatedTile = getTile(
@@ -232,44 +238,68 @@ const getTiles = createRecomputeSelector(
 				if (populatedTile) {
 					populatedTiles.push(populatedTile);
 				} else {
-					if (level > previousLevel) {
-						const parentTile = grid.getParentTile(level, tile);
-						if (parentTile) {
-							previousTiles.push(parentTile.tile);
-						}
-					} else if (level < previousLevel) {
-						const childTiles = grid.getChildTiles(level, tile);
-						if (childTiles) {
-							_forEach(childTiles, childTile =>
-								previousTiles.push(childTile.tile)
-							);
-						}
-					}
+					missingTiles.push(tile);
 				}
 			});
 
-			if (previousTiles.length) {
-				const uniquePreviousTiles = previousTiles
-					.map(tile => JSON.stringify(tile))
-					.filter((item, index, tile) => tile.indexOf(item) === index)
-					.map(tile => JSON.parse(tile));
-
-				_forEach(uniquePreviousTiles, previousTile => {
-					const previousPopulatedTile = getTile(
-						dataSourceKey,
-						fidColumnName,
-						previousLevel,
-						previousTile,
-						spatialRelationsFilter,
-						attributeRelationsFilter,
-						attributeDataSourceKeyAttributeKeyPairs,
-						styleKey,
-						attributeDataFilter
-					);
-					if (previousPopulatedTile) {
-						previousPopulatedTiles.push(previousPopulatedTile);
+			if (missingTiles.length > 0) {
+				const index = spatialData.getIndex_recompute(
+					spatialRelationsFilter,
+					null
+				);
+				const loadedIndex = index.index || {};
+				const loaded = {};
+				for (const [level, tilesData] of Object.entries(loadedIndex)) {
+					const loadedTileKeys = [];
+					for (const [tileKey, tileData] of Object.entries(tilesData)) {
+						if (tileData !== true) {
+							loadedTileKeys.push(tileKey);
+						}
 					}
-				});
+					loaded[level] = loadedTileKeys;
+				}
+				const loadedHigher =
+					utils.getLoadedTiles(level, missingTiles, loaded, 'HIGHER', 25) || {};
+				const loadedLower =
+					utils.getLoadedTiles(level, missingTiles, loaded, 'LOWER', 3) || {};
+
+				if (!_isEmpty(loadedHigher) || !_isEmpty(loadedLower)) {
+					const preferedLevelsDirection =
+						level < previousLevel ? 'HIGHER' : 'LOWER';
+					const uniqueByLevels = filterNearestTiles(
+						level,
+						loadedHigher,
+						loadedLower,
+						preferedLevelsDirection
+					);
+
+					for (const [tileKey, tileData] of Object.entries(uniqueByLevels)) {
+						for (const tile of [...tileData.tiles]) {
+							if (
+								!previousPopulatedTiles.some(
+									t =>
+										t.tile === tile &&
+										t.level === Number.parseInt(tileData.level)
+								)
+							) {
+								const previousPopulatedTile = getTile(
+									dataSourceKey,
+									fidColumnName,
+									Number.parseInt(tileData.level),
+									tile,
+									spatialRelationsFilter,
+									attributeRelationsFilter,
+									attributeDataSourceKeyAttributeKeyPairs,
+									styleKey,
+									attributeDataFilter
+								);
+								if (previousPopulatedTile) {
+									previousPopulatedTiles.push(previousPopulatedTile);
+								}
+							}
+						}
+					}
+				}
 			}
 
 			if (populatedTiles.length && previousPopulatedTiles.length) {
