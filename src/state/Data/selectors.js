@@ -16,7 +16,8 @@ import components from './Components/selectors';
 import spatialRelations from './SpatialRelations/selectors';
 import spatialDataSources from './SpatialDataSources/selectors';
 import spatialData from './SpatialData/selectors';
-import {tileAsString, filterNearestTiles} from './helpers';
+import {filterNearestTiles} from './helpers';
+import {utils as tileGridUtils} from '@gisatcz/ptr-tile-grid';
 import {recomputeSelectorOptions} from '../_common/recomputeHelpers';
 
 let tilesCache = new CacheFifo(1000);
@@ -104,7 +105,7 @@ const getTile = createRecomputeSelector(
 		);
 
 		if (spatialDataForDataSource) {
-			const tileString = tileAsString(tile);
+			const tileString = tileGridUtils.tileAsString(tile);
 			const cacheParams = {
 				attributeRelationsFilter,
 				attributeDataFilter,
