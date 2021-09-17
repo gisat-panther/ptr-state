@@ -1,5 +1,5 @@
 import ActionTypes from '../../../constants/ActionTypes';
-import {DEFAULT_INITIAL_STATE} from '../../_common/reducers';
+import common, {DEFAULT_INITIAL_STATE} from '../../_common/reducers';
 import {forIn as _forIn} from 'lodash';
 import commonHelpers from '../../_common/helpers';
 
@@ -44,6 +44,27 @@ const add = (state, action) => {
 
 const addWithIndex = (state, action) => {
 	const updatedByDataSourceKey = getUpdatedByDataSourceKey(
+		state,
+		action.dataByDataSourceKey
+	);
+
+	const updatedIndexes = commonHelpers.getUpdatedIndexes(
+		state,
+		action.filter,
+		action.order,
+		action.indexData,
+		action.changedOn
+	);
+
+	return {
+		...state,
+		byDataSourceKey: updatedByDataSourceKey,
+		indexes: updatedIndexes,
+	};
+};
+
+const addWithTiledIndex = (state, action) => {
+	const updatedByDataSourceKey = getUpdatedByDataSourceKeyTiled(
 		state,
 		action.dataByDataSourceKey,
 		action.level
@@ -142,6 +163,31 @@ function getUpdatedByDataSourceKey(state, dataByDataSourceKey, level) {
 
 		const newFeatures = {};
 		_forIn(data, (geometry, featureKey) => {
+			//create new feature with geometry and add to state
+			const newFeature = getEmptyFeature();
+			newFeature.geometry = geometry;
+			newFeatures[featureKey] = newFeature;
+		});
+
+		updatedData[dataSourceKey] = {
+			...updatedData[dataSourceKey],
+			...newFeatures,
+		};
+	});
+
+	return updatedData;
+}
+
+function getUpdatedByDataSourceKeyTiled(state, dataByDataSourceKey, level) {
+	let updatedData = {...state.byDataSourceKey};
+
+	_forIn(dataByDataSourceKey, (data, dataSourceKey) => {
+		if (!updatedData.hasOwnProperty(dataSourceKey)) {
+			updatedData[dataSourceKey] = {};
+		}
+
+		const newFeatures = {};
+		_forIn(data, (geometry, featureKey) => {
 			const existingFeature = updatedData[dataSourceKey].hasOwnProperty(
 				featureKey
 			);
@@ -169,12 +215,16 @@ export default (state = INITIAL_STATE, action) => {
 	switch (action.type) {
 		case ActionTypes.DATA.SPATIAL_DATA.ADD:
 			return add(state, action);
+		case ActionTypes.DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX:
+			return addWithTiledIndex(state, action);
 		case ActionTypes.DATA.SPATIAL_DATA.ADD_WITH_INDEX:
 			return addWithIndex(state, action);
 		case ActionTypes.DATA.SPATIAL_DATA.INDEX.ADD:
 			return addIndex(state, action);
 		case ActionTypes.DATA.SPATIAL_DATA.INDEX.REMOVE:
 			return removeIndex(state, action);
+		case ActionTypes.DATA.SPATIAL_DATA.UPDATE_STORE:
+			return common.updateStore(state, action);
 		default:
 			return state;
 	}

@@ -1,70 +1,87 @@
 import {assert} from 'chai';
 import getStoreSet from '../../../../store';
 import actions from '../../../../../src/state/Data/SpatialData/actions';
+import testBatchRunner from '../../../helpers';
 
-describe('state/Data/SpatialData/actions/receiveIndexed', function () {
-	it('Dispatch nothing, because spatialData are undefined', function () {
-		const storeHelpers = getStoreSet();
-		const getState = () => {
-			return () => ({});
-		};
-		const dispatch = storeHelpers.getDispatch(getState);
-		const spatialData = undefined;
+const tests = [
+	{
+		name: 'Dispatch nothing, because spatialData are undefined.',
+		action: (actions, actionTypes, options) => {
+			return (dispatch, getState) => {
+				const spatialData = undefined;
 
-		const attributeDataFilter = {appKey: 'testKey'};
-		const order = null;
-		const changedOn = null;
+				const attributeDataFilter = {appKey: 'testKey'};
+				const order = null;
+				const changedOn = null;
 
-		dispatch(
-			actions.receiveIndexed(spatialData, attributeDataFilter, order, changedOn)
-		);
-		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
-			assert.deepEqual(storeHelpers.getDispatchedActions(), []);
-		});
-	});
-
-	it('Dispatch ADD_WITH_SPATIAL_INDEX one datasource', function () {
-		const storeHelpers = getStoreSet();
-		const getState = () => {
-			return () => ({});
-		};
-		const dispatch = storeHelpers.getDispatch(getState);
-		const spatialData = {
-			'85e35be5-1706-402a-86ad-851397bae7aa': {
-				data: {
-					18502: {
-						type: 'MultiPolygon',
-						coordinates: [
-							[
-								[
-									[2.50647283, 50.63433838],
-									[2.5012393, 50.63986206],
-									[2.50829029, 50.64472198],
-									[2.50647283, 50.63433838],
+				return dispatch(
+					actions.receiveIndexed(
+						spatialData,
+						attributeDataFilter,
+						order,
+						changedOn
+					)
+				);
+			};
+		},
+		getState: (dataType, store) => () => {
+			return store.getState();
+		},
+		dispatchedActions: [],
+	},
+	{
+		name: 'Dispatch ADD_WITH_SPATIAL_INDEX one datasource.',
+		action: (actions, actionTypes, options) => {
+			return (dispatch, getState) => {
+				const spatialData = {
+					'85e35be5-1706-402a-86ad-851397bae7aa': {
+						data: {
+							18502: {
+								type: 'MultiPolygon',
+								coordinates: [
+									[
+										[
+											[2.50647283, 50.63433838],
+											[2.5012393, 50.63986206],
+											[2.50829029, 50.64472198],
+											[2.50647283, 50.63433838],
+										],
+									],
 								],
-							],
-						],
+							},
+						},
+						spatialIndex: {
+							7: {
+								'0,1': [18502],
+							},
+						},
 					},
-				},
-				spatialIndex: {
-					7: {
-						'0,1': [18502],
-					},
-				},
-			},
-		};
+				};
 
-		const attributeDataFilter = {appKey: 'testKey'};
-		const order = null;
-		const changedOn = null;
+				const attributeDataFilter = {appKey: 'testKey'};
+				const order = null;
+				const changedOn = null;
 
-		dispatch(
-			actions.receiveIndexed(spatialData, attributeDataFilter, order, changedOn)
-		);
-		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
-			assert.deepEqual(storeHelpers.getDispatchedActions(), [
+				dispatch(
+					actions.receiveIndexed(
+						spatialData,
+						attributeDataFilter,
+						order,
+						changedOn
+					)
+				);
+			};
+		},
+		getState: (dataType, store) => () => {
+			return store.getState();
+		},
+		dispatchedActions: () => {
+			const changedOn = null;
+			const order = null;
+			const attributeDataFilter = {appKey: 'testKey'};
+			return [
 				{
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					dataByDataSourceKey: {
 						'85e35be5-1706-402a-86ad-851397bae7aa': {
 							18502: {
@@ -96,74 +113,85 @@ describe('state/Data/SpatialData/actions/receiveIndexed', function () {
 					],
 					changedOn,
 				},
-			]);
-		});
-	});
-
-	it('Dispatch ADD_WITH_SPATIAL_INDEX two datasource', function () {
-		const storeHelpers = getStoreSet();
-		const getState = () => {
-			return () => ({});
-		};
-		const dispatch = storeHelpers.getDispatch(getState);
-		const spatialData = {
-			'85e35be5-1706-402a-86ad-851397bae7aa': {
-				data: {
-					18502: {
-						type: 'MultiPolygon',
-						coordinates: [
-							[
-								[
-									[2.50647283, 50.63433838],
-									[2.5012393, 50.63986206],
-									[2.50829029, 50.64472198],
-									[2.50647283, 50.63433838],
+			];
+		},
+	},
+	{
+		name: 'Dispatch ADD_WITH_SPATIAL_INDEX two datasource.',
+		action: (actions, actionTypes, options) => {
+			return (dispatch, getState) => {
+				const spatialData = {
+					'85e35be5-1706-402a-86ad-851397bae7aa': {
+						data: {
+							18502: {
+								type: 'MultiPolygon',
+								coordinates: [
+									[
+										[
+											[2.50647283, 50.63433838],
+											[2.5012393, 50.63986206],
+											[2.50829029, 50.64472198],
+											[2.50647283, 50.63433838],
+										],
+									],
 								],
-							],
-						],
+							},
+						},
+						spatialIndex: {
+							7: {
+								'0,1': [18502],
+							},
+						},
 					},
-				},
-				spatialIndex: {
-					7: {
-						'0,1': [18502],
-					},
-				},
-			},
-			'd8e72383-d72e-4a62-b23b-cc240e198d2e': {
-				data: {
-					18503: {
-						type: 'MultiPolygon',
-						coordinates: [
-							[
-								[
-									[2.50647283, 50.63433838],
-									[2.5012393, 50.63986206],
-									[2.50829029, 50.64472198],
-									[2.50647283, 50.63433838],
+					'd8e72383-d72e-4a62-b23b-cc240e198d2e': {
+						data: {
+							18503: {
+								type: 'MultiPolygon',
+								coordinates: [
+									[
+										[
+											[2.50647283, 50.63433838],
+											[2.5012393, 50.63986206],
+											[2.50829029, 50.64472198],
+											[2.50647283, 50.63433838],
+										],
+									],
 								],
-							],
-						],
+							},
+						},
+						spatialIndex: {
+							7: {
+								'0,1': [18503],
+							},
+						},
 					},
-				},
-				spatialIndex: {
-					7: {
-						'0,1': [18503],
-					},
-				},
-			},
-		};
+				};
 
-		const attributeDataFilter = {appKey: 'testKey'};
-		const order = null;
-		const changedOn = null;
+				const attributeDataFilter = {appKey: 'testKey'};
+				const order = null;
+				const changedOn = null;
 
-		dispatch(
-			actions.receiveIndexed(spatialData, attributeDataFilter, order, changedOn)
-		);
-		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
-			assert.deepEqual(storeHelpers.getDispatchedActions(), [
+				dispatch(
+					actions.receiveIndexed(
+						spatialData,
+						attributeDataFilter,
+						order,
+						changedOn
+					)
+				);
+			};
+		},
+		getState: (dataType, store) => () => {
+			return store.getState();
+		},
+		dispatchedActions: () => {
+			const attributeDataFilter = {appKey: 'testKey'};
+			const order = null;
+			const changedOn = null;
+
+			return [
 				{
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					dataByDataSourceKey: {
 						'85e35be5-1706-402a-86ad-851397bae7aa': {
 							18502: {
@@ -211,53 +239,49 @@ describe('state/Data/SpatialData/actions/receiveIndexed', function () {
 					],
 					changedOn,
 				},
-			]);
-		});
-	});
-
-	it('receiveIndexed and addDataWithIndex', function () {
-		const storeHelpers = getStoreSet();
-
-		const getState = () => ({
-			data: {
-				spatialData: {
-					byDataSourceKey: {},
-				},
-			},
-		});
-
-		const dispatch = storeHelpers.getDispatch(getState);
-
-		const results = {
-			key1: {
-				spatialIndex: {
-					2: {
-						'0,0': [1],
+			];
+		},
+	},
+	{
+		name: 'receiveIndexed and addDataWithIndex.',
+		action: (actions, actionTypes, options) => {
+			return (dispatch, getState) => {
+				const results = {
+					key1: {
+						spatialIndex: {
+							2: {
+								'0,0': [1],
+							},
+						},
+						data: {
+							citizens: 1,
+						},
 					},
-				},
-				data: {
-					citizens: 1,
-				},
-			},
-			key2: {
-				spatialIndex: {
-					2: {
-						'0,1': [2],
+					key2: {
+						spatialIndex: {
+							2: {
+								'0,1': [2],
+							},
+						},
+						data: {
+							citizens: 2,
+						},
 					},
-				},
-				data: {
-					citizens: 2,
-				},
-			},
-		};
+				};
 
-		const filter = {};
-		const order = null;
-		const changes = null;
-		dispatch(actions.receiveIndexed(results, filter, order, changes));
-
-		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
-			assert.deepStrictEqual(storeHelpers.getDispatchedActions(), [
+				const filter = {};
+				const order = null;
+				const changes = null;
+				return dispatch(
+					actions.receiveIndexed(results, filter, order, changes)
+				);
+			};
+		},
+		getState: (dataType, store) => () => {
+			return store.getState();
+		},
+		dispatchedActions: () => {
+			return [
 				{
 					dataByDataSourceKey: {
 						key1: {
@@ -268,7 +292,7 @@ describe('state/Data/SpatialData/actions/receiveIndexed', function () {
 						},
 					},
 					level: '2',
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					order: null,
 					filter: {},
 					changedOn: null,
@@ -286,56 +310,57 @@ describe('state/Data/SpatialData/actions/receiveIndexed', function () {
 						},
 					],
 				},
-			]);
-		});
-	});
+			];
+		},
+	},
+	{
+		name: 'receiveIndexed add new data and update current data.',
+		action: (actions, actionTypes, options) => {
+			return (dispatch, getState) => {
+				const results = {
+					key1: {
+						spatialIndex: {
+							2: {
+								'0,0': [1],
+							},
+						},
+						data: {
+							citizens: 1,
+						},
+					},
+					key2: {
+						spatialIndex: {
+							2: {
+								'0,1': [2],
+							},
+						},
+						data: {
+							citizens: 2,
+						},
+					},
+				};
 
-	it('receiveIndexed add new data and update current data', function () {
-		const storeHelpers = getStoreSet();
-		const getState = () => ({
-			data: {
-				spatialData: {
-					byDataSourceKey: {
-						key1: {
-							citizens: 4,
+				const filter = {};
+				const order = null;
+				const changes = null;
+				dispatch(actions.receiveIndexed(results, filter, order, changes));
+			};
+		},
+		getState: (dataType, store) => () => {
+			return {
+				data: {
+					spatialData: {
+						byDataSourceKey: {
+							key1: {
+								citizens: 4,
+							},
 						},
 					},
 				},
-			},
-		});
-
-		const dispatch = storeHelpers.getDispatch(getState);
-
-		const results = {
-			key1: {
-				spatialIndex: {
-					2: {
-						'0,0': [1],
-					},
-				},
-				data: {
-					citizens: 1,
-				},
-			},
-			key2: {
-				spatialIndex: {
-					2: {
-						'0,1': [2],
-					},
-				},
-				data: {
-					citizens: 2,
-				},
-			},
-		};
-
-		const filter = {};
-		const order = null;
-		const changes = null;
-		dispatch(actions.receiveIndexed(results, filter, order, changes));
-
-		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
-			assert.deepStrictEqual(storeHelpers.getDispatchedActions(), [
+			};
+		},
+		dispatchedActions: () => {
+			return [
 				{
 					changedOn: null,
 					dataByDataSourceKey: {
@@ -348,7 +373,7 @@ describe('state/Data/SpatialData/actions/receiveIndexed', function () {
 					},
 					level: '2',
 					order: null,
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					filter: {},
 					indexData: [
 						{
@@ -363,7 +388,131 @@ describe('state/Data/SpatialData/actions/receiveIndexed', function () {
 						},
 					],
 				},
-			]);
-		});
-	});
-});
+			];
+		},
+	},
+	{
+		name: 'receiveIndexed and addDataWithIndex for non tiled data',
+		action: (actions, actionTypes, options) => {
+			return (dispatch, getState) => {
+				const spatialData = {
+					'85e35be5-1706-402a-86ad-851397bae7aa': {
+						data: {
+							18502: {
+								type: 'MultiPolygon',
+								coordinates: [
+									[
+										[
+											[2.50647283, 50.63433838],
+											[2.5012393, 50.63986206],
+											[2.50829029, 50.64472198],
+											[2.50647283, 50.63433838],
+										],
+									],
+								],
+							},
+						},
+					},
+					'd8e72383-d72e-4a62-b23b-cc240e198d2e': {
+						data: {
+							18503: {
+								type: 'MultiPolygon',
+								coordinates: [
+									[
+										[
+											[2.50647283, 50.63433838],
+											[2.5012393, 50.63986206],
+											[2.50829029, 50.64472198],
+											[2.50647283, 50.63433838],
+										],
+									],
+								],
+							},
+						},
+					},
+				};
+
+				const attributeDataFilter = {appKey: 'testKey'};
+				const order = null;
+				const changedOn = null;
+
+				dispatch(
+					actions.receiveIndexed(
+						spatialData,
+						attributeDataFilter,
+						order,
+						changedOn
+					)
+				);
+			};
+		},
+		getState: (dataType, store) => () => {
+			return store.getState();
+		},
+		dispatchedActions: () => {
+			const attributeDataFilter = {appKey: 'testKey'};
+			const order = null;
+			const changedOn = null;
+
+			return [
+				{
+					filter: attributeDataFilter,
+					order: order,
+					type: 'DATA.SPATIAL_DATA.INDEX.REMOVE',
+				},
+				{
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					dataByDataSourceKey: {
+						'85e35be5-1706-402a-86ad-851397bae7aa': {
+							18502: {
+								type: 'MultiPolygon',
+								coordinates: [
+									[
+										[
+											[2.50647283, 50.63433838],
+											[2.5012393, 50.63986206],
+											[2.50829029, 50.64472198],
+											[2.50647283, 50.63433838],
+										],
+									],
+								],
+							},
+						},
+						'd8e72383-d72e-4a62-b23b-cc240e198d2e': {
+							18503: {
+								type: 'MultiPolygon',
+								coordinates: [
+									[
+										[
+											[2.50647283, 50.63433838],
+											[2.5012393, 50.63986206],
+											[2.50829029, 50.64472198],
+											[2.50647283, 50.63433838],
+										],
+									],
+								],
+							},
+						},
+					},
+					filter: attributeDataFilter,
+					order,
+					indexData: [
+						{
+							'85e35be5-1706-402a-86ad-851397bae7aa': ['18502'],
+							'd8e72383-d72e-4a62-b23b-cc240e198d2e': ['18503'],
+						},
+					],
+					changedOn,
+				},
+			];
+		},
+	},
+];
+
+const dataType = null;
+const categoryPath = null;
+const actionsTypes = null;
+describe(
+	'data/receiveIndexed',
+	testBatchRunner(dataType, categoryPath, tests, actions, actionsTypes)
+);

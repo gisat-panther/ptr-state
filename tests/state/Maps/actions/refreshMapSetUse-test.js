@@ -287,6 +287,7 @@ describe('state/Maps/actions/refreshMapSetUse', function () {
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {
@@ -336,6 +337,7 @@ describe('state/Maps/actions/refreshMapSetUse', function () {
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {
@@ -389,6 +391,7 @@ describe('state/Maps/actions/refreshMapSetUse', function () {
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {
@@ -440,6 +443,7 @@ describe('state/Maps/actions/refreshMapSetUse', function () {
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {

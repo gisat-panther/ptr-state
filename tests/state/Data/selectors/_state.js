@@ -21,6 +21,14 @@ export const DataSelectorsState = {
 					featureKey14: 17,
 					featureKey21: null,
 				},
+				attributeDataSourceA1: {
+					featureKeyA1: 23.45,
+					featureKeyA2: null,
+				},
+				attributeDataSourceA2: {
+					featureKeyA1: 'Benin',
+					featureKeyA2: 'Mali',
+				},
 			},
 			indexes: [
 				{
@@ -246,6 +254,20 @@ export const DataSelectorsState = {
 								type: 'Point',
 								coordinates: [0.75, 0.7],
 							},
+						},
+					},
+				},
+				spatialDataSourceA1: {
+					featureKeyA1: {
+						geometry: {
+							type: 'Point',
+							coordinates: [10, 50],
+						},
+					},
+					featureKeyA2: {
+						geometry: {
+							type: 'Point',
+							coordinates: [10, 51],
 						},
 					},
 				},

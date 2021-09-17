@@ -1,5 +1,6 @@
 import ActionTypes from '../../../constants/ActionTypes';
 import common from '../../_common/actions';
+import Select from '../../Select';
 
 const actionTypes = ActionTypes.DATA.SPATIAL_DATA_SOURCES;
 
@@ -39,6 +40,11 @@ function receiveIndexed(
 	};
 }
 
+const updateStore = common.updateStore(
+	Select.data.spatialDataSources.getSubstate,
+	actionTypes
+);
+
 // ============ actions ============
 
 // ============ export ===========
@@ -46,4 +52,5 @@ function receiveIndexed(
 export default {
 	add,
 	receiveIndexed,
+	updateStore,
 };

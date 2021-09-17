@@ -378,6 +378,7 @@ const tests = [
 						relations: {
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {
@@ -434,6 +435,7 @@ const tests = [
 						relations: {
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {tiles: [['0', '2']]},
@@ -559,7 +561,7 @@ const tests = [
 				changedOn: null,
 			},
 			{
-				type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+				type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 				dataByDataSourceKey: {
 					'85e35be5-1706-402a-86ad-851397bae7aa': {
 						18502: {
@@ -640,7 +642,7 @@ const tests = [
 				changedOn: null,
 			},
 			{
-				type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+				type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 				dataByDataSourceKey: {
 					'85e35be5-1706-402a-86ad-851397bae7aa': {
 						18503: {
@@ -1119,6 +1121,7 @@ const tests = [
 							limit: 1,
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {
@@ -1177,6 +1180,7 @@ const tests = [
 							limit: 1,
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {tiles: [['0', '2']]},
@@ -1498,6 +1502,7 @@ const tests = [
 							limit: 1,
 							attribute: true,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialFilter: {
@@ -1555,6 +1560,7 @@ const tests = [
 							limit: 1,
 							attribute: false,
 							spatial: true,
+							area: false,
 						},
 						data: {
 							spatialIndex: {tiles: [['0', '2']]},
@@ -1859,7 +1865,7 @@ const tests = [
 					type: 'DATA.SPATIAL_DATA_SOURCES.INDEX.ADD',
 				},
 				{
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					dataByDataSourceKey: {
 						'85e35be5-1706-402a-86ad-851397bae7aa': {
 							18502: {
@@ -2014,7 +2020,7 @@ const tests = [
 					type: 'DATA.SPATIAL_DATA_SOURCES.INDEX.ADD',
 				},
 				{
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					dataByDataSourceKey: {
 						'85e35be5-1706-402a-86ad-851397bae7aa': {
 							18503: {

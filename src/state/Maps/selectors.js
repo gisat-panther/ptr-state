@@ -570,15 +570,24 @@ const getSpatialRelationsFilterFromLayerState = createRecomputeSelector(
 
 			const relationsFilter = {};
 			// It converts modifiers from metadataKeys: ["A", "B"] to metadataKey: {in: ["A", "B"]}
-			relationsFilter.modifiers = commonHelpers.convertModifiersToRequestFriendlyFormat(
+			const modifiers = commonHelpers.convertModifiersToRequestFriendlyFormat(
 				mergedMetadataKeys
 			);
 
-			// add layerTemplate od areaTreeLevelKey
-			if (layer.layerTemplateKey) {
-				relationsFilter.layerTemplateKey = layer.layerTemplateKey;
-			} else if (layer.areaTreeLevelKey) {
-				relationsFilter.areaTreeLevelKey = layer.areaTreeLevelKey;
+			if (modifiers) {
+				relationsFilter.modifiers = modifiers;
+			}
+
+			// add layerTemplate or areaTreeLevelKey
+			const layerTemplateKey =
+				layer.layerTemplateKey || activeMetadataKeys?.layerTemplateKey;
+			const areaTreeLevelKey =
+				layer.areaTreeLevelKey || activeMetadataKeys?.areaTreeLevelKey;
+
+			if (layerTemplateKey) {
+				relationsFilter.layerTemplateKey = layerTemplateKey;
+			} else if (areaTreeLevelKey) {
+				relationsFilter.areaTreeLevelKey = areaTreeLevelKey;
 			}
 			return relationsFilter;
 		} else {
@@ -723,9 +732,12 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 
 		let options = {...dataSourceOptions, ...layerStateOptions};
 
+		let validType = false;
 		if (type === 'wmts') {
+			validType = true;
 			options.url = dataSourceOptions.url || dataSourceOptions.urls?.[0];
 		} else if (type === 'wms') {
+			validType = true;
 			let {url, params, configuration, ...rest} = dataSourceOptions;
 			const singleTile =
 				configuration && configuration.hasOwnProperty('singleTile')
@@ -757,6 +769,7 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 			type === 'tiledVector' ||
 			type === 'tiled-vector'
 		) {
+			validType = true;
 			let features,
 				tiles = null;
 
@@ -819,14 +832,18 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 			};
 		}
 
-		return {
-			key: layerKey + '_' + spatialDataSource.key,
-			layerKey,
-			opacity: opacity || opacity === 0 ? opacity : 1,
-			name,
-			type,
-			options,
-		};
+		if (validType) {
+			return {
+				key: layerKey + '_' + spatialDataSource.key,
+				layerKey,
+				opacity: opacity || opacity === 0 ? opacity : 1,
+				name,
+				type,
+				options,
+			};
+		} else {
+			return null;
+		}
 	},
 	recomputeSelectorOptions
 );

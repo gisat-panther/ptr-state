@@ -1,220 +1,237 @@
-import {assert} from 'chai';
 import actions from '../../../../src/state/Data/actions';
 import {
 	responseWithSpatialAndAttributeData,
 	responseWithRelationsSpatialAndAttributeData,
 } from './mockData/mockData';
 
-import getStoreSet from '../../../store';
+import testBatchRunner from '../../helpers';
 
-describe('state/Data/actions/processResult', function () {
-	it('Process response without relations', function () {
-		const storeHelpers = getStoreSet();
-
-		const getState = () => ({});
-
-		const dispatch = storeHelpers.getDispatch(getState);
-
-		const modifiers = {
-			scopeKey: 'c81d59c8-0b4c-4df3-9c20-375f977660d3',
-			placeKey: {
-				in: [
-					'8b65f2c9-bd6a-4d92-bc09-af604761f2f1',
-					'9e28f519-dc30-4ebb-bcc8-97f696d9cf2a',
-				],
-			},
-			caseKey: '4c2afea6-0964-458e-88a7-a65318554487',
-			periodKey: '439af632-5804-4fc0-b641-a9c34cc6a853',
-		};
-		const styleKey = '460372b1-4fce-4676-92be-b1656a5415f5';
-		const loadGeometry = true;
-		const loadAttributeRelations = true;
-		const loadSpatialRelations = true;
-		const order = null;
-		const layerTemplateKey = '11c7cc1b-9834-4e85-aba6-eab5571705e4';
-		const spatialRelationsFilter = {
-			layerTemplateKey: layerTemplateKey,
-			modifiers: modifiers,
-		};
-		const attributeRelationsFilter = {
-			...spatialRelationsFilter,
-			styleKey,
-		};
-		const attributeDataFilter = {
-			...attributeRelationsFilter,
-			featureKeys: [18502],
-		};
-		const start = 1;
-		dispatch(
-			actions.processResult(
-				responseWithSpatialAndAttributeData,
-				loadGeometry,
-				loadAttributeRelations,
-				loadSpatialRelations,
-				order,
-				spatialRelationsFilter,
-				attributeRelationsFilter,
-				attributeDataFilter,
-				start
-			)
-		);
-
-		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
-			assert.deepStrictEqual(storeHelpers.getDispatchedActions(), [
-				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
-					attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
-					data: {
-						18502: '27',
+const tests = [
+	{
+		name: 'Process response without relations.',
+		action: (actions, actionTypes, options) => {
+			return (dispatch, getState) => {
+				const modifiers = {
+					scopeKey: 'c81d59c8-0b4c-4df3-9c20-375f977660d3',
+					placeKey: {
+						in: [
+							'8b65f2c9-bd6a-4d92-bc09-af604761f2f1',
+							'9e28f519-dc30-4ebb-bcc8-97f696d9cf2a',
+						],
 					},
-					filter: {
-						layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
-						modifiers: {
-							scopeKey: 'c81d59c8-0b4c-4df3-9c20-375f977660d3',
-							placeKey: {
-								in: [
-									'8b65f2c9-bd6a-4d92-bc09-af604761f2f1',
-									'9e28f519-dc30-4ebb-bcc8-97f696d9cf2a',
-								],
-							},
-							caseKey: '4c2afea6-0964-458e-88a7-a65318554487',
-							periodKey: '439af632-5804-4fc0-b641-a9c34cc6a853',
-						},
-						styleKey: '460372b1-4fce-4676-92be-b1656a5415f5',
-						featureKeys: [18502],
-					},
-					order: null,
-					indexData: [
-						{
-							7: {
-								'1.40625,49.21875': {
-									'55f48ed1-ee67-47bd-a044-8985662ec29f': [18502],
-								},
-							},
-						},
-					],
-					changedOn: null,
+					caseKey: '4c2afea6-0964-458e-88a7-a65318554487',
+					periodKey: '439af632-5804-4fc0-b641-a9c34cc6a853',
+				};
+				const styleKey = '460372b1-4fce-4676-92be-b1656a5415f5';
+				const loadGeometry = true;
+				const loadAttributeRelations = true;
+				const loadSpatialRelations = true;
+				const loadAreaRelations = true;
+				const order = null;
+				const layerTemplateKey = '11c7cc1b-9834-4e85-aba6-eab5571705e4';
+				const spatialRelationsFilter = {
+					layerTemplateKey: layerTemplateKey,
+					modifiers: modifiers,
+				};
+				const attributeRelationsFilter = {
+					...spatialRelationsFilter,
+					styleKey,
+				};
+				const attributeDataFilter = {
+					...attributeRelationsFilter,
+					featureKeys: [18502],
+				};
+				const start = 1;
+				return dispatch(
+					actions.processResult(
+						responseWithSpatialAndAttributeData,
+						loadGeometry,
+						loadAttributeRelations,
+						loadSpatialRelations,
+						loadAreaRelations,
+						order,
+						spatialRelationsFilter,
+						attributeRelationsFilter,
+						attributeDataFilter,
+						start
+					)
+				);
+			};
+		},
+		getState: (dataType, store) => () => {
+			return store.getState();
+		},
+		dispatchedActions: [
+			{
+				type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
+				attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
+				data: {
+					18502: '27',
 				},
-				{
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
-					dataByDataSourceKey: {
-						'85e35be5-1706-402a-86ad-851397bae7aa': {
-							18502: {
-								type: 'MultiPolygon',
-								coordinates: [
+				filter: {
+					layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
+					modifiers: {
+						scopeKey: 'c81d59c8-0b4c-4df3-9c20-375f977660d3',
+						placeKey: {
+							in: [
+								'8b65f2c9-bd6a-4d92-bc09-af604761f2f1',
+								'9e28f519-dc30-4ebb-bcc8-97f696d9cf2a',
+							],
+						},
+						caseKey: '4c2afea6-0964-458e-88a7-a65318554487',
+						periodKey: '439af632-5804-4fc0-b641-a9c34cc6a853',
+					},
+					styleKey: '460372b1-4fce-4676-92be-b1656a5415f5',
+					featureKeys: [18502],
+				},
+				order: null,
+				indexData: [
+					{
+						7: {
+							'1.40625,49.21875': {
+								'55f48ed1-ee67-47bd-a044-8985662ec29f': [18502],
+							},
+						},
+					},
+				],
+				changedOn: null,
+			},
+			{
+				type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
+				dataByDataSourceKey: {
+					'85e35be5-1706-402a-86ad-851397bae7aa': {
+						18502: {
+							type: 'MultiPolygon',
+							coordinates: [
+								[
 									[
-										[
-											[2.50647283, 50.63433838],
-											[2.5012393, 50.63986206],
-											[2.50829029, 50.64472198],
-											[2.50647283, 50.63433838],
-										],
+										[2.50647283, 50.63433838],
+										[2.5012393, 50.63986206],
+										[2.50829029, 50.64472198],
+										[2.50647283, 50.63433838],
 									],
 								],
-							},
-						},
-						'848e2559-936d-4262-a808-4c87aa60217d': {},
-					},
-					level: '7',
-					filter: {
-						layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
-						modifiers: {
-							scopeKey: 'c81d59c8-0b4c-4df3-9c20-375f977660d3',
-							placeKey: {
-								in: [
-									'8b65f2c9-bd6a-4d92-bc09-af604761f2f1',
-									'9e28f519-dc30-4ebb-bcc8-97f696d9cf2a',
-								],
-							},
-							caseKey: '4c2afea6-0964-458e-88a7-a65318554487',
-							periodKey: '439af632-5804-4fc0-b641-a9c34cc6a853',
+							],
 						},
 					},
-					order: null,
-					indexData: [
-						{
-							7: {
-								'1.40625,49.21875': {
-									'85e35be5-1706-402a-86ad-851397bae7aa': [18502],
-									'848e2559-936d-4262-a808-4c87aa60217d': [],
-								},
-							},
-						},
-					],
-					changedOn: null,
+					'848e2559-936d-4262-a808-4c87aa60217d': {},
 				},
-			]);
-		});
-	});
-
-	it('Process response with relations', function () {
-		const storeHelpers = getStoreSet();
-		const getState = () => ({});
-		const dispatch = storeHelpers.getDispatch(getState);
-
-		const modifiers = {
-			scopeKey: 'c81d59c8-0b4c-4df3-9c20-375f977660d3',
-			placeKey: {
-				in: [
-					'8b65f2c9-bd6a-4d92-bc09-af604761f2f1',
-					'9e28f519-dc30-4ebb-bcc8-97f696d9cf2a',
+				level: '7',
+				filter: {
+					layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
+					modifiers: {
+						scopeKey: 'c81d59c8-0b4c-4df3-9c20-375f977660d3',
+						placeKey: {
+							in: [
+								'8b65f2c9-bd6a-4d92-bc09-af604761f2f1',
+								'9e28f519-dc30-4ebb-bcc8-97f696d9cf2a',
+							],
+						},
+						caseKey: '4c2afea6-0964-458e-88a7-a65318554487',
+						periodKey: '439af632-5804-4fc0-b641-a9c34cc6a853',
+					},
+				},
+				order: null,
+				indexData: [
+					{
+						7: {
+							'1.40625,49.21875': {
+								'85e35be5-1706-402a-86ad-851397bae7aa': [18502],
+								'848e2559-936d-4262-a808-4c87aa60217d': [],
+							},
+						},
+					},
 				],
+				changedOn: null,
 			},
-			caseKey: '4c2afea6-0964-458e-88a7-a65318554487',
-			periodKey: '439af632-5804-4fc0-b641-a9c34cc6a853',
-		};
-		const styleKey = '460372b1-4fce-4676-92be-b1656a5415f5';
-		const loadGeometry = true;
-		const loadAttributeRelations = true;
-		const loadSpatialRelations = true;
-		const order = null;
-		const layerTemplateKey = '11c7cc1b-9834-4e85-aba6-eab5571705e4';
-		const spatialRelationsFilter = {
-			layerTemplateKey: layerTemplateKey,
-			modifiers: modifiers,
-		};
-		const attributeRelationsFilter = {
-			...spatialRelationsFilter,
-			styleKey,
-		};
-		const attributeDataFilter = {
-			...attributeRelationsFilter,
-			featureKeys: [18502],
-		};
-		const start = 1;
-		dispatch(
-			actions.processResult(
-				responseWithRelationsSpatialAndAttributeData,
-				loadGeometry,
-				loadAttributeRelations,
-				loadSpatialRelations,
-				order,
-				spatialRelationsFilter,
-				attributeRelationsFilter,
-				attributeDataFilter,
-				start
-			)
-		);
+		],
+	},
+	{
+		name: 'Process response with relations.',
+		action: (actions, actionTypes, options) => {
+			return (dispatch, getState) => {
+				const modifiers = {
+					scopeKey: 'c81d59c8-0b4c-4df3-9c20-375f977660d3',
+					placeKey: {
+						in: [
+							'8b65f2c9-bd6a-4d92-bc09-af604761f2f1',
+							'9e28f519-dc30-4ebb-bcc8-97f696d9cf2a',
+						],
+					},
+					caseKey: '4c2afea6-0964-458e-88a7-a65318554487',
+					periodKey: '439af632-5804-4fc0-b641-a9c34cc6a853',
+				};
+				const styleKey = '460372b1-4fce-4676-92be-b1656a5415f5';
+				const loadGeometry = true;
+				const loadAttributeRelations = true;
+				const loadSpatialRelations = true;
+				const loadAreaRelations = false;
+				const order = null;
+				const layerTemplateKey = '11c7cc1b-9834-4e85-aba6-eab5571705e4';
+				const spatialRelationsFilter = {
+					layerTemplateKey: layerTemplateKey,
+					modifiers: modifiers,
+				};
+				const attributeRelationsFilter = {
+					...spatialRelationsFilter,
+					styleKey,
+				};
+				const attributeDataFilter = {
+					...attributeRelationsFilter,
+					featureKeys: [18502],
+				};
+				const start = 1;
+				return dispatch(
+					actions.processResult(
+						responseWithRelationsSpatialAndAttributeData,
+						loadGeometry,
+						loadAttributeRelations,
+						loadSpatialRelations,
+						loadAreaRelations,
+						order,
+						spatialRelationsFilter,
+						attributeRelationsFilter,
+						attributeDataFilter,
+						start
+					)
+				);
+			};
+		},
+		getState: (dataType, store) => () => {
+			return store.getState();
+		},
 
-		const _attributeDataFilter = {
-			layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
-			modifiers: modifiers,
-			styleKey: '460372b1-4fce-4676-92be-b1656a5415f5',
-			featureKeys: [18502],
-		};
-		const _attributeDataRelationsFilter = {
-			layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
-			modifiers: modifiers,
-			styleKey: '460372b1-4fce-4676-92be-b1656a5415f5',
-		};
+		dispatchedActions: () => {
+			const modifiers = {
+				scopeKey: 'c81d59c8-0b4c-4df3-9c20-375f977660d3',
+				placeKey: {
+					in: [
+						'8b65f2c9-bd6a-4d92-bc09-af604761f2f1',
+						'9e28f519-dc30-4ebb-bcc8-97f696d9cf2a',
+					],
+				},
+				caseKey: '4c2afea6-0964-458e-88a7-a65318554487',
+				periodKey: '439af632-5804-4fc0-b641-a9c34cc6a853',
+			};
 
-		const _spatialFilter = {
-			layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
-			modifiers: modifiers,
-		};
+			const _attributeDataFilter = {
+				layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
+				modifiers: modifiers,
+				styleKey: '460372b1-4fce-4676-92be-b1656a5415f5',
+				featureKeys: [18502],
+			};
+			const _attributeDataRelationsFilter = {
+				layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
+				modifiers: modifiers,
+				styleKey: '460372b1-4fce-4676-92be-b1656a5415f5',
+			};
 
-		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
-			assert.deepStrictEqual(storeHelpers.getDispatchedActions(), [
+			const _spatialFilter = {
+				layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
+				modifiers: modifiers,
+			};
+
+			return [
 				{
 					data: [
 						{
@@ -451,7 +468,7 @@ describe('state/Data/actions/processResult', function () {
 					type: 'DATA.SPATIAL_DATA_SOURCES.INDEX.ADD',
 				},
 				{
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					dataByDataSourceKey: {
 						'85e35be5-1706-402a-86ad-851397bae7aa': {
 							18502: {
@@ -485,7 +502,15 @@ describe('state/Data/actions/processResult', function () {
 					],
 					changedOn: null,
 				},
-			]);
-		});
-	});
-});
+			];
+		},
+	},
+];
+
+const dataType = null;
+const categoryPath = null;
+const actionsTypes = null;
+describe(
+	'data/processResult',
+	testBatchRunner(dataType, categoryPath, tests, actions, actionsTypes)
+);

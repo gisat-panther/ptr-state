@@ -146,12 +146,25 @@ const getCommonFilterByComponentKey = createRecomputeSelector(componentKey => {
 			modifiers
 		);
 
-		return {
-			modifiers: modifiersForRequest,
-			...(areaTreeLevelKey !== undefined && {areaTreeLevelKey}),
-			...(layerTemplateKey !== undefined && {layerTemplateKey}),
-			...(attributeKeys !== undefined && {attributeKeys}),
-		};
+		let filter = {};
+
+		if (modifiersForRequest) {
+			filter.modifiers = modifiersForRequest;
+		}
+
+		if (areaTreeLevelKey || modifiedAreaTreeLevelKey !== undefined) {
+			filter.areaTreeLevelKey = areaTreeLevelKey || modifiedAreaTreeLevelKey;
+		}
+
+		if (layerTemplateKey || modifiedLayerTemplateKey !== undefined) {
+			filter.layerTemplateKey = layerTemplateKey || modifiedLayerTemplateKey;
+		}
+
+		if (attributeKeys !== undefined) {
+			filter.attributeKeys = attributeKeys;
+		}
+
+		return filter;
 	} else {
 		return {};
 	}

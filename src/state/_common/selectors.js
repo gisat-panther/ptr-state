@@ -1028,12 +1028,23 @@ const getCommmonDataRelationsFilterFromComponentState_recompute = createRecomput
 			relationsFilter.modifiers = modifiers;
 		}
 
+		// Get actual metadata keys defined by filterByActive
+		const activeMetadataKeys = getActiveKeysByFilterByActiveObserver(
+			componentState?.filterByActive
+		);
+
 		// add layerTemplate od areaTreeLevelKey
-		if (componentState?.layerTemplateKey) {
-			relationsFilter.layerTemplateKey = componentState.layerTemplateKey;
-		} else if (componentState?.areaTreeLevelKey) {
-			relationsFilter.areaTreeLevelKey = componentState.areaTreeLevelKey;
+		const layerTemplateKey =
+			componentState?.layerTemplateKey || activeMetadataKeys?.layerTemplateKey;
+		const areaTreeLevelKey =
+			componentState?.areaTreeLevelKey || activeMetadataKeys?.areaTreeLevelKey;
+
+		if (layerTemplateKey) {
+			relationsFilter.layerTemplateKey = layerTemplateKey;
+		} else if (areaTreeLevelKey) {
+			relationsFilter.areaTreeLevelKey = areaTreeLevelKey;
 		}
+
 		return relationsFilter;
 	}
 );

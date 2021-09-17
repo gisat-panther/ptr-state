@@ -55,9 +55,7 @@ describe('getCommonFilterByComponentKey-test', function () {
 	});
 
 	it('Should return empty object, if there is no filter for given component', function () {
-		const expectedResult = {
-			modifiers: null,
-		};
+		const expectedResult = {};
 
 		assert.deepStrictEqual(
 			selectors.getCommonFilterByComponentKey('componentH'),

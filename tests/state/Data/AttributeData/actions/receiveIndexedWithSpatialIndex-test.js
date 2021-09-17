@@ -43,7 +43,7 @@ describe('state/Data/AttributeData/actions/receiveIndexedWithSpatialIndex', func
 		const attributeDataFilter = {appKey: 'testKey'};
 		const order = null;
 		const changedOn = null;
-		const spatialIndexData = actions.getIndexDataBySpatialData(
+		const spatialIndexData = actions.getTiledIndexDataBySpatialData(
 			spatialData,
 			attributeData
 		);
@@ -146,7 +146,7 @@ describe('state/Data/AttributeData/actions/receiveIndexedWithSpatialIndex', func
 		const attributeDataFilter = {appKey: 'testKey'};
 		const order = null;
 		const changedOn = null;
-		const spatialIndexData = actions.getIndexDataBySpatialData(
+		const spatialIndexData = actions.getTiledIndexDataBySpatialData(
 			spatialData,
 			attributeData
 		);
@@ -265,7 +265,7 @@ describe('state/Data/AttributeData/actions/receiveIndexedWithSpatialIndex', func
 		const attributeDataFilter = {appKey: 'testKey'};
 		const order = null;
 		const changedOn = null;
-		const spatialIndexData = actions.getIndexDataBySpatialData(
+		const spatialIndexData = actions.getTiledIndexDataBySpatialData(
 			spatialData,
 			attributeData
 		);

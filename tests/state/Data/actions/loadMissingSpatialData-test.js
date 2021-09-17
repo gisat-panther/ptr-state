@@ -150,6 +150,7 @@ describe('state/Data/actions/loadMissingSpatialData', function () {
 						relations: {
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {
@@ -206,6 +207,7 @@ describe('state/Data/actions/loadMissingSpatialData', function () {
 						relations: {
 							attribute: false,
 							spatial: false,
+							area: false,
 						},
 						data: {
 							spatialIndex: {tiles: [['0', '2']]},
@@ -381,7 +383,7 @@ describe('state/Data/actions/loadMissingSpatialData', function () {
 					changedOn: null,
 				},
 				{
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					dataByDataSourceKey: {
 						'85e35be5-1706-402a-86ad-851397bae7aa': {
 							18502: {
@@ -462,7 +464,7 @@ describe('state/Data/actions/loadMissingSpatialData', function () {
 					changedOn: null,
 				},
 				{
-					type: 'DATA.SPATIAL_DATA.ADD_WITH_INDEX',
+					type: 'DATA.SPATIAL_DATA.ADD_WITH_TILED_INDEX',
 					dataByDataSourceKey: {
 						'85e35be5-1706-402a-86ad-851397bae7aa': {
 							18503: {

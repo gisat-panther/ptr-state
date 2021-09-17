@@ -135,6 +135,8 @@ function getUpdatedIndexes(
 			} else {
 				//spatial data by spatialDataSourceKey, levels and tiles
 				//update spatialDataSourceKey
+				// in case of untiled data level is same like spatialDataSourceKey and dataByTiles is same like dataBySpatialDataSource
+				//FIXME - add tests for untiled data
 				for (const [level, dataByTiles] of Object.entries(model)) {
 					if (index.hasOwnProperty(level) && index[level]) {
 						//update data on level

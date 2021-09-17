@@ -56,7 +56,7 @@ describe('getMapLayers', function () {
 		const mapKey = 'map3';
 
 		const output = Select.maps.getMapLayers(mapKey);
-		assert.isNull(output);
+		assert.deepStrictEqual(output, [null]);
 		setState(null);
 	});
 

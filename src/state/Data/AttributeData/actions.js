@@ -195,12 +195,12 @@ function addLoadingIndex(pagination, attributeDataFilter, order) {
 // ============ helpers ============
 
 /**
- * Get data for indexing
+ * Get data for indexing for vectorTiled spatial data
  * @param {Object} spatialData
  * @param {Object} attributeData
  * @return {Object}
  */
-function getIndexDataBySpatialData(spatialData, attributeData) {
+function getTiledIndexDataBySpatialData(spatialData, attributeData) {
 	const indexByLevelByTileByDataSourceKey = {};
 
 	//Attribute data indexes are stored in related spatial index
@@ -264,6 +264,20 @@ function getIndexDataBySpatialData(spatialData, attributeData) {
 	}
 
 	return indexByLevelByTileByDataSourceKey;
+}
+
+/**
+ * Get data for indexing for vector spatial data
+ * @param {Object} attributeData
+ * @return {Object}
+ */
+function getIndexData(attributeData) {
+	const indexByDataSourceKey = {};
+	for (const [dsKey, data] of Object.entries(attributeData)) {
+		indexByDataSourceKey[dsKey] = [...Object.keys(data)];
+	}
+
+	return indexByDataSourceKey;
 }
 
 // ============ actions ============
@@ -395,7 +409,8 @@ function actionUpdateStore(data) {
 export default {
 	addLoadingIndex,
 	addLoadingSpatialIndex,
-	getIndexDataBySpatialData,
+	getTiledIndexDataBySpatialData,
+	getIndexData,
 	receiveIndexedWithSpatialIndex,
 	receiveIndexed,
 	removeSpatialIndex: actionRemoveSpatialIndex,

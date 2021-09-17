@@ -78,7 +78,8 @@ const testBatchRunner = (
 					typeof test.dispatchedActions === 'function'
 						? test.dispatchedActions(options)
 						: test.dispatchedActions;
-
+				// For debugging dispatchedActions
+				// debugger
 				assert.deepStrictEqual(
 					typeof test.dispatchedActionsModificator === 'function'
 						? test.dispatchedActionsModificator(
