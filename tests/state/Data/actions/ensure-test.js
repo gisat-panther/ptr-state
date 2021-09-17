@@ -528,7 +528,7 @@ const tests = [
 				changedOn: null,
 			},
 			{
-				type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
+				type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
 				attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 				data: {
 					18502: '27',
@@ -609,7 +609,7 @@ const tests = [
 				changedOn: null,
 			},
 			{
-				type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
+				type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
 				attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 				data: {
 					18503: '30',
@@ -1272,7 +1272,7 @@ const tests = [
 				changedOn: null,
 			},
 			{
-				type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
+				type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
 				attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 				data: {
 					18502: '27',
@@ -1297,7 +1297,7 @@ const tests = [
 				changedOn: null,
 			},
 			{
-				type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
+				type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
 				attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 				data: {
 					18503: '30',
@@ -1748,7 +1748,7 @@ const tests = [
 					type: 'DATA.ATTRIBUTE_DATA_SOURCES.INDEX.ADD',
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
 					attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 					data: {
 						18502: '27',
@@ -1903,7 +1903,7 @@ const tests = [
 					changedOn: null,
 				},
 				{
-					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_TILED_INDEX',
+					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
 					attributeDataSourceKey: '55f48ed1-ee67-47bd-a044-8985662ec29f',
 					data: {
 						18503: '30',

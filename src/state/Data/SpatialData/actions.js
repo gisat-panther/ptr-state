@@ -12,7 +12,7 @@ const actionTypes = ActionTypes.DATA.SPATIAL_DATA;
  * It ensure adding index and adding received data from BE.
  * Add data to state only when spatialData received, in case of empty spatialData it adds only index.
  * @param {Object} spatialData Object received from BE contains under spatialDataKey object of data attributes [id]: {data, spatialIndex}.
- * @param {Object} filter Filler object contains modifiers and layerTemplateKey or areaTreeLevelKey.
+ * @param {Object} filter Filler object contains modifiers and areaTreeLevelKey.
  * @param {Array?} order
  * @param {string?} changedOn
  */
@@ -69,28 +69,37 @@ function addDataAndIndex(
 				)
 			);
 		} else {
-			const spatialDataByDataSourceKey = getIndexData(
-				spatialDataAndIndexByDataSourceKey
-			);
+			// Case for non tiled geometry type
+			const index = getIndexData(spatialDataAndIndexByDataSourceKey);
 
-			// TODO add non tiled data
-			// dispatch(
-			// 	actionAddDataAndIndex(
-			// 		spatialDataByDataSourceKey,
-			// 		level,
-			// 		filter,
-			// 		order,
-			// 		[indexByLevelByTileByDataSourceKey],
-			// 		changedOn
-			// 	)
-			// );
+			const spatialDataByDataSourceKey = {};
+
+			for (const [dsKey, data] of Object.entries(
+				spatialDataAndIndexByDataSourceKey
+			)) {
+				spatialDataByDataSourceKey[dsKey] = data.data;
+			}
+
+			// Remove previous loading index
+			dispatch(actionRemoveIndex(filter, order));
+
+			// Add new index with data
+			dispatch(
+				actionAddDataAndIndex(
+					spatialDataByDataSourceKey,
+					filter,
+					order,
+					[index],
+					changedOn
+				)
+			);
 		}
 	};
 }
 
 /**
  * Create new index based on given level and tiles with loading indicator.
- * @param {Object} filter Filler object contains modifiers and layerTemplateKey or areaTreeLevelKey.
+ * @param {Object} filter Filler object contains modifiers and areaTreeLevelKey.
  * @param {Array?} order
  * @param {Number} level
  * @param {Array.[Array]} tiles
@@ -151,7 +160,7 @@ function getTiledIndexData(spatialDataByDataSourceKey) {
 }
 
 /**
- * Get data for indexing fot vector type
+ * Get data for indexing for vector type
  * @param spatialDataByDataSourceKey {Object} [dataSourceKey]: {data: Object}
  * @return {Object}
  */
@@ -187,6 +196,23 @@ function actionAddDataAndTiledIndex(
 		type: actionTypes.ADD_WITH_TILED_INDEX,
 		dataByDataSourceKey,
 		level,
+		filter,
+		order,
+		indexData,
+		changedOn,
+	};
+}
+
+function actionAddDataAndIndex(
+	dataByDataSourceKey,
+	filter,
+	order,
+	indexData,
+	changedOn
+) {
+	return {
+		type: actionTypes.ADD_WITH_INDEX,
+		dataByDataSourceKey,
 		filter,
 		order,
 		indexData,
