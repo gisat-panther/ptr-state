@@ -30,6 +30,8 @@ const defaultGetState = () => ({});
  *                                                Used in store related actions to add STORE prefix to the action types.
  * @param {string} storeName Name of the store used in actionTypes like [CASES, PLACES, ...]
  * @param {string} storePath Optional definition of where store is. Store path is by default same like dataType. Use this variable if store is nested. Path defined as a string. Particular substores are separated by [.] `[substore].[substore].[substore]`
+ * @param {function} beforeCb Optional function called before all tests. More doc in mocha before
+ * @param {function} afterCb Optional function called after all tests. More doc in mocha after
  * @returns {function}
  */
 const testBatchRunner = (
@@ -40,7 +42,9 @@ const testBatchRunner = (
 	actionTypes,
 	dispatchedActionsModificator,
 	storeName,
-	storePath
+	storePath,
+	beforeCb,
+	afterCb
 ) => () => {
 	const storeHelpers = getStoreSet();
 
@@ -48,6 +52,14 @@ const testBatchRunner = (
 		storeHelpers.clearDispatchedActions();
 		resetFetch();
 	});
+
+	if (typeof beforeCb === 'function') {
+		before(beforeCb);
+	}
+
+	if (typeof afterCb === 'function') {
+		after(afterCb);
+	}
 
 	tests.forEach(test => {
 		it(test.name, () => {

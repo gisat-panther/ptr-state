@@ -1,8 +1,9 @@
 import ActionTypes from '../../constants/ActionTypes';
 import _ from 'lodash';
-import path from 'path';
-import fetch from 'isomorphic-fetch';
+import {isServer} from '@gisatcz/ptr-core';
 
+import cookies from '../../utils/cookies';
+import url from '../../utils/url';
 import request from '../_common/request';
 
 import common from '../_common/actions';
@@ -13,6 +14,7 @@ import PlacesAction from '../Places/actions';
 import PeriodsAction from '../Periods/actions';
 
 const TTL = 5;
+const cookieUserToken = 'authToken';
 
 // ============ creators ===========
 
@@ -78,10 +80,63 @@ const useIndexedGroups = common.useIndexed(
 	'user'
 );
 
-function onLogin() {
+function authCookie(authToken) {
+	const suffix = process.env.NODE_ENV === 'development' ? '' : ';secure';
+
+	return `${cookieUserToken}=${authToken};path=/;samesite=strict${suffix}`;
+}
+
+/**
+ * @typedef User
+ * @property {string} key
+ * @property {{name: string, email: string, phone: string}} data
+ * @property {Object<string, Object<string, {create: boolean, view: boolean, update: boolean, delete: boolean}>>} data.permissions
+ */
+
+/**
+ * @param {string} provider (e.g. `facebook` or `google`)
+ */
+function loginViaSso(provider) {
+	return function (dispatch, getState) {
+		if (!isServer) {
+			const localConfig = Select.app.getCompleteLocalConfiguration(getState());
+			const backendUrl = url.getBackendUrl(
+				localConfig,
+				`/rest/login/sso/${provider}`
+			);
+			const loginWindow = window.open(backendUrl);
+			window.addEventListener('message', function (e) {
+				const message = e.data;
+				if (
+					e.source !== loginWindow ||
+					message == null ||
+					typeof message !== 'object' ||
+					message.type !== 'sso_response'
+				) {
+					return;
+				}
+
+				loginWindow.close();
+
+				const result = message.data;
+				const user = _.omit(result, cookieUserToken);
+				dispatch(onLogin({user: user, authToken: result.authToken}));
+			});
+		}
+	};
+}
+
+/**
+ * @param {object} data
+ * @param {User} data.user
+ * @param {string} data.authToken
+ */
+function onLogin(data) {
 	return dispatch => {
+		cookies.setCookie(authCookie(data.authToken));
+
 		dispatch(common.actionDataSetOutdated());
-		dispatch(apiLoadCurrentUser());
+		loadedUser(dispatch, data.user);
 
 		dispatch(ScopesAction.refreshUses());
 		dispatch(PlacesAction.refreshUses());
@@ -92,6 +147,9 @@ function onLogin() {
 
 function onLogout() {
 	return dispatch => {
+		cookies.setCookie(
+			`${cookieUserToken}=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+		);
 		dispatch(actionLogout());
 		dispatch(setActiveKey(null));
 
@@ -107,16 +165,16 @@ function apiLoginUser(email, password) {
 		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
 		dispatch(actionApiLoginRequest());
 
-		let payload = {
+		const payload = {
 			username: email,
 			password: password,
 		};
 
 		return request(localConfig, 'api/login/login', 'POST', null, payload)
 			.then(result => {
-				if (result.data.status === 'ok') {
-					dispatch(onLogin());
-				}
+				const user = _.omit(result, cookieUserToken);
+
+				dispatch(onLogin({user: user, authToken: result.authToken}));
 			})
 			.catch(error => {
 				dispatch(common.actionGeneralError(error));
@@ -173,26 +231,49 @@ function apiLoginUser(email, password) {
 // 	};
 // }
 
+/**
+ * @param {User} result
+ */
+function loadedUser(dispatch, result) {
+	const user = {...result, ...{groups: []}};
+
+	dispatch(setActiveKey(user.key));
+	dispatch(add(transformUser(user)));
+	// dispatch(actionAddGroups(transformGroups(user.groups)));
+}
+
+/**
+ * Check if authToken is saved in cookies, if so, load user data.
+ */
+function ensureCurrentUser() {
+	return (dispatch, getState) => {
+		//check if is user active
+		const activeUser = Select.users.getActiveUser(getState());
+		if (!activeUser) {
+			//if not, check if is set authKey in cookies
+			const cookieAuthToken = cookies.getCookie(cookieUserToken);
+			if (cookieAuthToken) {
+				dispatch(apiLoadCurrentUser());
+			}
+		} else {
+			// Do nothing, user is set
+		}
+	};
+}
+
 function apiLoadCurrentUser() {
 	return (dispatch, getState) => {
 		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
 		dispatch(actionApiLoadCurrentUserRequest());
 
-		return request(localConfig, 'rest/user/current', 'GET', null, null)
+		return request(localConfig, 'api/login/getLoginInfo', 'GET', null, null)
 			.then(result => {
 				if (result.errors) {
 					//todo how do we return errors here?
 					throw new Error(result.errors);
 				} else {
-					if (result.key === 0) {
-						// no logged in user = guest
-						dispatch(actionAddGroups(transformGroups(result.groups)));
-					} else if (result.key) {
-						// logged in user
-						dispatch(setActiveKey(result.key));
-						dispatch(add(transformUser(result)));
-						dispatch(actionAddGroups(transformGroups(result.groups)));
-					}
+					const user = _.omit(result, cookieUserToken);
+					loadedUser(dispatch, user);
 				}
 			})
 			.catch(error => {
@@ -205,41 +286,22 @@ function apiLoadCurrentUser() {
 function apiLogoutUser(ttl) {
 	if (_.isUndefined(ttl)) ttl = TTL;
 	return (dispatch, getState) => {
-		const apiBackendProtocol = Select.app.getLocalConfiguration(
-			getState(),
-			'apiBackendProtocol'
-		);
-		const apiBackendHost = Select.app.getLocalConfiguration(
-			getState(),
-			'apiBackendHost'
-		);
 		dispatch(actionApiLogoutRequest());
 
-		let url =
-			apiBackendProtocol +
-			'://' +
-			path.join(apiBackendHost, 'api/login/logout');
-
-		return fetch(url, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-			},
-		}).then(
+		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
+		const payload = null;
+		return request(
+			localConfig,
+			'api/login/logout',
+			'POST',
+			null,
+			payload,
+			undefined,
+			null
+		).then(
 			response => {
 				console.log('#### logout user response', response);
-				if (response.ok) {
-					// window.location.reload();
-					dispatch(onLogout());
-				} else {
-					dispatch(
-						actionApiLogoutRequestError(
-							'user#action logout Problem with logging out the User, please try later.'
-						)
-					);
-				}
+				dispatch(onLogout());
 			},
 			error => {
 				console.log('#### logout user error', error);
@@ -297,26 +359,13 @@ function actionAddGroups(groups) {
 
 function actionApiLogoutRequest() {
 	return {
-		type: ActionTypes.USERS_LOGOUT_REQUEST,
+		type: ActionTypes.USERS.LOGOUT.REQUEST,
 	};
 }
 
 function actionApiLogoutRequestError(error) {
 	return {
-		type: ActionTypes.USERS_LOGOUT_REQUEST_ERROR,
-		error: error,
-	};
-}
-
-function actionApiLoadRequest() {
-	return {
-		type: ActionTypes.USERS_LOAD_REQUEST,
-	};
-}
-
-function actionApiLoadRequestError(error) {
-	return {
-		type: ActionTypes.USERS_LOAD_REQUEST_ERROR,
+		type: ActionTypes.USERS.LOGOUT.REQUEST_ERROR,
 		error: error,
 	};
 }
@@ -358,4 +407,6 @@ export default {
 	useIndexedGroups,
 	useIndexedUsersClear: actionClearUsersUseIndexed,
 	useIndexedGroupsClear: actionClearGroupsUseIndexed,
+	loginViaSso,
+	ensureCurrentUser,
 };

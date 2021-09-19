@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import _fetch from 'isomorphic-fetch';
-import path from 'path';
 import queryString from 'query-string';
+import urlUtils from '../../utils/url';
 
 const TTL = 5;
 const DATAPATH = 'data';
@@ -49,10 +49,7 @@ export default function request(
 ) {
 	if (_.isUndefined(ttl)) ttl = TTL;
 	if (_.isUndefined(dataPath)) dataPath = DATAPATH;
-	let url =
-		localConfig.apiBackendProtocol +
-		'://' +
-		path.join(localConfig.apiBackendHost, localConfig.apiBackendPath, apiPath);
+	let url = urlUtils.getBackendUrl(localConfig, apiPath);
 	if (query) {
 		url += '?' + queryString.stringify(query);
 	}
@@ -69,9 +66,10 @@ export default function request(
 		response => {
 			let contentType = response.headers.get('Content-type');
 			if (
-				response.ok &&
-				contentType &&
-				contentType.indexOf('application/json') !== -1
+				response.status === 200 ||
+				(response.ok &&
+					contentType &&
+					contentType.indexOf('application/json') !== -1)
 			) {
 				return response.json().then(body => {
 					if (dataPath === null || (dataPath && _.get(body, dataPath))) {

@@ -23,6 +23,7 @@ const mapDispatchToProps = dispatch => {
 				Action.components.set('App_Container', 'loginOverlayOpen', false)
 			);
 		},
+		onMount: () => dispatch(Action.users.ensureCurrentUser()),
 	};
 };
 

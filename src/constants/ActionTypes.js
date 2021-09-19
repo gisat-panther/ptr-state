@@ -712,6 +712,10 @@ export default utils.deepKeyMirror({
 		LOGIN: {
 			REQUEST: null,
 		},
+		LOGOUT: {
+			REQUEST: null,
+			REQUEST_ERROR: null,
+		},
 		INDEX: {
 			ADD: null,
 			CLEAR_ALL: null,
