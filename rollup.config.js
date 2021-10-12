@@ -92,6 +92,7 @@ export default {
 		'@tackworld.com/rereselct',
 		'@jvitela/recompute',
 		'fast-stringify',
+		/@babel\/runtime/,
 		...lodashExternal,
 	],
 	output: {
@@ -109,6 +110,7 @@ export default {
 	plugins: [
 		babel({
 			plugins: ['lodash'],
+			babelHelpers: 'runtime',
 		}),
 		commonjs({
 			include: 'node_modules/**',
