@@ -34,9 +34,10 @@ describe('getCommmonDataRelationsFilterFromComponentState_recompute', () => {
 			},
 			layerTemplateKey: 'layerTemplateKey1',
 		};
-		const output = commonSelectors.getCommmonDataRelationsFilterFromComponentState_recompute(
-			componentState
-		);
+		const output =
+			commonSelectors.getCommmonDataRelationsFilterFromComponentState_recompute(
+				componentState
+			);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -59,9 +60,10 @@ describe('getCommmonDataRelationsFilterFromComponentState_recompute', () => {
 			},
 			areaTreeLevelKey: 'atlk1',
 		};
-		const output = commonSelectors.getCommmonDataRelationsFilterFromComponentState_recompute(
-			componentState
-		);
+		const output =
+			commonSelectors.getCommmonDataRelationsFilterFromComponentState_recompute(
+				componentState
+			);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -72,15 +74,17 @@ describe('getCommmonDataRelationsFilterFromComponentState_recompute', () => {
 		const expectedResult = {
 			areaTreeLevelKey: 'atlk1',
 		};
-		const output = commonSelectors.getCommmonDataRelationsFilterFromComponentState_recompute(
-			componentState
-		);
+		const output =
+			commonSelectors.getCommmonDataRelationsFilterFromComponentState_recompute(
+				componentState
+			);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
 	it('should return empty object, if no componentState given', () => {
 		const expectedResult = {};
-		const output = commonSelectors.getCommmonDataRelationsFilterFromComponentState_recompute();
+		const output =
+			commonSelectors.getCommmonDataRelationsFilterFromComponentState_recompute();
 		assert.deepStrictEqual(output, expectedResult);
 	});
 

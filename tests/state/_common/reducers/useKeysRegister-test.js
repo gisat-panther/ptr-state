@@ -27,8 +27,7 @@ const tests = [
 		},
 	},
 	{
-		name:
-			'should register unregistered keys and omit registered for existing component',
+		name: 'should register unregistered keys and omit registered for existing component',
 		action: {
 			componentId: 'ComponentA',
 			keys: ['key2', 'key4'],

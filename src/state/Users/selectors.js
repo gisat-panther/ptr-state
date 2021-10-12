@@ -154,5 +154,6 @@ export default {
 	isLoggedIn: isLoggedIn,
 	isDromasAdmin: isDromasAdmin,
 
-	getActiveUserDromasLpisChangeReviewGroup: getActiveUserDromasLpisChangeReviewGroup,
+	getActiveUserDromasLpisChangeReviewGroup:
+		getActiveUserDromasLpisChangeReviewGroup,
 };

@@ -137,7 +137,8 @@ const getVectorSpatialDataSourcesLoadedStatus = (
 			order
 		);
 
-		spatialDataIndexForDataSourceisEmpty = spatialDataIndexForDataSource.index.hasOwnProperty();
+		spatialDataIndexForDataSourceisEmpty =
+			spatialDataIndexForDataSource.index.hasOwnProperty();
 	}
 
 	return !spatialDataIndexForDataSourceisEmpty;
@@ -400,9 +401,8 @@ function loadMissingAttributeData(
 				const spatialDataSources =
 					response?.spatialAttributeRelationsDataSources?.spatialDataSources ||
 					[];
-				const preloadedSpatialDataSourcesTypes = transformSDStoTypes(
-					spatialDataSources
-				);
+				const preloadedSpatialDataSourcesTypes =
+					transformSDStoTypes(spatialDataSources);
 
 				const attributeRelationsCount =
 					response.spatialAttributeRelationsDataSources.total
@@ -575,9 +575,8 @@ function ensureDataAndRelations(
 		const loadGeometry = true;
 		const loadAttributeRelations = true;
 		const loadSpatialRelations = true;
-		const loadAreaRelations = spatialRelationsFilter.hasOwnProperty(
-			'areaTreeLevelKey'
-		);
+		const loadAreaRelations =
+			spatialRelationsFilter.hasOwnProperty('areaTreeLevelKey');
 		if (spatialFilter && !_isEmpty(spatialFilter)) {
 			// Only if spatialIndex is null then is set whole spatialFilter.tiles as loading true in one step
 			const spatialIndex = null;
@@ -642,9 +641,8 @@ function ensureDataAndRelations(
 							);
 						}
 					} else {
-						const preloadedSpatialDataSourcesTypes = transformSDStoTypes(
-							spatialDataSources
-						);
+						const preloadedSpatialDataSourcesTypes =
+							transformSDStoTypes(spatialDataSources);
 
 						return dispatch(
 							loadMissingRelationsAndData(
@@ -839,9 +837,11 @@ function ensure(
 				missingSpatialDataTiles
 			);
 
-			modifiedSpatialFilterForAttributes.tiles = missingAttributeDataTilesToLoad;
+			modifiedSpatialFilterForAttributes.tiles =
+				missingAttributeDataTilesToLoad;
 
-			modifiedSpatialFilterForSpatial.tiles = missingSpatialAndAttributeDataTiles;
+			modifiedSpatialFilterForSpatial.tiles =
+				missingSpatialAndAttributeDataTiles;
 		}
 
 		const promises = [];

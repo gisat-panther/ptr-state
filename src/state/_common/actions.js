@@ -905,9 +905,8 @@ function refreshUses(
 				ensureKeys(getSubstate, dataType, actionTypes, usedKeys, categoryPath)
 			);
 
-			let usedIndexPages = commonSelectors.getUsedIndexPages(getSubstate)(
-				state
-			);
+			let usedIndexPages =
+				commonSelectors.getUsedIndexPages(getSubstate)(state);
 
 			const promises = _.flatMap(usedIndexPages, usedIndexPage => {
 				_.map(usedIndexPage.uses, use => {

@@ -188,9 +188,8 @@ function getUpdatedByDataSourceKeyTiled(state, dataByDataSourceKey, level) {
 
 		const newFeatures = {};
 		_forIn(data, (geometry, featureKey) => {
-			const existingFeature = updatedData[dataSourceKey].hasOwnProperty(
-				featureKey
-			);
+			const existingFeature =
+				updatedData[dataSourceKey].hasOwnProperty(featureKey);
 			if (existingFeature) {
 				//add just level geometry to existing feature
 				updatedData[dataSourceKey][featureKey].geometries[level] = geometry;

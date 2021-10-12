@@ -68,8 +68,8 @@ const getIndexed = createRecomputeSelector(filter => {
  * @param filter {Object} attribute relation filter
  * @return {Object}
  */
-const getFilteredAttributeDataSourceKeyAttributeKeyPairs = createRecomputeSelector(
-	filter => {
+const getFilteredAttributeDataSourceKeyAttributeKeyPairs =
+	createRecomputeSelector(filter => {
 		const relations = getIndexed(filter);
 		if (relations) {
 			const pairs = {};
@@ -81,9 +81,7 @@ const getFilteredAttributeDataSourceKeyAttributeKeyPairs = createRecomputeSelect
 		} else {
 			return null;
 		}
-	},
-	recomputeSelectorOptions
-);
+	}, recomputeSelectorOptions);
 
 export default {
 	getByKeyObserver,
