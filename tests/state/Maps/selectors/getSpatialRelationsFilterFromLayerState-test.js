@@ -27,9 +27,8 @@ describe('getSpatialRelationsFilterFromLayerState', function () {
 			},
 			layerTemplateKey: 'layerTemplate1',
 		};
-		const output = Select.maps.getSpatialRelationsFilterFromLayerState(
-			layerState
-		);
+		const output =
+			Select.maps.getSpatialRelationsFilterFromLayerState(layerState);
 		assert.deepStrictEqual(output, expectedResult);
 		setState(null);
 	});
@@ -57,9 +56,8 @@ describe('getSpatialRelationsFilterFromLayerState', function () {
 			},
 			areaTreeLevelKey: 'areaTreeLevel1',
 		};
-		const output = Select.maps.getSpatialRelationsFilterFromLayerState(
-			layerState
-		);
+		const output =
+			Select.maps.getSpatialRelationsFilterFromLayerState(layerState);
 		assert.deepStrictEqual(output, expectedResult);
 		setState(null);
 	});

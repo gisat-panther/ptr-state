@@ -32,69 +32,73 @@ const defaultGetState = () => ({});
  * @param {string} storePath Optional definition of where store is. Store path is by default same like dataType. Use this variable if store is nested. Path defined as a string. Particular substores are separated by [.] `[substore].[substore].[substore]`
  * @returns {function}
  */
-const testBatchRunner = (
-	dataType,
-	categoryPath,
-	tests,
-	actions,
-	actionTypes,
-	dispatchedActionsModificator,
-	storeName,
-	storePath
-) => () => {
-	const storeHelpers = getStoreSet();
+const testBatchRunner =
+	(
+		dataType,
+		categoryPath,
+		tests,
+		actions,
+		actionTypes,
+		dispatchedActionsModificator,
+		storeName,
+		storePath
+	) =>
+	() => {
+		const storeHelpers = getStoreSet();
 
-	afterEach(function () {
-		storeHelpers.clearDispatchedActions();
-		resetFetch();
-	});
+		afterEach(function () {
+			storeHelpers.clearDispatchedActions();
+			resetFetch();
+		});
 
-	tests.forEach(test => {
-		it(test.name, () => {
-			const store =
-				typeof test.getStore === 'function' ? test.getStore() : null;
-			storePath = storePath || dataType;
-			const getState =
-				typeof test.getState === 'function'
-					? test.getState(dataType, store, storePath)
-					: defaultGetState;
-			const dispatch = store
-				? storeHelpers.getDispatch(getState, store.dispatch)
-				: storeHelpers.getDispatch(getState);
-			const options = {
-				getSubstate: state => state[storePath],
-				dataType,
-				categoryPath,
-			};
+		tests.forEach(test => {
+			it(test.name, () => {
+				const store =
+					typeof test.getStore === 'function' ? test.getStore() : null;
+				storePath = storePath || dataType;
+				const getState =
+					typeof test.getState === 'function'
+						? test.getState(dataType, store, storePath)
+						: defaultGetState;
+				const dispatch = store
+					? storeHelpers.getDispatch(getState, store.dispatch)
+					: storeHelpers.getDispatch(getState);
+				const options = {
+					getSubstate: state => state[storePath],
+					dataType,
+					categoryPath,
+				};
 
-			if (test.setFetch) {
-				setFetch(test.setFetch(dataType, categoryPath));
-			}
+				if (test.setFetch) {
+					setFetch(test.setFetch(dataType, categoryPath));
+				}
 
-			dispatch(test.action(actions, actionTypes, options));
+				dispatch(test.action(actions, actionTypes, options));
 
-			return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
-				const expectedDispatchedActions =
-					typeof test.dispatchedActions === 'function'
-						? test.dispatchedActions(options)
-						: test.dispatchedActions;
-				// For debugging dispatchedActions
-				// debugger
-				assert.deepStrictEqual(
-					typeof test.dispatchedActionsModificator === 'function'
-						? test.dispatchedActionsModificator(
-								storeHelpers.getDispatchedActions(),
-								storeName
-						  )
-						: storeHelpers.getDispatchedActions(),
-					typeof dispatchedActionsModificator === 'function'
-						? dispatchedActionsModificator(expectedDispatchedActions)
-						: expectedDispatchedActions
-				);
+				return storeHelpers
+					.runFunctionActions({dispatch, getState})
+					.then(() => {
+						const expectedDispatchedActions =
+							typeof test.dispatchedActions === 'function'
+								? test.dispatchedActions(options)
+								: test.dispatchedActions;
+						// For debugging dispatchedActions
+						// debugger
+						assert.deepStrictEqual(
+							typeof test.dispatchedActionsModificator === 'function'
+								? test.dispatchedActionsModificator(
+										storeHelpers.getDispatchedActions(),
+										storeName
+								  )
+								: storeHelpers.getDispatchedActions(),
+							typeof dispatchedActionsModificator === 'function'
+								? dispatchedActionsModificator(expectedDispatchedActions)
+								: expectedDispatchedActions
+						);
+					});
 			});
 		});
-	});
-};
+	};
 
 /**
  * Most used dispatchedActionsModificator that adds STORE name to dispatched action types.

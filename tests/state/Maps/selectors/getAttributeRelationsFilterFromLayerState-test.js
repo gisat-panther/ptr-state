@@ -36,9 +36,8 @@ describe('getAttributeRelationsFilterFromLayerState', function () {
 			layerTemplateKey: 'layerTemplate1',
 			styleKey: 'style1',
 		};
-		const output = Select.maps.getAttributeRelationsFilterFromLayerState(
-			layerState
-		);
+		const output =
+			Select.maps.getAttributeRelationsFilterFromLayerState(layerState);
 		assert.deepStrictEqual(output, expectedResult);
 		setState(null);
 	});
@@ -51,9 +50,8 @@ describe('getAttributeRelationsFilterFromLayerState', function () {
 			},
 		};
 
-		const output = Select.maps.getAttributeRelationsFilterFromLayerState(
-			layerState
-		);
+		const output =
+			Select.maps.getAttributeRelationsFilterFromLayerState(layerState);
 		assert.isNull(output);
 		setState(null);
 	});

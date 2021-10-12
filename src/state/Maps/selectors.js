@@ -221,9 +221,8 @@ const getViewportByMapKey = createCachedSelector([getMapByKey], map => {
 	return map?.data?.viewport || null;
 })((state, mapKey) => mapKey);
 
-const getViewportByMapKeyObserver = createRecomputeObserver(
-	getViewportByMapKey
-);
+const getViewportByMapKeyObserver =
+	createRecomputeObserver(getViewportByMapKey);
 
 /**
  * @param state {Object}
@@ -570,9 +569,10 @@ const getSpatialRelationsFilterFromLayerState = createRecomputeSelector(
 
 			const relationsFilter = {};
 			// It converts modifiers from metadataKeys: ["A", "B"] to metadataKey: {in: ["A", "B"]}
-			const modifiers = commonHelpers.convertModifiersToRequestFriendlyFormat(
-				mergedMetadataKeys
-			);
+			const modifiers =
+				commonHelpers.convertModifiersToRequestFriendlyFormat(
+					mergedMetadataKeys
+				);
 
 			if (modifiers) {
 				relationsFilter.modifiers = modifiers;
@@ -635,9 +635,10 @@ const getVisibleTilesByMapKey = createCachedSelector(
 const getAttributeDataFilterFromLayerState = createRecomputeSelector(
 	layerState => {
 		if (layerState) {
-			const commonFilter = common.getCommmonDataRelationsFilterFromComponentState_recompute(
-				layerState
-			);
+			const commonFilter =
+				common.getCommmonDataRelationsFilterFromComponentState_recompute(
+					layerState
+				);
 			if (!_isEmpty(commonFilter)) {
 				let attributeFilter = {...commonFilter};
 				const attributeDataFilterExtension = {
@@ -670,9 +671,10 @@ const getAttributeDataFilterFromLayerState = createRecomputeSelector(
 const getAttributeRelationsFilterFromLayerState = createRecomputeSelector(
 	layerState => {
 		if (layerState) {
-			const commonFilter = common.getCommmonDataRelationsFilterFromComponentState_recompute(
-				layerState
-			);
+			const commonFilter =
+				common.getCommmonDataRelationsFilterFromComponentState_recompute(
+					layerState
+				);
 			if (!_isEmpty(commonFilter)) {
 				let attributeFilter = {...commonFilter};
 				if (layerState.styleKey) {
@@ -750,7 +752,8 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 			// TODO special config constants for mapserver?
 			// TODO replace with more robust check of valid URL
 			if (url && url.charAt(0) !== 'h') {
-				const localConfig = AppSelectors.getCompleteLocalConfigurationObserver();
+				const localConfig =
+					AppSelectors.getCompleteLocalConfigurationObserver();
 				url = `${localConfig.apiBackendProtocol}://${localConfig.apiBackendHost}/${url}`;
 			}
 
@@ -863,9 +866,8 @@ const getMapBackgroundLayer = createRecomputeSelector((mapKey, layerState) => {
 			return layerState;
 		} else {
 			const layerKey = 'pantherBackgroundLayer';
-			const spatialDataSources = DataSelectors.spatialDataSources.getIndexed_recompute(
-				layerState
-			);
+			const spatialDataSources =
+				DataSelectors.spatialDataSources.getIndexed_recompute(layerState);
 			if (spatialDataSources) {
 				const layers = _compact(
 					spatialDataSources.map(dataSource => {
@@ -915,9 +917,10 @@ const getMapLayers = createRecomputeSelector((mapKey, layersState) => {
 						...layerState,
 						options: {
 							...layerState.options,
-							selected: SelectionsSelectors.prepareSelectionByLayerStateSelected(
-								layerState.options.selected
-							),
+							selected:
+								SelectionsSelectors.prepareSelectionByLayerStateSelected(
+									layerState.options.selected
+								),
 						},
 					};
 				}
@@ -926,21 +929,20 @@ const getMapLayers = createRecomputeSelector((mapKey, layersState) => {
 			}
 			// necessary to assemble data for the end format
 			else {
-				const spatialRelationsFilter = getSpatialRelationsFilterFromLayerState(
-					layerState
-				);
-				const attributeRelationsFilter = getAttributeRelationsFilterFromLayerState(
-					layerState
-				);
-				const attributeDataFilter = getAttributeDataFilterFromLayerState(
-					layerState
-				);
-				const spatialDataSources = DataSelectors.spatialDataSources.getIndexed_recompute(
-					spatialRelationsFilter
-				);
-				const attributeDataSourceKeyAttributeKeyPairs = DataSelectors.attributeRelations.getFilteredAttributeDataSourceKeyAttributeKeyPairs(
-					attributeRelationsFilter
-				);
+				const spatialRelationsFilter =
+					getSpatialRelationsFilterFromLayerState(layerState);
+				const attributeRelationsFilter =
+					getAttributeRelationsFilterFromLayerState(layerState);
+				const attributeDataFilter =
+					getAttributeDataFilterFromLayerState(layerState);
+				const spatialDataSources =
+					DataSelectors.spatialDataSources.getIndexed_recompute(
+						spatialRelationsFilter
+					);
+				const attributeDataSourceKeyAttributeKeyPairs =
+					DataSelectors.attributeRelations.getFilteredAttributeDataSourceKeyAttributeKeyPairs(
+						attributeRelationsFilter
+					);
 				if (spatialDataSources) {
 					_forEach(spatialDataSources, dataSource => {
 						finalLayers.push(

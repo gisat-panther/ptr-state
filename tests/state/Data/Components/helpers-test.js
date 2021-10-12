@@ -71,18 +71,10 @@ describe('state/Data/Components/helpers', function () {
 		});
 
 		it('Request by pageSize and length 1000', function () {
-			assert.deepStrictEqual(getRestPages(null, 100, null, 1000), [
-				0,
-				1,
-				2,
-				3,
-				4,
-				5,
-				6,
-				7,
-				8,
-				9,
-			]);
+			assert.deepStrictEqual(
+				getRestPages(null, 100, null, 1000),
+				[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+			);
 		});
 
 		// Combibe parameters
@@ -108,63 +100,31 @@ describe('state/Data/Components/helpers', function () {
 		});
 
 		it('Request by combination of parameters, ask for ten pages', function () {
-			assert.deepStrictEqual(getRestPages(1000, 100, 1, 1000), [
-				0,
-				1,
-				2,
-				3,
-				4,
-				5,
-				6,
-				7,
-				8,
-				9,
-			]);
+			assert.deepStrictEqual(
+				getRestPages(1000, 100, 1, 1000),
+				[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+			);
 		});
 
 		it('Request by combination of parameters, ask for nine pages', function () {
-			assert.deepStrictEqual(getRestPages(1000, 100, 101, 1000), [
-				0,
-				1,
-				2,
-				3,
-				4,
-				5,
-				6,
-				7,
-				8,
-			]);
+			assert.deepStrictEqual(
+				getRestPages(1000, 100, 101, 1000),
+				[0, 1, 2, 3, 4, 5, 6, 7, 8]
+			);
 		});
 
 		// With unset count
 		it('Request by combination of parameters, ask for length 1000', function () {
-			assert.deepStrictEqual(getRestPages(null, 100, null, 1000), [
-				0,
-				1,
-				2,
-				3,
-				4,
-				5,
-				6,
-				7,
-				8,
-				9,
-			]);
+			assert.deepStrictEqual(
+				getRestPages(null, 100, null, 1000),
+				[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+			);
 		});
 		it('Request by combination of parameters, ask for length 1001', function () {
-			assert.deepStrictEqual(getRestPages(null, 100, null, 1001), [
-				0,
-				1,
-				2,
-				3,
-				4,
-				5,
-				6,
-				7,
-				8,
-				9,
-				10,
-			]);
+			assert.deepStrictEqual(
+				getRestPages(null, 100, null, 1001),
+				[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+			);
 		});
 
 		// With count higher than length
@@ -674,15 +634,10 @@ describe('state/Data/Components/helpers', function () {
 				count: 10,
 				index: {2: true, 5: true, 6: true},
 			};
-			assert.deepStrictEqual(getMissingPages(mockData, 1, 1, 10), [
-				0,
-				2,
-				3,
-				6,
-				7,
-				8,
-				9,
-			]);
+			assert.deepStrictEqual(
+				getMissingPages(mockData, 1, 1, 10),
+				[0, 2, 3, 6, 7, 8, 9]
+			);
 		});
 		it('Get getMissingPages with null mockData , start 1, pageSize 5, lenght 10', function () {
 			const mockData = null;

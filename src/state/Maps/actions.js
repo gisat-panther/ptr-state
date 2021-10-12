@@ -352,16 +352,12 @@ function layerUse(layerState, spatialFilter) {
 		);
 
 		// Decouple modifiers from templates
-		const {
-			areaTreeLevelKey,
-			layerTemplateKey,
-			...modifiers
-		} = mergedMetadataKeys;
+		const {areaTreeLevelKey, layerTemplateKey, ...modifiers} =
+			mergedMetadataKeys;
 
 		// It converts modifiers from metadataKeys: ["A", "B"] to metadataKey: {in: ["A", "B"]}
-		const modifiersForRequest = commonHelpers.convertModifiersToRequestFriendlyFormat(
-			modifiers
-		);
+		const modifiersForRequest =
+			commonHelpers.convertModifiersToRequestFriendlyFormat(modifiers);
 		if (layerTemplateKey || areaTreeLevelKey) {
 			let commonRelationsFilter = {};
 			if (areaTreeLevelKey) {
@@ -600,10 +596,8 @@ function setMapBackgroundLayer(mapKey, backgroundLayer) {
 
 			// Call use action only on state controlled layers
 			if (!backgroundLayer.type) {
-				const backgroundLayerState = Select.maps.getMapBackgroundLayerStateByMapKey(
-					getState(),
-					mapKey
-				);
+				const backgroundLayerState =
+					Select.maps.getMapBackgroundLayerStateByMapKey(getState(), mapKey);
 
 				const spatialFilter = Select.maps.getVisibleTilesByMapKey(
 					getState(),
