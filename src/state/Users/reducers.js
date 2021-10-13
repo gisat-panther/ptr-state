@@ -5,7 +5,7 @@ import common from '../_common/reducers';
 
 import {DEFAULT_INITIAL_STATE} from '../_common/reducers';
 
-const INITIAL_STATE = {
+export const INITIAL_STATE = {
 	...DEFAULT_INITIAL_STATE,
 	groups: {...DEFAULT_INITIAL_STATE},
 };

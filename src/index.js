@@ -24,28 +24,72 @@ import commonSelectors from './state/_common/selectors';
 import activeMetadataActions from './state/_activeMetadata/actions';
 import {STORES_TO_ENSURE_WITH_FILTER_BY_ACTIVE} from './state/_activeMetadata/constants';
 
-import appReducers from './state/App/reducers';
-import areasReducers from './state/Areas/reducers';
-import areaRelationsReducers from './state/AreaRelations/reducers';
-import attributesReducers from './state/Attributes/reducers';
-import attributeSetsReducers from './state/AttributeSets/reducers';
-import casesReducers from './state/Cases/reducers';
-import componentsReducers from './state/Components/reducers';
-import dataReducers from './state/Data/reducers';
-import layerTemplatesReducers from './state/LayerTemplates/reducers';
-import layerTreesReducers from './state/LayerTrees/reducers';
-import mapsReducers from './state/Maps/reducers';
-import periodsReducers from './state/Periods/reducers';
-import placesReducers from './state/Places/reducers';
-import scenariosReducers from './state/Scenarios/reducers';
-import scopesReducers from './state/Scopes/reducers';
-import screensReducers from './state/Screens/reducers';
-import selectionsReducers from './state/Selections/reducers';
-import stylesReducers from './state/Styles/reducers';
-import tagsReducers from './state/Tags/reducers';
-import usersReducers from './state/Users/reducers';
-import viewsReducers from './state/Views/reducers';
-import windowsReducers from './state/Windows/reducers';
+import appReducers, {
+	INITIAL_STATE as appInitialState,
+} from './state/App/reducers';
+import areasReducers, {
+	INITIAL_STATE as areasInitialState,
+} from './state/Areas/reducers';
+import areaRelationsReducers, {
+	INITIAL_STATE as areaRelationsInitialState,
+} from './state/AreaRelations/reducers';
+import attributesReducers, {
+	INITIAL_STATE as attributesInitialState,
+} from './state/Attributes/reducers';
+import attributeSetsReducers, {
+	INITIAL_STATE as attributeSetsInitialState,
+} from './state/AttributeSets/reducers';
+import casesReducers, {
+	INITIAL_STATE as casesInitialState,
+} from './state/Cases/reducers';
+import componentsReducers, {
+	INITIAL_STATE as componentsInitialState,
+} from './state/Components/reducers';
+import dataReducers, {
+	INITIAL_STATE as dataInitialState,
+} from './state/Data/reducers';
+import layerTemplatesReducers, {
+	INITIAL_STATE as layerTemplatesInitialState,
+} from './state/LayerTemplates/reducers';
+import layerTreesReducers, {
+	INITIAL_STATE as layerTreesInitialState,
+} from './state/LayerTrees/reducers';
+import mapsReducers, {
+	INITIAL_STATE as mapsInitialState,
+} from './state/Maps/reducers';
+import periodsReducers, {
+	INITIAL_STATE as periodsInitialState,
+} from './state/Periods/reducers';
+import placesReducers, {
+	INITIAL_STATE as placesInitialState,
+} from './state/Places/reducers';
+import scenariosReducers, {
+	INITIAL_STATE as scenariosInitialState,
+} from './state/Scenarios/reducers';
+import scopesReducers, {
+	INITIAL_STATE as scopesInitialState,
+} from './state/Scopes/reducers';
+import screensReducers, {
+	INITIAL_STATE as screensInitialState,
+} from './state/Screens/reducers';
+import selectionsReducers, {
+	INITIAL_STATE as selectionsInitialState,
+} from './state/Selections/reducers';
+import stylesReducers, {
+	INITIAL_STATE as stylesInitialState,
+} from './state/Styles/reducers';
+import tagsReducers, {
+	INITIAL_STATE as tagsInitialState,
+} from './state/Tags/reducers';
+import usersReducers, {
+	INITIAL_STATE as usersInitialState,
+} from './state/Users/reducers';
+import viewsReducers, {
+	INITIAL_STATE as viewsInitialState,
+} from './state/Views/reducers';
+import windowsReducers, {
+	INITIAL_STATE as windowsInitialState,
+} from './state/Windows/reducers';
 
 const baseStores = {
 	app: appReducers,
@@ -70,6 +114,31 @@ const baseStores = {
 	users: usersReducers,
 	views: viewsReducers,
 	windows: windowsReducers,
+};
+
+const initialStates = {
+	app: appInitialState,
+	areas: areasInitialState,
+	areaRelations: areaRelationsInitialState,
+	attributes: attributesInitialState,
+	attributeSets: attributeSetsInitialState,
+	cases: casesInitialState,
+	components: componentsInitialState,
+	data: dataInitialState,
+	layerTemplates: layerTemplatesInitialState,
+	layerTrees: layerTreesInitialState,
+	maps: mapsInitialState,
+	periods: periodsInitialState,
+	places: placesInitialState,
+	scenarios: scenariosInitialState,
+	scopes: scopesInitialState,
+	screens: screensInitialState,
+	selections: selectionsInitialState,
+	styles: stylesInitialState,
+	tags: tagsInitialState,
+	users: usersInitialState,
+	views: viewsInitialState,
+	windows: windowsInitialState,
 };
 
 /**
@@ -115,6 +184,7 @@ export {
 	applyMiddleware,
 	compose,
 	connect,
+	initialStates,
 	Provider,
 	ReactReduxContext,
 	MountWrapper,
@@ -150,5 +220,6 @@ export default {
 	commonReducers,
 	commonSelectors,
 
+	initialStates,
 	DEFAULT_INITIAL_STATE,
 };
