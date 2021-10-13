@@ -1,29 +1,43 @@
 import {combineReducers} from 'redux';
 
-import * as attributeRelations from './AttributeRelations/reducers';
-import * as attributeDataSources from './AttributeDataSources/reducers';
-import * as attributeData from './AttributeData/reducers';
-import * as components from './Components/reducers';
-import * as spatialRelations from './SpatialRelations/reducers';
-import * as spatialDataSources from './SpatialDataSources/reducers';
-import * as spatialData from './SpatialData/reducers';
+import attributeRelations, {
+	INITIAL_STATE as attributeRelationsInitialState,
+} from './AttributeRelations/reducers';
+import attributeDataSources, {
+	INITIAL_STATE as attributeDataSourcesInitialState,
+} from './AttributeDataSources/reducers';
+import attributeData, {
+	INITIAL_STATE as attributeDataInitialState,
+} from './AttributeData/reducers';
+import components, {
+	INITIAL_STATE as componentsInitialState,
+} from './Components/reducers';
+import spatialRelations, {
+	INITIAL_STATE as spatialRelationsInitialState,
+} from './SpatialRelations/reducers';
+import spatialDataSources, {
+	INITIAL_STATE as spatialDataSourcesInitialState,
+} from './SpatialDataSources/reducers';
+import spatialData, {
+	INITIAL_STATE as spatialDataInitialState,
+} from './SpatialData/reducers';
 
 export const INITIAL_STATE = {
-	attributeData: attributeData.INITIAL_STATE,
-	attributeDataSources: attributeDataSources.INITIAL_STATE,
-	attributeRelations: attributeRelations.INITIAL_STATE,
-	components: components.INITIAL_STATE,
-	spatialData: spatialData.INITIAL_STATE,
-	spatialDataSources: spatialDataSources.INITIAL_STATE,
-	spatialRelations: spatialRelations.INITIAL_STATE,
+	attributeRelations: attributeRelationsInitialState,
+	attributeDataSources: attributeDataSourcesInitialState,
+	attributeData: attributeDataInitialState,
+	components: componentsInitialState,
+	spatialRelations: spatialRelationsInitialState,
+	spatialDataSources: spatialDataSourcesInitialState,
+	spatialData: spatialDataInitialState,
 };
 
 export default combineReducers({
-	attributeData: attributeData.default,
-	attributeDataSources: attributeDataSources.default,
-	attributeRelations: attributeRelations.default,
-	components: components.default,
-	spatialData: spatialData.default,
-	spatialDataSources: spatialDataSources.default,
-	spatialRelations: spatialRelations.default,
+	attributeData: attributeData,
+	attributeDataSources: attributeDataSources,
+	attributeRelations: attributeRelations,
+	components: components,
+	spatialData: spatialData,
+	spatialDataSources: spatialDataSources,
+	spatialRelations: spatialRelations,
 });

@@ -1,14 +1,18 @@
 import {combineReducers} from 'redux';
 
-import * as areaTreeLevels from './AreaTreeLevels/reducers';
-import * as areaTrees from './AreaTrees/reducers';
+import areaTreeLevels, {
+	INITIAL_STATE as areaTreeLevelsInitialState,
+} from './AreaTreeLevels/reducers';
+import areaTrees, {
+	INITIAL_STATE as areaTreesInitialState,
+} from './AreaTrees/reducers';
 
 export const INITIAL_STATE = {
-	areaTreeLevels: areaTreeLevels.INITIAL_STATE,
-	areaTrees: areaTrees.INITIAL_STATE,
+	areaTreeLevels: areaTreeLevelsInitialState,
+	areaTrees: areaTreesInitialState,
 };
 
 export default combineReducers({
-	areaTreeLevels: areaTreeLevels.default,
-	areaTrees: areaTrees.default,
+	areaTreeLevels: areaTreeLevels,
+	areaTrees: areaTrees,
 });
