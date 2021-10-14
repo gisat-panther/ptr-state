@@ -59,9 +59,8 @@ describe('getActiveKeysByFilterByActiveObserver', function () {
 			areaTreeLevelKey: 'areaTreeLevel1',
 			applicationKey: 'testing',
 		};
-		const output = commonSelectors.getActiveKeysByFilterByActiveObserver(
-			filterByActive
-		);
+		const output =
+			commonSelectors.getActiveKeysByFilterByActiveObserver(filterByActive);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -78,9 +77,8 @@ describe('getActiveKeysByFilterByActiveObserver', function () {
 			placeKeys: ['placeA', 'placeB'],
 			layerTemplateKey: 'ltA',
 		};
-		const output = commonSelectors.getActiveKeysByFilterByActiveObserver(
-			filterByActive
-		);
+		const output =
+			commonSelectors.getActiveKeysByFilterByActiveObserver(filterByActive);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -93,9 +91,8 @@ describe('getActiveKeysByFilterByActiveObserver', function () {
 		const expectedResult = {
 			scopeKey: 'scopeA',
 		};
-		const output = commonSelectors.getActiveKeysByFilterByActiveObserver(
-			filterByActive
-		);
+		const output =
+			commonSelectors.getActiveKeysByFilterByActiveObserver(filterByActive);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -104,17 +101,15 @@ describe('getActiveKeysByFilterByActiveObserver', function () {
 			areaTreeLevelKey: true,
 		};
 
-		const output = commonSelectors.getActiveKeysByFilterByActiveObserver(
-			filterByActive
-		);
+		const output =
+			commonSelectors.getActiveKeysByFilterByActiveObserver(filterByActive);
 		assert.isNull(output);
 	});
 
 	it('should return null if filter by active is null', () => {
 		const filterByActive = null;
-		const output = commonSelectors.getActiveKeysByFilterByActiveObserver(
-			filterByActive
-		);
+		const output =
+			commonSelectors.getActiveKeysByFilterByActiveObserver(filterByActive);
 		assert.isNull(output);
 	});
 

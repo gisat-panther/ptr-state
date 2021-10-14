@@ -283,13 +283,13 @@ const ensure = componentKey => {
 					length,
 				} = componentState;
 
-				const attributeDataFilterExtension = Select.data.components.getAttributeDataFilterExtensionByComponentKey(
-					componentKey
-				);
+				const attributeDataFilterExtension =
+					Select.data.components.getAttributeDataFilterExtensionByComponentKey(
+						componentKey
+					);
 
-				const commonFilter = Select.data.components.getCommonFilterByComponentKey(
-					componentKey
-				);
+				const commonFilter =
+					Select.data.components.getCommonFilterByComponentKey(componentKey);
 
 				const relationsFilter = {
 					...commonFilter,
@@ -418,11 +418,12 @@ const ensureWithFilterByActive = filterByActive => {
 		const componentsInUse = Select.data.components.getAllComponentsInUse(state);
 		if (componentsInUse.length) {
 			componentsInUse.forEach(componentKey => {
-				const fitsFilterByActive = Select.data.components.componentMatchesFilterByActive(
-					state,
-					componentKey,
-					filterByActive
-				);
+				const fitsFilterByActive =
+					Select.data.components.componentMatchesFilterByActive(
+						state,
+						componentKey,
+						filterByActive
+					);
 				if (fitsFilterByActive) {
 					dispatch(ensure(componentKey));
 				}
@@ -494,19 +495,11 @@ const getPayload = (
 	attributeDataFilterExtension,
 	order
 ) => {
-	const {
-		attributeFilter,
-		dataSourceKeys,
-		featureKeys,
-		spatialFilter,
-	} = attributeDataFilterExtension;
+	const {attributeFilter, dataSourceKeys, featureKeys, spatialFilter} =
+		attributeDataFilterExtension;
 
-	const {
-		layerTemplateKey,
-		areaTreeLevelKey,
-		attributeKeys,
-		modifiers,
-	} = commonFilter;
+	const {layerTemplateKey, areaTreeLevelKey, attributeKeys, modifiers} =
+		commonFilter;
 
 	// Create payload
 	const payload = {

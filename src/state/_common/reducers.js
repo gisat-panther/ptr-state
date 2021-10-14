@@ -381,10 +381,8 @@ export default {
 			const editedModel = state.editedByKey[action.key];
 			const editedModelData = editedModel?.data;
 			if (editedModelData?.hasOwnProperty(action.property)) {
-				const {
-					[action.property]: propertyToRemove,
-					...restProps
-				} = editedModelData;
+				const {[action.property]: propertyToRemove, ...restProps} =
+					editedModelData;
 
 				if (_isEmpty(restProps)) {
 					let editedModels = {...state.editedByKey};

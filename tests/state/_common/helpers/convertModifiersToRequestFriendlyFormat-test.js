@@ -21,9 +21,8 @@ describe('convertModifiersToRequestFriendlyFormat', function () {
 			},
 		};
 
-		const output = commonHelpers.convertModifiersToRequestFriendlyFormat(
-			modifiers
-		);
+		const output =
+			commonHelpers.convertModifiersToRequestFriendlyFormat(modifiers);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -40,9 +39,8 @@ describe('convertModifiersToRequestFriendlyFormat', function () {
 			caseKey: 'I',
 		};
 
-		const output = commonHelpers.convertModifiersToRequestFriendlyFormat(
-			modifiers
-		);
+		const output =
+			commonHelpers.convertModifiersToRequestFriendlyFormat(modifiers);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -57,9 +55,8 @@ describe('convertModifiersToRequestFriendlyFormat', function () {
 			periodKey: null,
 		};
 
-		const output = commonHelpers.convertModifiersToRequestFriendlyFormat(
-			modifiers
-		);
+		const output =
+			commonHelpers.convertModifiersToRequestFriendlyFormat(modifiers);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 

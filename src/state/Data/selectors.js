@@ -100,9 +100,8 @@ const getTile = createRecomputeSelector(
 		attributeDataFilter
 	) => {
 		// Get all data for given key. It caused performance issues when the data was passed as a parameter
-		const spatialDataForDataSource = spatialData.getByDataSourceKeyObserver(
-			spatialDataSourceKey
-		);
+		const spatialDataForDataSource =
+			spatialData.getByDataSourceKeyObserver(spatialDataSourceKey);
 
 		if (spatialDataForDataSource) {
 			const tileString = tileGridUtils.tileAsString(tile);
@@ -121,11 +120,12 @@ const getTile = createRecomputeSelector(
 				tileString,
 				spatialDataSourceKey
 			);
-			const indexedFeatureKeysByAttributeDataSourceKeys = attributeData.getSpatiallyIndexedFeatureKeysByDataSourceKeys(
-				attributeDataFilter,
-				level,
-				tileString
-			);
+			const indexedFeatureKeysByAttributeDataSourceKeys =
+				attributeData.getSpatiallyIndexedFeatureKeysByDataSourceKeys(
+					attributeDataFilter,
+					level,
+					tileString
+				);
 			const cacheKey = stringify({
 				cacheParams,
 				indexedFeatureKeys,
@@ -149,10 +149,11 @@ const getTile = createRecomputeSelector(
 							spatialDataForDataSource[key]?.geometries?.[level];
 
 						if (attributeDataSourceKeyAttributeKeyPairs) {
-							const attributes = attributeData.getAttributesByDataSourceKeysForFeatureKey(
-								attributeDataSourceKeyAttributeKeyPairs,
-								key
-							);
+							const attributes =
+								attributeData.getAttributesByDataSourceKeysForFeatureKey(
+									attributeDataSourceKeyAttributeKeyPairs,
+									key
+								);
 							if (attributes) {
 								properties = {...properties, ...attributes};
 							}

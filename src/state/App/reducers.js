@@ -1,6 +1,6 @@
 import ActionTypes from '../../constants/ActionTypes';
 
-const INITIAL_STATE = {
+export const INITIAL_STATE = {
 	key: null,
 };
 

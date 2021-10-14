@@ -980,9 +980,8 @@ const getMergedModifiers_recompute = createRecomputeSelector(
 		let metadataDefinedByKey = metadataModifiers ? {...metadataModifiers} : {};
 
 		// Get actual metadata keys defined by filterByActive
-		const activeMetadataKeys = getActiveKeysByFilterByActiveObserver(
-			filterByActive
-		);
+		const activeMetadataKeys =
+			getActiveKeysByFilterByActiveObserver(filterByActive);
 
 		// Merge metadata, metadata defined by key have priority
 		return commonHelpers.mergeMetadataKeys(
@@ -1017,8 +1016,8 @@ const getMergedModifiersInRequestFormat_recompute = createRecomputeSelector(
  * @params componentState {Object}
  * @return {Object} relations filter
  */
-const getCommmonDataRelationsFilterFromComponentState_recompute = createRecomputeSelector(
-	componentState => {
+const getCommmonDataRelationsFilterFromComponentState_recompute =
+	createRecomputeSelector(componentState => {
 		const relationsFilter = {};
 		const modifiers = getMergedModifiersInRequestFormat_recompute(
 			componentState?.metadataModifiers,
@@ -1046,8 +1045,7 @@ const getCommmonDataRelationsFilterFromComponentState_recompute = createRecomput
 		}
 
 		return relationsFilter;
-	}
-);
+	});
 
 export default {
 	getActive,

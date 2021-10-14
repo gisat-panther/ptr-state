@@ -76,12 +76,8 @@ const getAttributeDataFilterExtensionByComponentKey = createRecomputeSelector(
 		const componentState = getComponentStateByKeyObserver(componentKey);
 
 		if (componentState) {
-			const {
-				attributeFilter,
-				dataSourceKeys,
-				featureKeys,
-				spatialFilter,
-			} = componentState;
+			const {attributeFilter, dataSourceKeys, featureKeys, spatialFilter} =
+				componentState;
 
 			return {
 				...(attributeFilter !== undefined && {attributeFilter}),
@@ -142,9 +138,8 @@ const getCommonFilterByComponentKey = createRecomputeSelector(componentKey => {
 		} = mergedMetadataKeys;
 
 		// It converts modifiers from metadataKeys: ["A", "B"] to metadataKey: {in: ["A", "B"]}
-		const modifiersForRequest = commonHelpers.convertModifiersToRequestFriendlyFormat(
-			modifiers
-		);
+		const modifiersForRequest =
+			commonHelpers.convertModifiersToRequestFriendlyFormat(modifiers);
 
 		let filter = {};
 
@@ -181,9 +176,8 @@ const getIndexForAttributeDataByComponentKey = createRecomputeSelector(
 		if (componentState) {
 			const {attributeOrder} = componentState;
 
-			const attributeDataFilterExtension = getAttributeDataFilterExtensionByComponentKey(
-				componentKey
-			);
+			const attributeDataFilterExtension =
+				getAttributeDataFilterExtensionByComponentKey(componentKey);
 
 			const commonFilter = getCommonFilterByComponentKey(componentKey);
 
@@ -220,9 +214,8 @@ const getData = createRecomputeSelector(componentKey => {
 		const attributeKeys = componentState?.attributeKeys;
 
 		if (!_isEmpty(data) && attributeKeys?.length) {
-			const attributeDataFilterExtension = getAttributeDataFilterExtensionByComponentKey(
-				componentKey
-			);
+			const attributeDataFilterExtension =
+				getAttributeDataFilterExtensionByComponentKey(componentKey);
 
 			const commonFilter = getCommonFilterByComponentKey(componentKey);
 
@@ -238,9 +231,8 @@ const getData = createRecomputeSelector(componentKey => {
 			};
 
 			// Get relations
-			const attributeRelations = attributeRelationsSelectors.getIndexed(
-				relationsFilter
-			);
+			const attributeRelations =
+				attributeRelationsSelectors.getIndexed(relationsFilter);
 
 			if (attributeRelations?.length) {
 				// Get from relations, which data source is associated with which attribute
@@ -286,9 +278,8 @@ const getData = createRecomputeSelector(componentKey => {
 									if (value !== undefined) {
 										// existing feature
 										if (finalFeaturesAsObject[i - start]) {
-											finalFeaturesAsObject[i - start].data[
-												attributeKey
-											] = value;
+											finalFeaturesAsObject[i - start].data[attributeKey] =
+												value;
 										}
 
 										// new feature

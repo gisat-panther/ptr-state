@@ -1,7 +1,7 @@
 import ActionTypes from '../../constants/ActionTypes';
 import _ from 'lodash';
 
-const INITIAL_STATE = {
+export const INITIAL_STATE = {
 	windows: {},
 	sets: {},
 };
