@@ -352,6 +352,7 @@ export default {
 	apiLoginUser: apiLoginUser,
 	apiLogoutUser: apiLogoutUser,
 	refreshUses,
+	setActiveKey,
 	useKeys,
 	useKeysClear,
 	useIndexedUsers,
