@@ -1,5 +1,5 @@
 import ActionTypes from '../../../constants/ActionTypes';
-import {tileAsString} from '../helpers';
+import {utils as tileGridUtils} from '@gisatcz/ptr-tile-grid';
 import {isEmpty as _isEmpty, reduce as _reduce} from 'lodash';
 
 const actionTypes = ActionTypes.DATA.ATTRIBUTE_DATA;
@@ -146,7 +146,7 @@ function addLoadingSpatialIndex(attributeDataFilter, order, level, tiles) {
 	const loadingTiles = _reduce(
 		tiles,
 		(acc, tile) => {
-			const tileId = tileAsString(tile);
+			const tileId = tileGridUtils.tileAsString(tile);
 			acc[tileId] = true;
 			return acc;
 		},
@@ -219,10 +219,14 @@ function getTiledIndexDataBySpatialData(spatialData, attributeData) {
 				// or
 				// Prepare empty tile for new data if tile does not exists.
 				if (
-					!indexByLevelByTileByDataSourceKey[level][tileAsString(tile)] ||
+					!indexByLevelByTileByDataSourceKey[level][
+						tileGridUtils.tileAsString(tile)
+					] ||
 					_isEmpty(attributeData)
 				) {
-					indexByLevelByTileByDataSourceKey[level][tileAsString(tile)] = {};
+					indexByLevelByTileByDataSourceKey[level][
+						tileGridUtils.tileAsString(tile)
+					] = {};
 				}
 
 				if (!_isEmpty(attributeData)) {
@@ -240,22 +244,22 @@ function getTiledIndexDataBySpatialData(spatialData, attributeData) {
 						//Add to existing index
 						if (
 							indexByLevelByTileByDataSourceKey?.[level]?.[
-								tileAsString(tile)
+								tileGridUtils.tileAsString(tile)
 							]?.[attributeDataSourceKey]
 						) {
-							indexByLevelByTileByDataSourceKey[level][tileAsString(tile)][
-								attributeDataSourceKey
-							] = [
-								...indexByLevelByTileByDataSourceKey[level][tileAsString(tile)][
-									attributeDataSourceKey
-								],
+							indexByLevelByTileByDataSourceKey[level][
+								tileGridUtils.tileAsString(tile)
+							][attributeDataSourceKey] = [
+								...indexByLevelByTileByDataSourceKey[level][
+									tileGridUtils.tileAsString(tile)
+								][attributeDataSourceKey],
 								...indexes,
 							];
 						} else {
 							//Create new tile and insert dsKey index data
-							indexByLevelByTileByDataSourceKey[level][tileAsString(tile)][
-								attributeDataSourceKey
-							] = indexes;
+							indexByLevelByTileByDataSourceKey[level][
+								tileGridUtils.tileAsString(tile)
+							][attributeDataSourceKey] = indexes;
 						}
 					}
 				}

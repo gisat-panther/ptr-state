@@ -1,7 +1,13 @@
 import {createSelector as createRecomputeSelector} from '@jvitela/recompute';
-import {map as _map, forIn as _forIn, forEach as _forEach} from 'lodash';
+import {
+	map as _map,
+	forIn as _forIn,
+	forEach as _forEach,
+	isEmpty as _isEmpty,
+} from 'lodash';
 import stringify from 'fast-stringify';
 import {CacheFifo} from '@gisatcz/ptr-utils';
+import {utils} from '@gisatcz/ptr-tile-grid';
 
 import attributeRelations from './AttributeRelations/selectors';
 import attributeDataSources from './AttributeDataSources/selectors';
@@ -10,7 +16,8 @@ import components from './Components/selectors';
 import spatialRelations from './SpatialRelations/selectors';
 import spatialDataSources from './SpatialDataSources/selectors';
 import spatialData from './SpatialData/selectors';
-import {tileAsString} from './helpers';
+import {filterNearestTiles} from './helpers';
+import {utils as tileGridUtils} from '@gisatcz/ptr-tile-grid';
 import {recomputeSelectorOptions} from '../_common/recomputeHelpers';
 
 let tilesCache = new CacheFifo(1000);
@@ -97,7 +104,7 @@ const getTile = createRecomputeSelector(
 			spatialData.getByDataSourceKeyObserver(spatialDataSourceKey);
 
 		if (spatialDataForDataSource) {
-			const tileString = tileAsString(tile);
+			const tileString = tileGridUtils.tileAsString(tile);
 			const cacheParams = {
 				attributeRelationsFilter,
 				attributeDataFilter,
@@ -190,6 +197,7 @@ const getTile = createRecomputeSelector(
  * @param dataSourceKey {string} uuid
  * @param fidColumnName {string} name of property used as feature identifier
  * @param level {number}
+ * @param previousLevel {number}
  * @param tiles {Array} list of tiles definition points
  * @param spatialRelationsFilter {Object} getSpatialRelationsFilterFromLayerState
  * @param attributeRelationsFilter {Object} getAttributeRelationsFilterFromLayerState
@@ -203,6 +211,7 @@ const getTiles = createRecomputeSelector(
 		dataSourceKey,
 		fidColumnName,
 		level,
+		previousLevel,
 		tiles,
 		spatialRelationsFilter,
 		attributeRelationsFilter,
@@ -212,6 +221,10 @@ const getTiles = createRecomputeSelector(
 	) => {
 		if (tiles?.length) {
 			let populatedTiles = [];
+			let previousTiles = [];
+			let previousPopulatedTiles = [];
+			const missingTiles = [];
+
 			_forEach(tiles, tile => {
 				const populatedTile = getTile(
 					dataSourceKey,
@@ -226,9 +239,80 @@ const getTiles = createRecomputeSelector(
 				);
 				if (populatedTile) {
 					populatedTiles.push(populatedTile);
+				} else {
+					missingTiles.push(tile);
 				}
 			});
-			return populatedTiles.length ? populatedTiles : null;
+
+			if (missingTiles.length > 0) {
+				const index = spatialData.getIndex_recompute(
+					spatialRelationsFilter,
+					null
+				);
+				const loadedIndex = index.index || {};
+				const loaded = {};
+				for (const [level, tilesData] of Object.entries(loadedIndex)) {
+					const loadedTileKeys = [];
+					for (const [tileKey, tileData] of Object.entries(tilesData)) {
+						if (tileData !== true) {
+							loadedTileKeys.push(tileKey);
+						}
+					}
+					loaded[level] = loadedTileKeys;
+				}
+				const loadedHigher =
+					utils.getLoadedTiles(level, missingTiles, loaded, 'HIGHER', 25) || {};
+				const loadedLower =
+					utils.getLoadedTiles(level, missingTiles, loaded, 'LOWER', 3) || {};
+
+				if (!_isEmpty(loadedHigher) || !_isEmpty(loadedLower)) {
+					const preferedLevelsDirection =
+						level < previousLevel ? 'HIGHER' : 'LOWER';
+					const uniqueByLevels = filterNearestTiles(
+						level,
+						loadedHigher,
+						loadedLower,
+						preferedLevelsDirection
+					);
+
+					for (const [tileKey, tileData] of Object.entries(uniqueByLevels)) {
+						for (const tile of [...tileData.tiles]) {
+							if (
+								!previousPopulatedTiles.some(
+									t =>
+										t.tile === tile &&
+										t.level === Number.parseInt(tileData.level)
+								)
+							) {
+								const previousPopulatedTile = getTile(
+									dataSourceKey,
+									fidColumnName,
+									Number.parseInt(tileData.level),
+									tile,
+									spatialRelationsFilter,
+									attributeRelationsFilter,
+									attributeDataSourceKeyAttributeKeyPairs,
+									styleKey,
+									attributeDataFilter
+								);
+								if (previousPopulatedTile) {
+									previousPopulatedTiles.push(previousPopulatedTile);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (populatedTiles.length && previousPopulatedTiles.length) {
+				return [...previousPopulatedTiles, ...populatedTiles];
+			} else if (populatedTiles.length) {
+				return populatedTiles;
+			} else if (previousPopulatedTiles.length) {
+				return previousPopulatedTiles;
+			} else {
+				return null;
+			}
 		} else {
 			return null;
 		}

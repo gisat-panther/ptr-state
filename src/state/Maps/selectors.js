@@ -217,6 +217,19 @@ const getViewByMapKeyObserver = createRecomputeObserver(getViewByMapKey);
  * @param state {Object}
  * @param mapKey {string}
  */
+const getPreviousViewByMapKey = createCachedSelector(
+	[getMapByKey, getMapSetByMapKey],
+	selectorHelpers.getPreviousView
+)((state, mapKey) => mapKey);
+
+const getPreviousViewByMapKeyObserver = createRecomputeObserver(
+	getPreviousViewByMapKey
+);
+
+/**
+ * @param state {Object}
+ * @param mapKey {string}
+ */
 const getViewportByMapKey = createCachedSelector([getMapByKey], map => {
 	return map?.data?.viewport || null;
 })((state, mapKey) => mapKey);
@@ -784,6 +797,7 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 				);
 			} else if (type === 'tiledVector' || type === 'tiled-vector') {
 				const view = getViewByMapKeyObserver(mapKey);
+				const previousView = getPreviousViewByMapKeyObserver(mapKey);
 				const viewport = getViewportByMapKeyObserver(mapKey);
 				if (viewport) {
 					const tileList = selectorHelpers.getTiles(
@@ -797,10 +811,16 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 						viewport.height,
 						view.boxRange
 					);
+					const previousLevel = selectorHelpers.getZoomLevel(
+						viewport.width,
+						viewport.height,
+						previousView?.boxRange
+					);
 					tiles = DataSelectors.getTiles(
 						spatialDataSource.key,
 						fidColumnName,
 						level,
+						previousLevel,
 						tileList,
 						spatialRelationsFilter,
 						attributeRelationsFilter,
@@ -1021,6 +1041,8 @@ export default {
 	getMapSets,
 	getMapSetView,
 	getMapSetViewLimits,
+
+	getPreviousViewByMapKey,
 
 	getVisibleTilesByMapKey,
 	getSpatialRelationsFilterFromLayerState,

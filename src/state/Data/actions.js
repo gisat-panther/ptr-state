@@ -19,14 +19,9 @@ import areaRelations from '../AreaRelations/actions';
 import request from '../_common/request';
 import commonActions from '../_common/actions';
 import helpers from './SpatialData/helpers';
-
+import {utils as tileGridUtils} from '@gisatcz/ptr-tile-grid';
 import Select from '../Select';
-import {
-	getMissingTiles,
-	tileAsString,
-	getPageSize,
-	tileAsStringArray,
-} from './helpers';
+import {getMissingTiles, getPageSize} from './helpers';
 import {TILED_VECTOR_LAYER_TYPES} from './constants';
 
 const DEFAULT_RELATIONS_PAGE = {
@@ -774,7 +769,9 @@ function ensure(
 		};
 
 		// ensure string datatype for tiles in filter
-		spatialFilter.tiles = spatialFilter.tiles.map(tileAsStringArray);
+		spatialFilter.tiles = spatialFilter.tiles.map(
+			tileGridUtils.tileAsStringArray
+		);
 
 		// Order for spatialData if null at the moment
 		const order = null;
@@ -1188,10 +1185,10 @@ function setLoading(
 				const loading = Select.data.spatialData.isTileLoading(
 					spatialRelationsFilter,
 					spatialFilter.level,
-					tileAsString(tile)
+					tileGridUtils.tileAsString(tile)
 				);
 				if (!loading) {
-					return [...acc, tileAsStringArray(tile)];
+					return [...acc, tileGridUtils.tileAsStringArray(tile)];
 				} else {
 					return acc;
 				}
@@ -1204,10 +1201,10 @@ function setLoading(
 				const loading = Select.data.attributeData.isTileLoading(
 					attributeDataFilter,
 					spatialFilter.level,
-					tileAsString(tile)
+					tileGridUtils.tileAsString(tile)
 				);
 				if (!loading) {
-					return [...acc, tileAsStringArray(tile)];
+					return [...acc, tileGridUtils.tileAsStringArray(tile)];
 				} else {
 					return acc;
 				}

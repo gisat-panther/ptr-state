@@ -1,6 +1,6 @@
 import ActionTypes from '../../../constants/ActionTypes';
 import {isEmpty as _isEmpty, forIn as _forIn, reduce as _reduce} from 'lodash';
-import {tileAsString} from '../helpers';
+import {utils as tileGridUtils} from '@gisatcz/ptr-tile-grid';
 import helpers from './helpers';
 import common from '../../_common/actions';
 import Select from '../../Select';
@@ -111,7 +111,7 @@ function addLoadingIndex(filter, order, level, tiles) {
 	const loadingTiles = _reduce(
 		tiles,
 		(acc, tile) => {
-			const tileId = tileAsString(tile);
+			const tileId = tileGridUtils.tileAsString(tile);
 			acc[tileId] = true;
 			return acc;
 		},
@@ -141,14 +141,24 @@ function getTiledIndexData(spatialDataByDataSourceKey) {
 			}
 			for (const [tile, tileData] of Object.entries(tiles)) {
 				//Add to existing index
-				if (indexByLevelByTileByDataSourceKey?.[level]?.[tileAsString(tile)]) {
-					indexByLevelByTileByDataSourceKey[level][tileAsString(tile)] = {
-						...indexByLevelByTileByDataSourceKey[level][tileAsString(tile)],
+				if (
+					indexByLevelByTileByDataSourceKey?.[level]?.[
+						tileGridUtils.tileAsString(tile)
+					]
+				) {
+					indexByLevelByTileByDataSourceKey[level][
+						tileGridUtils.tileAsString(tile)
+					] = {
+						...indexByLevelByTileByDataSourceKey[level][
+							tileGridUtils.tileAsString(tile)
+						],
 						[dsKey]: tileData,
 					};
 				} else {
 					//Create new tile and insert dsKey index data
-					indexByLevelByTileByDataSourceKey[level][tileAsString(tile)] = {
+					indexByLevelByTileByDataSourceKey[level][
+						tileGridUtils.tileAsString(tile)
+					] = {
 						[dsKey]: tileData,
 					};
 				}
