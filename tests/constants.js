@@ -37,6 +37,12 @@ export const expectedLayerTreesSelectors = [...baseMetadataSelectors];
 export const expectedStylesSelectors = [...baseMetadataSelectors];
 export const expectedViewsSelectors = [...baseMetadataSelectors];
 
+export const expectedDataSpatialRelationsSelectors = [
+	'getAll',
+	'getSubstate',
+	'getIndex',
+];
+
 const getDeepValues = obj => {
 	const values = [];
 	for (const [key, value] of Object.entries(obj)) {

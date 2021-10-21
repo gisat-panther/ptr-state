@@ -25,7 +25,7 @@ const tests = [
 		},
 		setFetch: (dataType, categoryPath) => (url, options) => {
 			assert.strictEqual(
-				'http://localhost/rest/application/filtered/configurations',
+				'http://localhost/rest/applications/filtered/configurations',
 				slash(url)
 			);
 			assert.deepStrictEqual(options, {

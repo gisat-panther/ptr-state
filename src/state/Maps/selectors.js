@@ -570,9 +570,12 @@ const getSpatialRelationsFilterFromLayerState = createRecomputeSelector(
 				: {};
 
 			// Get actual metadata keys defined by filterByActive
-			const activeMetadataKeys = common.getActiveKeysByFilterByActiveObserver(
-				layer.filterByActive
-			);
+			let activeMetadataKeys = null;
+			if (layer.filterByActive) {
+				activeMetadataKeys = common.getActiveKeysByFilterByActiveObserver(
+					layer.filterByActive
+				);
+			}
 
 			// Merge metadata, metadata defined by key have priority
 			const mergedMetadataKeys = commonHelpers.mergeMetadataKeys(

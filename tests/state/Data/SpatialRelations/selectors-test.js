@@ -1,5 +1,7 @@
 import {assert} from 'chai';
 import selectors from '../../../../src/state/Data/SpatialRelations/selectors';
+import {expectedDataSpatialRelationsSelectors} from '../../../constants';
+import testHelpers from '../../../helpers';
 
 describe('state/Data/SpatialRelations/selectors', function () {
 	describe('getIndex', function () {
@@ -93,4 +95,11 @@ describe('state/Data/SpatialRelations/selectors', function () {
 			);
 		});
 	});
+});
+
+describe('_selectors-test', () => {
+	const options = {
+		expectedSelectors: expectedDataSpatialRelationsSelectors,
+	};
+	testHelpers.baseSelectorsTestSet(selectors, 'data.spatialRelations', options);
 });

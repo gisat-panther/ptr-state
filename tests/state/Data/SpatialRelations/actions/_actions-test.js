@@ -5,11 +5,12 @@ import testBatchRunner, {
 	getTestsByActionName,
 } from '../../../helpers';
 
-const actionNames = ['updateStore'];
+const actionNames = ['updateStore', 'ensureIndexed'];
 
 const store = 'DATA.SPATIAL_RELATIONS';
-const dataType = undefined;
-const categoryPath = undefined;
+const storePath = 'data.spatialRelations';
+const dataType = 'spatial';
+const categoryPath = 'relations';
 const tests = getTestsByActionName(actionNames, commonActionsTests);
 describe(
 	'common DATA/SPATIALRELATIONS actions',
@@ -20,6 +21,7 @@ describe(
 		actions,
 		null,
 		getDispatchedActionsModificator(store),
-		store
+		store,
+		storePath
 	)
 );
