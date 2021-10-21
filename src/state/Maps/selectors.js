@@ -570,7 +570,7 @@ const getSpatialRelationsFilterFromLayerState = createRecomputeSelector(
 				: {};
 
 			// Get actual metadata keys defined by filterByActive
-			const activeMetadataKeys = null;
+			let activeMetadataKeys = null;
 			if (layer.filterByActive) {
 				activeMetadataKeys = common.getActiveKeysByFilterByActiveObserver(
 					layer.filterByActive
