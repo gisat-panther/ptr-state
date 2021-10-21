@@ -980,8 +980,11 @@ const getMergedModifiers_recompute = createRecomputeSelector(
 		let metadataDefinedByKey = metadataModifiers ? {...metadataModifiers} : {};
 
 		// Get actual metadata keys defined by filterByActive
-		const activeMetadataKeys =
-			getActiveKeysByFilterByActiveObserver(filterByActive);
+		let activeMetadataKeys = null;
+		if (filterByActive) {
+			activeMetadataKeys =
+				getActiveKeysByFilterByActiveObserver(filterByActive);
+		}
 
 		// Merge metadata, metadata defined by key have priority
 		return commonHelpers.mergeMetadataKeys(
@@ -1028,9 +1031,12 @@ const getCommmonDataRelationsFilterFromComponentState_recompute =
 		}
 
 		// Get actual metadata keys defined by filterByActive
-		const activeMetadataKeys = getActiveKeysByFilterByActiveObserver(
-			componentState?.filterByActive
-		);
+		let activeMetadataKeys = null;
+		if (componentState?.filterByActive) {
+			activeMetadataKeys = getActiveKeysByFilterByActiveObserver(
+				componentState?.filterByActive
+			);
+		}
 
 		// add layerTemplate od areaTreeLevelKey
 		const layerTemplateKey =
