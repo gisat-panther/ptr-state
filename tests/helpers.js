@@ -8,6 +8,7 @@ import {
 
 // import all reducers due to coverage overview
 import {baseStores} from '../src/index';
+import {set as _set} from 'lodash';
 
 function testCache(testingFunction, params, expectedResult, otherParams) {
 	it('should be cached', () => {
@@ -108,14 +109,16 @@ function baseSelectorsTestSet(selectors, substore, options) {
 	}
 
 	it('Should select substate', function () {
-		const state = {
-			[substore]: {
-				activeKey: 'key1',
-				byKey: {
-					key1: 'Something',
-				},
+		const defaultStateStructure = {
+			activeKey: 'key1',
+			byKey: {
+				key1: 'Something',
 			},
 		};
+
+		const state = {};
+
+		_set(state, substore, defaultStateStructure);
 
 		const expectedOutput = {
 			activeKey: 'key1',
