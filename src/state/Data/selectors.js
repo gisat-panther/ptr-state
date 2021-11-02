@@ -16,6 +16,8 @@ import components from './Components/selectors';
 import spatialRelations from './SpatialRelations/selectors';
 import spatialDataSources from './SpatialDataSources/selectors';
 import spatialData from './SpatialData/selectors';
+import timeSerieRelations from './TimeSerieRelations/selectors';
+import timeSerie from './TimeSerie/selectors';
 import {filterNearestTiles} from './helpers';
 import {utils as tileGridUtils} from '@gisatcz/ptr-tile-grid';
 import {recomputeSelectorOptions} from '../_common/recomputeHelpers';
@@ -332,4 +334,6 @@ export default {
 	spatialData,
 	spatialDataSources,
 	spatialRelations,
+	timeSerieRelations,
+	timeSerie,
 };

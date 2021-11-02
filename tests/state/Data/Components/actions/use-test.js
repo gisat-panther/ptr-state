@@ -60,6 +60,7 @@ describe('state/Data/Components/actions/use', function () {
 						byKey: {
 							table: {
 								// start: 0
+								type: 'attributeData',
 								attributeFilter: {
 									xxx: {
 										in: [11],

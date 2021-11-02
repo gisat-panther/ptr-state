@@ -16,6 +16,8 @@ import spatialRelations from './SpatialRelations/actions';
 import spatialDataSources from './SpatialDataSources/actions';
 import spatialData from './SpatialData/actions';
 import areaRelations from '../AreaRelations/actions';
+import timeSerieRelations from './TimeSerieRelations/actions';
+import timeSerie from './TimeSerie/actions';
 import request from '../_common/request';
 import commonActions from '../_common/actions';
 import helpers from './SpatialData/helpers';
@@ -1352,6 +1354,8 @@ export default {
 	spatialData,
 	spatialDataSources,
 	spatialRelations,
+	timeSerie,
+	timeSerieRelations,
 
 	//export functions
 	composeDataEndpointPayload,

@@ -7,6 +7,12 @@ import commonActions from '../../_common/actions';
 import attributeRelations from '../AttributeRelations/actions';
 import attributeData from '../AttributeData/actions';
 import Select from '../../Select';
+import timeSerieActions from './timeSerieActions';
+import {
+	timeSerieDataType,
+	attributeDataType,
+	componentDataTypes,
+} from './constanst';
 import {getPagination, getNullishPagination, getMissingPages} from './helpers';
 
 import {getPageSize} from '../helpers';
@@ -275,8 +281,40 @@ const ensure = componentKey => {
 				state,
 				componentKey
 			);
+			if (
+				componentState &&
+				componentState.type &&
+				componentDataTypes.includes(componentState.type)
+			) {
+				switch (componentState.type) {
+					case attributeDataType:
+						return dispatch(ensureAttributeData(componentKey)).then(resolve);
+					case timeSerieDataType:
+						return dispatch(timeSerieActions.ensure(componentKey)).then(
+							resolve
+						);
+				}
+			}
+		});
+	};
+};
 
-			if (componentState) {
+/**
+ * Check if for given componentKey missing attribute data or relations and load them.
+ * @param {String} componentKey
+ */
+const ensureAttributeData = componentKey => {
+	return (dispatch, getState) => {
+		return new Promise(resolve => {
+			const state = getState();
+			// Update recompute state before ask cached selectors.
+			setState(state);
+			const componentState = Select.data.components.getComponentStateByKey(
+				state,
+				componentKey
+			);
+
+			if (componentState && componentState.type === attributeDataType) {
 				const {
 					attributeOrder: order = null,
 					start = 1,

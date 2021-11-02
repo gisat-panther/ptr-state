@@ -59,6 +59,7 @@ describe('state/Data/Components/actions/ensureWithFilterByActive', function () {
 						inUse: [],
 						byKey: {
 							table: {
+								type: 'attributeData',
 								// start: 0
 								attributeFilter: {
 									xxx: {
@@ -129,6 +130,7 @@ describe('state/Data/Components/actions/ensureWithFilterByActive', function () {
 						inUse: ['table'],
 						byKey: {
 							table: {
+								type: 'attributeData',
 								// start: 0
 								attributeFilter: {
 									xxx: {

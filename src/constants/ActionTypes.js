@@ -282,6 +282,20 @@ export default utils.deepKeyMirror({
 				ADD: null,
 			},
 		},
+		TIMESERIE_RELATIONS: {
+			ADD: null,
+			UPDATE_STORE: null,
+			INDEX: {
+				ADD: null,
+			},
+		},
+		TIMESERIE: {
+			ADD_WITH_INDEX: null,
+			INDEX: {
+				ADD: null,
+				ADD_FOR_EACH_DS: null,
+			},
+		},
 		UPDATE: null,
 	},
 

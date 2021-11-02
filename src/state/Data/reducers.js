@@ -21,6 +21,12 @@ import spatialDataSources, {
 import spatialData, {
 	INITIAL_STATE as spatialDataInitialState,
 } from './SpatialData/reducers';
+import timeSerieRelations, {
+	INITIAL_STATE as timeSerieRelationsInitialState,
+} from './TimeSerieRelations/reducers';
+import timeSerie, {
+	INITIAL_STATE as timeSerieInitialState,
+} from './TimeSerie/reducers';
 
 export const INITIAL_STATE = {
 	attributeRelations: attributeRelationsInitialState,
@@ -30,6 +36,8 @@ export const INITIAL_STATE = {
 	spatialRelations: spatialRelationsInitialState,
 	spatialDataSources: spatialDataSourcesInitialState,
 	spatialData: spatialDataInitialState,
+	timeSerie: timeSerieInitialState,
+	timeSerieRelations: timeSerieRelationsInitialState,
 };
 
 export default combineReducers({
@@ -40,4 +48,6 @@ export default combineReducers({
 	spatialData: spatialData,
 	spatialDataSources: spatialDataSources,
 	spatialRelations: spatialRelations,
+	timeSerieRelations: timeSerieRelations,
+	timeSerie: timeSerie,
 });

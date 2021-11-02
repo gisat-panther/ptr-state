@@ -95,6 +95,7 @@ function removeIndex(indexes = [], filter, order) {
 }
 
 /**
+ * Helper function special for spatial indexes.
  * Create set of updated indexes state based on current state and given indexUpdate.
  * It produce updated indexes state in case of existing index for given filter and order.
  * If index with filter and order is not in the state yet, its add to indexes state.
@@ -153,6 +154,105 @@ function getUpdatedIndexes(
 		filter: selectedIndex.filter || filter,
 		order: selectedIndex.order || order,
 		changedOn: changedOn,
+		index: index || selectedIndex.index,
+	};
+	indexes.push(selectedIndex);
+
+	return indexes;
+}
+/**
+ * Helper function special for timeseries indexes.
+ * Create set of updated indexes state based on current state and given indexUpdate.
+ * It produce updated indexes state in case of existing index for given filter and order.
+ * If index with filter and order is not in the state yet, its add to indexes state.
+ * @param state {Object}
+ * @param filter {Object}
+ * @param order {Array}
+ * @param indexUpdate {Array}
+ * @param changedOn {string}
+ * @param indexesPath {string} name of a property where indexes are stored
+ */
+function getUpdatedIndexesByKeys(
+	state,
+	filter,
+	order,
+	indexUpdate = {},
+	changedOn,
+	total,
+	indexesPath = 'timeSerieIndexes'
+) {
+	let indexes = [];
+	let selectedIndex = {};
+
+	//Find if index already exists under same filter and order
+	if (state[indexesPath]) {
+		state[indexesPath].forEach(index => {
+			if (_isEqual(index.filter, filter) && _isEqual(index.order, order)) {
+				selectedIndex = index;
+			} else {
+				indexes.push(index);
+			}
+		});
+	}
+
+	let index = {...selectedIndex.index};
+	//check if update indexes is in "loading" format
+	const isLoading = Object.values(indexUpdate)[0] === true;
+	if (isLoading) {
+		const currentIndexIsEmpty = _isEmpty(index);
+		const currentIndexIsLoading = Object.values(index)[0] === true;
+
+		if (currentIndexIsEmpty || currentIndexIsLoading) {
+			for (const valueIndex of Object.keys(indexUpdate)) {
+				index[valueIndex] = true;
+			}
+		} else {
+			//current index contains data structured by ds keys
+
+			for (const dsKey of Object.keys(index)) {
+				for (const valueIndex of Object.keys(indexUpdate)) {
+					index[dsKey][valueIndex] = true;
+				}
+			}
+		}
+	} else {
+		const currentIndexIsLoading = Object.values(index)[0] === true;
+		const currentIndexIsEmpty = _isEmpty(index);
+		// Current index is structured as a loading
+		if (currentIndexIsLoading) {
+			const prevLoading = {...index};
+			//clear current index before change its structure
+			index = {};
+			for (const dsKey of Object.keys(indexUpdate)) {
+				index[dsKey] = {
+					...prevLoading,
+					...indexUpdate[dsKey],
+				};
+			}
+		} else if (currentIndexIsEmpty) {
+			// Current index is empty
+			for (const dsKey of Object.keys(indexUpdate)) {
+				index[dsKey] = {
+					...indexUpdate[dsKey],
+				};
+			}
+		} else {
+			// Current index is structured by DS
+			// TODO - add some checks?
+			for (const dsKey of Object.keys(indexUpdate)) {
+				index[dsKey] = {
+					...index[dsKey],
+					...indexUpdate[dsKey],
+				};
+			}
+		}
+	}
+
+	selectedIndex = {
+		filter: selectedIndex.filter || filter,
+		order: selectedIndex.order || order,
+		changedOn: changedOn,
+		count: total,
 		index: index || selectedIndex.index,
 	};
 	indexes.push(selectedIndex);
@@ -510,6 +610,7 @@ export default {
 	getIndex,
 	getUniqueIndexes,
 	getUpdatedIndexes,
+	getUpdatedIndexesByKeys,
 	getUpdatedByDataSourceKey,
 	mergeFilters,
 	mergeMetadataKeys,

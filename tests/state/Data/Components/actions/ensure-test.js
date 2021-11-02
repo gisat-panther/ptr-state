@@ -58,6 +58,7 @@ describe('state/Data/Components/actions/ensure', function () {
 						byKey: {
 							table: {
 								// start: 0
+								type: 'attributeData',
 								attributeFilter: {
 									xxx: {
 										in: [11],
@@ -666,6 +667,7 @@ describe('state/Data/Components/actions/ensure', function () {
 						byKey: {
 							table: {
 								// start: 0
+								type: 'attributeData',
 								attributeFilter: {
 									xxx: {
 										in: [11],

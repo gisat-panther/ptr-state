@@ -15,6 +15,8 @@ import commonHelpers from '../../_common/helpers';
 import commonSelectors from '../../_common/selectors';
 import attributeDataSelectors from '../AttributeData/selectors';
 import attributeRelationsSelectors from '../AttributeRelations/selectors';
+
+import timeSerieSelectors from '../TimeSerie/selectors';
 import componentsSelectors from '../../Components/selectors';
 
 const getAllComponentsInUse = state => state.data.components.components.inUse;
@@ -81,6 +83,29 @@ const getAttributeDataFilterExtensionByComponentKey = createRecomputeSelector(
 
 			return {
 				...(attributeFilter !== undefined && {attributeFilter}),
+				...(dataSourceKeys !== undefined && {dataSourceKeys}),
+				...(featureKeys !== undefined && {featureKeys}),
+				...(spatialFilter !== undefined && {spatialFilter}),
+			};
+		} else {
+			return {};
+		}
+	}
+);
+
+/**
+ * Get filter params which are specific for TimeSerie data
+ * @param componentKey {string}
+ * @return {Object}
+ */
+const getTimeSerieFilterExtensionByComponentKey = createRecomputeSelector(
+	componentKey => {
+		const componentState = getComponentStateByKeyObserver(componentKey);
+
+		if (componentState) {
+			const {dataSourceKeys, featureKeys, spatialFilter} = componentState;
+
+			return {
 				...(dataSourceKeys !== undefined && {dataSourceKeys}),
 				...(featureKeys !== undefined && {featureKeys}),
 				...(spatialFilter !== undefined && {spatialFilter}),
@@ -164,6 +189,41 @@ const getCommonFilterByComponentKey = createRecomputeSelector(componentKey => {
 		return {};
 	}
 });
+
+/**
+ * Select timeSerie data indexes by component key
+ * @param componentKey {string}
+ */
+const getIndexForTimeSerieByComponentKey = createRecomputeSelector(
+	componentKey => {
+		const componentState = getComponentStateByKeyObserver(componentKey);
+
+		if (componentState) {
+			const {orderPeriods} = componentState;
+
+			const dataFilterExtension =
+				getTimeSerieFilterExtensionByComponentKey(componentKey);
+
+			const commonFilter = getCommonFilterByComponentKey(componentKey);
+
+			const dataFilter = {
+				...commonFilter,
+				...dataFilterExtension,
+			};
+
+			const timeSerieDataIndex =
+				timeSerieSelectors.getIndex_recompute(dataFilter, orderPeriods) || [];
+
+			if (!_isEmpty(timeSerieDataIndex)) {
+				return timeSerieDataIndex;
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+);
 
 /**
  * Select attribute data indexes by component key
@@ -346,14 +406,16 @@ export default {
 
 	getAllComponentsInUse,
 	getAttributeDataFilterExtensionByComponentKey,
+	getTimeSerieFilterExtensionByComponentKey,
 	getCommonFilterByComponentKey,
 	getComponentStateByKey,
 	getComponentStateByKeyObserver,
 	getIndexForAttributeDataByComponentKey,
-
+	getIndexForTimeSerieByComponentKey,
 	isComponentInUse,
 
 	// Data selectors
+	// getTimeSerieData, //TODO
 	getData,
 	getDataForCartesianChart,
 };
