@@ -17,9 +17,9 @@ const getTimeSerieIndexFromData = (data = {}, start) => {
 	const indexUpdate = {};
 	for (const [dsKey, values] of Object.entries(data)) {
 		indexUpdate[dsKey] = {};
-		const valuesKeys = Object.keys(values);
-		for (let i = 0; i < valuesKeys.length; i++) {
-			indexUpdate[dsKey][i + start] = valuesKeys[i];
+		const featureKeys = Object.keys(values);
+		for (let i = 0; i < featureKeys.length; i++) {
+			indexUpdate[dsKey][i + start] = featureKeys[i];
 		}
 	}
 	return indexUpdate;

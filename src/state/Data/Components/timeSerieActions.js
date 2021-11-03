@@ -308,8 +308,13 @@ const ensure = componentKey => {
 				// Time serie data index exist
 				// find if all required data are loaded
 				if (!_isEmpty(timeSerieRelationsIndex)) {
+					// override index by first tsDS index
+					// all tsDS index reflects fase structure with same loading data but different values
+					timeSerieDataIndex.index =
+						timeSerieDataIndex.index[Object.keys(timeSerieDataIndex.index)[0]];
+
 					missingDataPages = getMissingPages(
-						timeSerieRelationsIndex,
+						timeSerieDataIndex,
 						PAGE_SIZE,
 						start,
 						length
