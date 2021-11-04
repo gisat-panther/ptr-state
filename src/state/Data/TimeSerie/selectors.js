@@ -19,6 +19,10 @@ const getIndexesObserver = createRecomputeObserver(
 	state => getSubstate(state).timeSerieIndexes
 );
 
+const getAllAsObjectObserver = createRecomputeObserver(
+	state => getSubstate(state).byDataSourceKey
+);
+
 /**
  * It returns whole index for given filter & order
  * @param {Object} filter
@@ -35,6 +39,7 @@ const getIndex_recompute = createRecomputeSelector((filter, order) => {
 }, recomputeSelectorOptions);
 
 export default {
+	getAllAsObjectObserver,
 	getIndex_recompute,
 	getSubstate,
 };

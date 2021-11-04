@@ -43,9 +43,16 @@ export const expectedDataSpatialRelationsSelectors = [
 	'getIndex',
 ];
 
-export const expectedDataTimeSerieRelationsSelectors = ['getIndex'];
+export const expectedDataTimeSerieRelationsSelectors = [
+	'getIndex',
+	'getSubstate',
+];
 
-export const expectedDataTimeSerieSelectors = ['getIndex_recompute'];
+export const expectedDataTimeSerieSelectors = [
+	'getIndex_recompute',
+	'getAllAsObjectObserver',
+	'getSubstate',
+];
 
 const getDeepValues = obj => {
 	const values = [];

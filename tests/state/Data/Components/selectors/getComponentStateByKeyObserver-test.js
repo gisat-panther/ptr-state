@@ -10,6 +10,7 @@ describe('getComponentStateByKeyObserver-test', function () {
 
 	it('Should select component key for given key', function () {
 		const expectedResult = {
+			type: 'attributeData',
 			filterByActive: {
 				period: true,
 			},

@@ -8,7 +8,7 @@ describe('getData-test', function () {
 		setState(ComponentsSelectorsState);
 	});
 
-	it('Should select attribute data for given component key', function () {
+	it('Should select attribute data for given component key _1', function () {
 		const expectedResult = [
 			{
 				key: 'featureKey5',
@@ -36,7 +36,7 @@ describe('getData-test', function () {
 		assert.deepStrictEqual(selectors.getData('columnChart'), expectedResult);
 	});
 
-	it('Should select attribute data for given component key 2', function () {
+	it('Should select attribute data for given component key _2', function () {
 		const expectedResult = [
 			{
 				key: 'featureKey1',
@@ -50,7 +50,7 @@ describe('getData-test', function () {
 		assert.deepStrictEqual(selectors.getData('componentB'), expectedResult);
 	});
 
-	it('Should select attribute data for given component key', function () {
+	it('Should select attribute data for given component key _3', function () {
 		const expectedResult = [
 			{
 				key: 'featureKey2',
@@ -73,6 +73,35 @@ describe('getData-test', function () {
 		];
 
 		assert.deepStrictEqual(selectors.getData('componentE'), expectedResult);
+	});
+
+	it('Should select attribute data for given component key _4', function () {
+		const expectedResult = {
+			dsKey1: [
+				{
+					key: 'featureKey12',
+					data: [
+						{
+							period: '2021-1',
+							value: 1,
+						},
+						{
+							period: '2021-11',
+							value: 'hehe',
+						},
+						{
+							period: '2021-12',
+							value: 'hehe',
+						},
+					],
+				},
+			],
+		};
+
+		assert.deepStrictEqual(
+			selectors.getData('columnChartTimeSerieB'),
+			expectedResult
+		);
 	});
 
 	it('Should return null, if there are no features indexed for given component', function () {

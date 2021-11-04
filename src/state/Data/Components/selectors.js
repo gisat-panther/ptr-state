@@ -11,6 +11,11 @@ import {
 	includes as _includes,
 } from 'lodash';
 
+import {
+	timeSerieDataType,
+	attributeDataType,
+	componentDataTypes,
+} from './constanst';
 import commonHelpers from '../../_common/helpers';
 import commonSelectors from '../../_common/selectors';
 import attributeDataSelectors from '../AttributeData/selectors';
@@ -266,9 +271,10 @@ const getIndexForAttributeDataByComponentKey = createRecomputeSelector(
  * @param componentKey {string}
  * @return {Array} A collection of features, where each feature has following format: {featureKey: string, data: {attributeKey: string|number|boolean|null}}
  */
-const getData = createRecomputeSelector(componentKey => {
+const getAttributeData = createRecomputeSelector(componentKey => {
 	const componentState = getComponentStateByKeyObserver(componentKey);
-	if (componentState) {
+
+	if (componentState && componentState.type === attributeDataType) {
 		// TODO cached selector for data of only relevant data sources needed!!!
 		const data = attributeDataSelectors.getAllAsObjectObserver();
 		const attributeKeys = componentState?.attributeKeys;
@@ -383,6 +389,99 @@ const getData = createRecomputeSelector(componentKey => {
 });
 
 /**
+ * General selector for assembling timeSerie data for component
+ * @param componentKey {string}
+ * @return {Array} A collection of features, where each feature has following format: {featureKey: string, data: {attributeKey: string|number|boolean|null}}
+ */
+const getTimeSerieData = createRecomputeSelector(componentKey => {
+	const componentState = getComponentStateByKeyObserver(componentKey);
+
+	if (componentState && componentState.type === timeSerieDataType) {
+		// TODO cached selector for data of only relevant data sources needed!!!
+		const data = timeSerieSelectors.getAllAsObjectObserver();
+
+		if (!_isEmpty(data)) {
+			const timeSerieDataFilterExtension =
+				getTimeSerieFilterExtensionByComponentKey(componentKey);
+
+			const commonFilter = getCommonFilterByComponentKey(componentKey);
+
+			const timeSerieFilter = {
+				...commonFilter,
+				...timeSerieDataFilterExtension,
+			};
+
+			const timeSerieOrder = componentState.orderPeriods || null;
+
+			// Find data index
+			// TODO more sophisticated index with timeSerieFilter & timeSerieOrder
+			const timeSerieDataIndex = timeSerieSelectors.getIndex_recompute(
+				timeSerieFilter,
+				timeSerieOrder
+			);
+			// Get indexed features
+			let indexedFeatureKeysByDSKey = timeSerieDataIndex?.index;
+
+			if (indexedFeatureKeysByDSKey && !_isEmpty(indexedFeatureKeysByDSKey)) {
+				let {start, length} = componentState;
+				start = start || 1;
+				length = length || timeSerieDataIndex.count;
+				let end = Math.min(start + length - 1, timeSerieDataIndex.count);
+
+				let finalFeaturesAsObject = {};
+				const dsKeys = Object.keys(indexedFeatureKeysByDSKey);
+				for (const dsKey of dsKeys) {
+					finalFeaturesAsObject[dsKey] = [];
+					// Loop through indexed features
+					for (let i = start; i <= end; i++) {
+						const featureKey = indexedFeatureKeysByDSKey[dsKey][i];
+						if (featureKey) {
+							let value = data[dsKey]?.[featureKey];
+
+							if (value !== undefined) {
+								finalFeaturesAsObject[dsKey][i - start] = {
+									key: featureKey,
+									data: value,
+								};
+							}
+						}
+					}
+				}
+				return finalFeaturesAsObject;
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	} else {
+		return null;
+	}
+});
+
+/**
+ * General selector for assembling attribute data for component
+ * @param componentKey {string}
+ * @return {Array} A collection of features, where each feature has following format: {featureKey: string, data: {attributeKey: string|number|boolean|null}}
+ */
+const getData = createRecomputeSelector(componentKey => {
+	const componentState = getComponentStateByKeyObserver(componentKey);
+
+	if (
+		componentState &&
+		componentState.type &&
+		componentDataTypes.includes(componentState.type)
+	) {
+		switch (componentState.type) {
+			case attributeDataType:
+				return getAttributeData(componentKey);
+			case timeSerieDataType:
+				return getTimeSerieData(componentKey);
+		}
+	}
+});
+
+/**
  * Specific selector to assembling the attribute data & settings of the cartesian chart
  * @param props {Object} component props
  * @param props.stateComponentKey {string} component key, needed for data assembling
@@ -415,7 +514,7 @@ export default {
 	isComponentInUse,
 
 	// Data selectors
-	// getTimeSerieData, //TODO
+	getTimeSerieData,
 	getData,
 	getDataForCartesianChart,
 };
