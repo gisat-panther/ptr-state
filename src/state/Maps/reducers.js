@@ -326,6 +326,47 @@ const setMapLayerStyleKey = (state, mapKey, layerKey, styleKey) => {
 };
 
 /**
+ * Set map layer opacity
+ * @param state {Object}
+ * @param mapKey {string}
+ * @param layerKey {string}
+ * @param opacity {number}
+ * @return {Object} state
+ */
+const setMapLayerOpacity = (state, mapKey, layerKey, opacity) => {
+	const layers = state.maps[mapKey]?.data?.layers;
+
+	if (layers) {
+		const updatedLayers = layers.map(item => {
+			if (item.key === layerKey) {
+				return {
+					...item,
+					opacity,
+				};
+			} else {
+				return item;
+			}
+		});
+
+		return {
+			...state,
+			maps: {
+				...state.maps,
+				[mapKey]: {
+					...state.maps[mapKey],
+					data: {
+						...state.maps[mapKey].data,
+						layers: updatedLayers,
+					},
+				},
+			},
+		};
+	} else {
+		return state;
+	}
+};
+
+/**
  * Set map layer option
  * @param state {Object}
  * @param mapKey {string}
@@ -719,6 +760,13 @@ export default function tasksReducer(state = INITIAL_STATE, action) {
 			);
 		case ActionTypes.MAPS.MAP.LAYERS.REMOVE_LAYER:
 			return removeMapLayer(state, action.mapKey, action.layerKey);
+		case ActionTypes.MAPS.MAP.LAYERS.SET_OPACITY:
+			return setMapLayerOpacity(
+				state,
+				action.mapKey,
+				action.layerKey,
+				action.opacity
+			);
 		case ActionTypes.MAPS.MAP.LAYERS.SET_OPTION:
 			return setMapLayerOption(
 				state,
