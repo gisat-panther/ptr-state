@@ -36,6 +36,39 @@ describe('setMapLayerOpacity-test', function () {
 		assert.deepStrictEqual(output, expectedState);
 	});
 
+	it('Should set map layer opacity even if is 0', function () {
+		let updatedLayers = [...state.maps.map1.data.layers];
+		updatedLayers[0] = {
+			...updatedLayers[0],
+			opacity: 0,
+		};
+
+		const expectedState = {
+			...state,
+			maps: {
+				...state.maps,
+				map1: {
+					...state.maps.map1,
+					data: {
+						...state.maps.map1.data,
+						layers: updatedLayers,
+					},
+				},
+			},
+		};
+
+		const action = {
+			type: 'MAPS.MAP.LAYERS.SET_OPACITY',
+			mapKey: 'map1',
+			layerKey: 'layer1',
+			opacity: 0,
+		};
+
+		const output = reducers(state, action);
+
+		assert.deepStrictEqual(output, expectedState);
+	});
+
 	it('Should change nothing if layer with given key is not part of given map', function () {
 		const action = {
 			type: 'MAPS.MAP.LAYERS.SET_OPACITY',

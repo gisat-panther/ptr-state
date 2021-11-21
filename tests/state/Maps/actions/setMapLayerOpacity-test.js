@@ -39,6 +39,37 @@ describe('state/Maps/actions/setMapLayerOpacity', function () {
 		});
 	});
 
+	it('dispatch set layer opacity even if it is 0', function () {
+		const storeHelpers = getStoreSet();
+		const reducers = combineReducers({
+			maps: MapsReducers,
+		});
+
+		const defaultState = {
+			maps: {..._cloneDeep(state.maps)},
+		};
+
+		const store = createStore(reducers, defaultState);
+
+		setState(store.getState());
+		const getState = () => {
+			return store.getState();
+		};
+		const dispatch = storeHelpers.getDispatch(getState, store.dispatch);
+		dispatch(actions.setMapLayerOpacity('map1', 'layer1', 0));
+
+		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
+			assert.deepStrictEqual(storeHelpers.getDispatchedActions(), [
+				{
+					type: 'MAPS.MAP.LAYERS.SET_OPACITY',
+					mapKey: 'map1',
+					layerKey: 'layer1',
+					opacity: 0,
+				},
+			]);
+		});
+	});
+
 	it('dispatch error, mapXY does not exists', function () {
 		const storeHelpers = getStoreSet();
 		const reducers = combineReducers({
