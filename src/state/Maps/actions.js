@@ -523,6 +523,31 @@ function setMapLayerStyleKey(mapKey, layerKey, styleKey) {
 }
 
 /**
+ * Set map layer opacity
+ * @param mapKey {string}
+ * @param layerKey {string}
+ * @param opacity {number} from 0 to 1
+ */
+function setMapLayerOpacity(mapKey, layerKey, opacity) {
+	return (dispatch, getState) => {
+		const layer = Select.maps.getLayerStateByLayerKeyAndMapKey(
+			getState(),
+			mapKey,
+			layerKey
+		);
+		if (layer) {
+			dispatch(actionSetMapLayerOpacity(mapKey, layerKey, opacity));
+		} else {
+			dispatch(
+				commonActions.actionGeneralError(
+					`No layer found for mapKey ${mapKey} and layerKey ${layerKey}`
+				)
+			);
+		}
+	};
+}
+
+/**
  * Set map layer option
  * @param mapKey {string}
  * @param layerKey {string}
@@ -852,6 +877,15 @@ const actionSetActiveMapKey = mapKey => {
 	};
 };
 
+const actionSetMapLayerOpacity = (mapKey, layerKey, opacity) => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.SET_OPACITY,
+		mapKey,
+		layerKey,
+		opacity,
+	};
+};
+
 const actionSetMapLayerOption = (mapKey, layerKey, optionKey, optionValue) => {
 	return {
 		type: ActionTypes.MAPS.MAP.LAYERS.SET_OPTION,
@@ -991,6 +1025,7 @@ export default {
 	removeMapSet,
 	setActiveMapKey: actionSetActiveMapKey,
 	setLayerSelectedFeatureKeys,
+	setMapLayerOpacity,
 	setMapLayerOption,
 	setMapLayerStyleKey,
 	setMapSetActiveMapKey,
