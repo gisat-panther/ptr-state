@@ -66,9 +66,10 @@ function remove(state, componentKey, path = '') {
 function set(state, componentKey, path, value) {
 	if (componentKey && path) {
 		const pathParams = path.split('.');
+		const componentState = state[componentKey] || {};
 		return {
 			...state,
-			[componentKey]: helpers.setHelper(state[componentKey], pathParams, value),
+			[componentKey]: helpers.setHelper(componentState, pathParams, value),
 		};
 	} else {
 		return state;
