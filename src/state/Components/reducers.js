@@ -1,6 +1,8 @@
 import {isEmpty as _isEmpty} from 'lodash';
+import utils from '@gisatcz/ptr-utils';
 import ActionTypes from '../../constants/ActionTypes';
 import common from '../_common/reducers';
+import helpers from './helpers';
 
 export const INITIAL_STATE = {};
 
@@ -25,19 +27,49 @@ function update(state, componentKey, update) {
 }
 
 /**
+ * Remove component
+ * Remove whole component or if path is defined, remove just everything on path.
+ * @param state {Object}
+ * @param componentKey {string}
+ * @param path {string} Dot separated path or "" or null.
+ * @return {Object} state
+ */
+function remove(state, componentKey, path = '') {
+	const pathForComponent = !path || path === null || path === '';
+	if (componentKey && (pathForComponent || path)) {
+		const pathParams = !pathForComponent && path.split('.');
+		if (pathForComponent) {
+			return utils.stateManagement.removeItemByKey(state, componentKey);
+		} else {
+			return {
+				...state,
+				[componentKey]: helpers.setHelper(
+					state[componentKey],
+					pathParams,
+					undefined
+				),
+			};
+		}
+	} else {
+		return state;
+	}
+}
+
+/**
  * Set value in given path
  * @param state {Object}
- * @param component {string}
+ * @param componentKey {string}
  * @param path {string} data.property.something
  * @param value {*}
  * @return {Object} state
  */
-function set(state, component, path, value) {
-	if (component && path) {
+function set(state, componentKey, path, value) {
+	if (componentKey && path) {
 		const pathParams = path.split('.');
+		const componentState = state[componentKey] || {};
 		return {
 			...state,
-			[component]: setHelper(state[component], pathParams, value),
+			[componentKey]: helpers.setHelper(componentState, pathParams, value),
 		};
 	} else {
 		return state;
@@ -45,26 +77,6 @@ function set(state, component, path, value) {
 }
 
 // helpers ---------------------------------------------------------------------
-
-/**
- *
- * @param state {Object}
- * @param path {string}
- * @param value {*}
- * @return {Object}
- */
-function setHelper(state, path, value) {
-	let remainingPath = [...path];
-	let currentKey = remainingPath.shift();
-	if (remainingPath.length) {
-		return {
-			...state,
-			[currentKey]: setHelper(state[currentKey], remainingPath, value),
-		};
-	} else {
-		return {...state, [currentKey]: value};
-	}
-}
 
 export default (state = INITIAL_STATE, action) => {
 	switch (action.type) {
@@ -74,6 +86,8 @@ export default (state = INITIAL_STATE, action) => {
 			return common.updateStore(state, action);
 		case ActionTypes.COMPONENTS.SET:
 			return set(state, action.component, action.path, action.value);
+		case ActionTypes.COMPONENTS.REMOVE:
+			return remove(state, action.component, action.path);
 		default:
 			return state;
 	}

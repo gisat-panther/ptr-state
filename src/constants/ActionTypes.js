@@ -213,6 +213,7 @@ export default utils.deepKeyMirror({
 	COMPONENTS: {
 		SET: null,
 		UPDATE: null,
+		REMOVE: null,
 		UPDATE_STORE: null,
 	},
 
