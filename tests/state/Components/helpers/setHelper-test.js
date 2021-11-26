@@ -88,4 +88,11 @@ describe('state/Components/helpers/setHelper', function () {
 			bike: {color: 'black'},
 		});
 	});
+
+	it('set value on path _9', function () {
+		const path = null;
+		const state = {car: {color: 'blue', type: 'van'}, bike: {color: 'black'}};
+		const updatedState = helpers.setHelper(state, path, undefined);
+		assert.deepStrictEqual(updatedState, state);
+	});
 });
