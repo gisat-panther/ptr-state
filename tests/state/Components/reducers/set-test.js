@@ -79,4 +79,36 @@ describe('set-test', function () {
 		const output = reducers(state, action);
 		assert.equal(output, state);
 	});
+
+	it('Should return the state without property', function () {
+		const action = {
+			type: 'COMPONENTS.SET',
+			component: 'componentA',
+			path: 'data.something',
+			value: undefined,
+		};
+
+		const expectedState = {
+			componentA: {
+				data: {},
+			},
+		};
+
+		const output = reducers(state, action);
+		assert.deepEqual(output, expectedState);
+	});
+
+	it('Should return the state with empty component data', function () {
+		const action = {
+			type: 'COMPONENTS.SET',
+			component: 'componentA',
+			path: 'data',
+			value: undefined,
+		};
+
+		const expectedState = {componentA: {}};
+
+		const output = reducers(state, action);
+		assert.deepEqual(output, expectedState);
+	});
 });
