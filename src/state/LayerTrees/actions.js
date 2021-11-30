@@ -9,19 +9,19 @@ const create = common.create(
 	Select.layerTrees.getSubstate,
 	'layerTrees',
 	ActionTypes.LAYER_TREES,
-	'applications'
+	'application'
 );
 const deleteItem = common.delete(
 	Select.layerTrees.getSubstate,
 	'layerTrees',
 	ActionTypes.LAYER_TREES,
-	'applications'
+	'application'
 );
 const saveEdited = common.saveEdited(
 	Select.layerTrees.getSubstate,
 	'layerTrees',
 	ActionTypes.LAYER_TREES,
-	'applications'
+	'application'
 );
 const updateEdited = common.updateEdited(
 	Select.layerTrees.getSubstate,
@@ -31,7 +31,7 @@ const useKeys = common.useKeys(
 	Select.layerTrees.getSubstate,
 	'layerTrees',
 	ActionTypes.LAYER_TREES,
-	'applications'
+	'application'
 );
 const useKeysClear = common.useKeysClear(ActionTypes.LAYER_TREES);
 const useIndexedClear = common.useIndexedClear(ActionTypes.LAYER_TREES);
@@ -40,13 +40,13 @@ const useIndexed = common.useIndexed(
 	Select.layerTrees.getSubstate,
 	'layerTrees',
 	ActionTypes.LAYER_TREES,
-	'applications'
+	'application'
 );
 const refreshUses = common.refreshUses(
 	Select.layerTrees.getSubstate,
 	'layerTrees',
 	ActionTypes.LAYER_TREES,
-	'applications'
+	'application'
 );
 const updateStateFromView = common.updateSubstateFromView(
 	ActionTypes.LAYER_TREES
