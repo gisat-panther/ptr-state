@@ -9,7 +9,7 @@ import Select from '../Select';
 const loadConfiguration = () => {
 	return (dispatch, getState) => {
 		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
-		const apiPath = 'rest/applications/filtered/configurations';
+		const apiPath = 'rest/application/filtered/configurations';
 		let applicationKey = selectors.getKey(getState());
 		const payload = {
 			filter: {

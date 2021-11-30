@@ -17,7 +17,7 @@ const actionNames = [
 
 const store = 'LAYER_TREES';
 const dataType = 'layerTrees';
-const categoryPath = 'applications';
+const categoryPath = 'application';
 const tests = getTestsByActionName(actionNames, commonActionsTests);
 describe(
 	'common LAYER_TREES actions',
