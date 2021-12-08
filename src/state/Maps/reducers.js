@@ -205,6 +205,32 @@ const removeMapLayer = (state, mapKey, layerKey) => {
 };
 
 /**
+ * Remove all layers from map
+ * @param state {Object}
+ * @param mapKey {string}
+ * @return {Object} Updated state
+ */
+const removeAllMapLayers = (state, mapKey) => {
+	if (mapKey && state.maps[mapKey]?.data?.layers?.length) {
+		return {
+			...state,
+			maps: {
+				...state.maps,
+				[mapKey]: {
+					...state.maps[mapKey],
+					data: {
+						...state.maps[mapKey].data,
+						layers: [],
+					},
+				},
+			},
+		};
+	} else {
+		return state;
+	}
+};
+
+/**
  * Add layer states to map
  * @param state {Object}
  * @param mapKey {string}
@@ -760,6 +786,8 @@ export default function tasksReducer(state = INITIAL_STATE, action) {
 			);
 		case ActionTypes.MAPS.MAP.LAYERS.REMOVE_LAYER:
 			return removeMapLayer(state, action.mapKey, action.layerKey);
+		case ActionTypes.MAPS.MAP.LAYERS.REMOVE_ALL:
+			return removeAllMapLayers(state, action.mapKey);
 		case ActionTypes.MAPS.MAP.LAYERS.SET_OPACITY:
 			return setMapLayerOpacity(
 				state,

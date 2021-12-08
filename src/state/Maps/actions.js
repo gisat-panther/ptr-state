@@ -862,6 +862,13 @@ const actionRemoveMapLayer = (mapKey, layerKey) => {
 	};
 };
 
+const actionRemoveAllMapLayers = mapKey => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.REMOVE_ALL,
+		mapKey,
+	};
+};
+
 const actionRemoveMapFromSet = (setKey, mapKey) => {
 	return {
 		type: ActionTypes.MAPS.SET.REMOVE_MAP,
@@ -1022,6 +1029,7 @@ export default {
 	removeMap,
 	removeMapFromSet,
 	removeMapLayer,
+	removeAllMapLayers: actionRemoveAllMapLayers,
 	removeMapSet,
 	setActiveMapKey: actionSetActiveMapKey,
 	setLayerSelectedFeatureKeys,
