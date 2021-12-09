@@ -205,6 +205,43 @@ const removeMapLayer = (state, mapKey, layerKey) => {
 };
 
 /**
+ * Remove layers from map
+ * @param state {Object}
+ * @param mapKey {string}
+ * @param layerKeys {Array}
+ * @return {Object} Updated state
+ */
+const removeMapLayers = (state, mapKey, layerKeys) => {
+	if (layerKeys?.length && mapKey) {
+		let updatedLayers = [...state.maps[mapKey]?.data?.layers];
+		layerKeys.forEach(layerKey => {
+			const index = _findIndex(updatedLayers, {
+				key: layerKey,
+			});
+			if (index > -1) {
+				updatedLayers = stateManagement.removeItemByIndex(updatedLayers, index);
+			}
+		});
+
+		return {
+			...state,
+			maps: {
+				...state.maps,
+				[mapKey]: {
+					...state.maps[mapKey],
+					data: {
+						...state.maps[mapKey].data,
+						layers: updatedLayers,
+					},
+				},
+			},
+		};
+	} else {
+		return state;
+	}
+};
+
+/**
  * Remove all layers from map
  * @param state {Object}
  * @param mapKey {string}
@@ -786,6 +823,8 @@ export default function tasksReducer(state = INITIAL_STATE, action) {
 			);
 		case ActionTypes.MAPS.MAP.LAYERS.REMOVE_LAYER:
 			return removeMapLayer(state, action.mapKey, action.layerKey);
+		case ActionTypes.MAPS.MAP.LAYERS.REMOVE_LAYERS:
+			return removeMapLayers(state, action.mapKey, action.layerKeys);
 		case ActionTypes.MAPS.MAP.LAYERS.REMOVE_ALL:
 			return removeAllMapLayers(state, action.mapKey);
 		case ActionTypes.MAPS.MAP.LAYERS.SET_OPACITY:
