@@ -216,6 +216,42 @@ const removeMapLayer = (mapKey, layerKey) => {
 };
 
 /**
+ * Remove layers from map
+ * @param mapKey {string}
+ * @param layerKeys {Array}
+ */
+const removeMapLayers = (mapKey, layerKeys) => {
+	return (dispatch, getState) => {
+		if (layerKeys?.length) {
+			const state = getState();
+			const layersToRemove = [];
+
+			layerKeys.forEach(layerKey => {
+				const layerState = Select.maps.getLayerStateByLayerKeyAndMapKey(
+					state,
+					mapKey,
+					layerKey
+				);
+
+				if (layerState) {
+					layersToRemove.push(layerKey);
+				} else {
+					dispatch(
+						commonActions.actionGeneralError(
+							`No layer with key ${layerKey} found for mapKey ${mapKey}`
+						)
+					);
+				}
+			});
+
+			if (layersToRemove.length) {
+				dispatch(actionRemoveMapLayers(mapKey, layersToRemove));
+			}
+		}
+	};
+};
+
+/**
  * Clear use of the map set
  * @param mapSetKey {string}
  */
@@ -862,6 +898,14 @@ const actionRemoveMapLayer = (mapKey, layerKey) => {
 	};
 };
 
+const actionRemoveMapLayers = (mapKey, layerKeys) => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.REMOVE_LAYERS,
+		mapKey,
+		layerKeys,
+	};
+};
+
 const actionRemoveAllMapLayers = mapKey => {
 	return {
 		type: ActionTypes.MAPS.MAP.LAYERS.REMOVE_ALL,
@@ -1029,6 +1073,7 @@ export default {
 	removeMap,
 	removeMapFromSet,
 	removeMapLayer,
+	removeMapLayers,
 	removeAllMapLayers: actionRemoveAllMapLayers,
 	removeMapSet,
 	setActiveMapKey: actionSetActiveMapKey,
