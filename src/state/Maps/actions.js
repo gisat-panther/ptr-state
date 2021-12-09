@@ -224,7 +224,7 @@ const removeMapLayers = (mapKey, layerKeys) => {
 	return (dispatch, getState) => {
 		if (layerKeys?.length) {
 			const state = getState();
-			let layersToRemove = [];
+			const layersToRemove = [];
 
 			layerKeys.forEach(layerKey => {
 				const layerState = Select.maps.getLayerStateByLayerKeyAndMapKey(
