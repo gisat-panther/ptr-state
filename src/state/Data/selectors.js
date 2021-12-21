@@ -31,7 +31,6 @@ const getFeatures = createRecomputeSelector(
 	(dataSourceKey, fidColumnName, attributeDataSourceKeyAttributeKeyPairs) => {
 		const data = spatialData.getByDataSourceKeyObserver(dataSourceKey);
 		let attributesByDataSourceKey = null;
-
 		if (attributeDataSourceKeyAttributeKeyPairs) {
 			attributesByDataSourceKey = attributeData.getDataByDataSourceKeys(
 				Object.keys(attributeDataSourceKeyAttributeKeyPairs)

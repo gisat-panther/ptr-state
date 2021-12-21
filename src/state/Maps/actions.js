@@ -16,7 +16,10 @@ import commonHelpers from '../_common/helpers';
 import commonSelectors from '../_common/selectors';
 
 import DataActions from '../Data/actions';
-import {TILED_VECTOR_LAYER_TYPES} from '../Data/constants';
+import {
+	TILED_VECTOR_LAYER_TYPES,
+	SINGLE_VECTOR_LAYER_TYPES,
+} from '../Data/constants';
 import StylesActions from '../Styles/actions';
 
 import helpers from './selectorHelpers';
@@ -417,9 +420,14 @@ function layerUse(layerState, spatialFilter) {
 					commonRelationsFilter,
 					order
 				);
+
+				//also for single tile
 				const sdsContainsVector =
 					spatialDataSources?.some(spatialDataSource =>
-						TILED_VECTOR_LAYER_TYPES.includes(spatialDataSource?.data?.type)
+						[
+							...TILED_VECTOR_LAYER_TYPES,
+							...SINGLE_VECTOR_LAYER_TYPES,
+						].includes(spatialDataSource?.data?.type)
 					) || false;
 				// load only dataSources that are supported type
 				if (spatialDataSources && !sdsContainsVector) {

@@ -78,6 +78,14 @@ const checkSomeDSAreVector = spatialDataSources => {
 	return someDSisVectorType;
 };
 
+const checkDSAreVector = spatialDataSources => {
+	const SDSvectorType = 'vector';
+	const everyDSisVectorType = !_isEmpty(spatialDataSources)
+		? spatialDataSources.every(ds => ds.data?.type === SDSvectorType)
+		: false;
+	return everyDSisVectorType;
+};
+
 const transformSDStoTypes = spatialDataSources => {
 	return !_isEmpty(spatialDataSources)
 		? spatialDataSources.map(sds => ({
@@ -539,7 +547,7 @@ function loadMissingSpatialData(
 
 /**
  * Ensure load spatial data, attribute data and relations for tiles defined in spatialFilter.
- * Makes load first page of data, if more date missing, pass filters to loadMissingRelationsAndData.
+ * Makes load first page of data, if more data missing, pass filters to loadMissingRelationsAndData.
  * @param {Object} spatialFilter Spatial defined filter of level and its tiles
  * @param {string?} styleKey UUID
  * @param {Array?} order
@@ -778,18 +786,31 @@ function ensure(
 
 		const spatialDataIndex =
 			Select.data.spatialData.getIndex(state, spatialRelationsFilter, order) ||
-			[];
+			{};
+		//FIXME Select.data.attributeData.getIndex returns object where indec contains some methods
 		const attributeDataIndex =
 			Select.data.attributeData.getIndex(
 				state,
 				'spatialIndexes',
 				attributeDataFilter,
 				order
-			) || [];
+			) || {};
+
 		const missingAttributesData = hasMissingAttributesData(
 			attributeDataIndex,
 			spatialFilter
 		);
+
+		const spatialDataSources = Select.data.spatialDataSources.getIndexed(
+			state,
+			spatialRelationsFilter,
+			order
+		);
+
+		const allDSofTypeVector = spatialDataSources
+			? checkDSAreVector(spatialDataSources)
+			: false;
+
 		const missingSpatialData = hasMissingSpatialData(
 			spatialDataIndex,
 			spatialFilter
@@ -800,16 +821,6 @@ function ensure(
 			spatialRelationsFilter,
 			order
 		);
-
-		// Check if all DS are type of vector and whether all DS are loaded. In that case stop loading farther data cause all we need is loaded.
-		const isFullyLoadedVectorTypeDS = getVectorSpatialDataSourcesLoadedStatus(
-			state,
-			spatialRelationsFilter,
-			order
-		);
-		if (isFullyLoadedVectorTypeDS) {
-			return Promise.resolve();
-		}
 
 		const loadRelationsAndData =
 			!filterHasSpatialOrAreaRelations && missingSpatialData;
@@ -843,57 +854,89 @@ function ensure(
 
 		const promises = [];
 
-		if (loadRelationsAndData) {
-			promises.push(
-				dispatch(
-					ensureDataAndRelations(
-						spatialFilter,
-						styleKey,
-						order,
-						spatialRelationsFilter,
-						attributeRelationsFilter,
-						attributeDataFilter
-					)
-				)
-			);
-		}
+		if (allDSofTypeVector) {
+			// if we know that all DS are type vector, it means that we have all relations
+			// only these cases can occure
+			// 		- we are missing spatial data
+			// 		- we are missing attribute data
+			// 		- we are missing spatial and attribute data
+			const missingSpatialData = !spatialDataIndex?.index;
+			const missingAttributesData = _isEmpty(attributeDataIndex);
 
-		if (
-			filterHasSpatialOrAreaRelations &&
-			missingSpatialData &&
-			!_isEmpty(modifiedSpatialFilterForSpatial.tiles)
-		) {
-			promises.push(
-				dispatch(
-					loadMissingSpatialData(
-						modifiedSpatialFilterForSpatial,
-						styleKey,
-						order,
-						spatialRelationsFilter,
-						attributeRelationsFilter,
-						attributeDataFilter
+			//use only firts tile from spatial filter
+			let modifiedSpatialFilterForAttributes = {
+				...spatialFilter,
+				tiles: [spatialFilter.tiles[0]],
+			};
+			if (missingAttributesData) {
+				promises.push(
+					dispatch(
+						loadMissingAttributeData(
+							modifiedSpatialFilterForAttributes,
+							styleKey,
+							order,
+							spatialRelationsFilter,
+							attributeRelationsFilter,
+							attributeDataFilter
+						)
 					)
-				)
-			);
-		}
+				);
+			}
 
-		if (
-			missingAttributesData &&
-			!loadRelationsAndData &&
-			!_isEmpty(modifiedSpatialFilterForAttributes.tiles)
-		) {
-			promises.push(
-				dispatch(
-					loadMissingAttributeData(
-						modifiedSpatialFilterForAttributes,
-						styleKey,
-						order,
-						spatialRelationsFilter,
-						attributeRelationsFilter,
-						attributeDataFilter
+			//FIXME add next methods by use case
+		} else {
+			if (loadRelationsAndData) {
+				promises.push(
+					dispatch(
+						ensureDataAndRelations(
+							spatialFilter,
+							styleKey,
+							order,
+							spatialRelationsFilter,
+							attributeRelationsFilter,
+							attributeDataFilter
+						)
 					)
-				)
-			);
+				);
+			}
+
+			if (
+				filterHasSpatialOrAreaRelations &&
+				missingSpatialData &&
+				!_isEmpty(modifiedSpatialFilterForSpatial.tiles)
+			) {
+				promises.push(
+					dispatch(
+						loadMissingSpatialData(
+							modifiedSpatialFilterForSpatial,
+							styleKey,
+							order,
+							spatialRelationsFilter,
+							attributeRelationsFilter,
+							attributeDataFilter
+						)
+					)
+				);
+			}
+
+			if (
+				missingAttributesData &&
+				!loadRelationsAndData &&
+				!_isEmpty(modifiedSpatialFilterForAttributes.tiles)
+			) {
+				promises.push(
+					dispatch(
+						loadMissingAttributeData(
+							modifiedSpatialFilterForAttributes,
+							styleKey,
+							order,
+							spatialRelationsFilter,
+							attributeRelationsFilter,
+							attributeDataFilter
+						)
+					)
+				);
+			}
 		}
 
 		return Promise.all(promises);
