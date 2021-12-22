@@ -41,7 +41,7 @@ describe('getFeatures', function () {
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
-	it('should select features with attributes', function () {
+	it('should select features 2', function () {
 		const attributeDataSourceKeyAttributeKeyPairs = {
 			attributeDataSourceA1: 'AverageAge',
 			attributeDataSourceA2: 'Country',
@@ -71,6 +71,7 @@ describe('getFeatures', function () {
 				properties: {
 					fid: 'featureKeyA2',
 					Country: 'Mali',
+					AverageAge: null,
 				},
 			},
 		];
