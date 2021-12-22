@@ -48,7 +48,7 @@ const getFeatures = createRecomputeSelector(
 						attributesByDataSourceKey,
 						(features, attributeDataSourceKey) => {
 							const attributeValue = features[key];
-							if (attributeValue) {
+							if (attributeValue !== undefined) {
 								properties[
 									attributeDataSourceKeyAttributeKeyPairs[
 										attributeDataSourceKey
