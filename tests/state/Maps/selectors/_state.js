@@ -106,6 +106,78 @@ export const MapsSelectorsState = {
 					},
 				},
 			},
+			map4: {
+				key: 'map1',
+				name: 'Map 1',
+				data: {
+					backgroundLayer: {
+						layerTemplateKey: 'layerTemplateBackground',
+					},
+					layers: [
+						{
+							key: 'layer1',
+							name: 'Layer 1',
+							layerTemplateKey: 'layerTemplate1',
+							styleKey: 'style1',
+							metadataModifiers: {
+								placeKey: 'place1',
+								scenarioKeys: ['scenario1', 'scenario2'],
+							},
+							filterByActive: {
+								place: true,
+								layerTemplateKey: true,
+								applicationKey: true,
+							},
+						},
+						{
+							key: 'layer2',
+							name: 'Layer 2',
+							layerTemplateKey: 'layerTemplate1',
+							styleKey: 'style1',
+							metadataModifiers: {
+								placeKey: 'place1',
+								periodKey: 'period1',
+								scenarioKeys: ['scenario1', 'scenario2'],
+							},
+							filterByActive: {
+								place: true,
+								layerTemplateKey: true,
+								applicationKey: true,
+							},
+						},
+						{
+							key: 'layerDefinition1',
+							name: 'Layer with definitions',
+							type: 'vector',
+							options: {
+								features: [],
+								style: {
+									styles: [
+										{
+											fill: '#ff0000',
+										},
+									],
+								},
+							},
+						},
+					],
+					metadataModifiers: null,
+					filterByActive: {
+						period: true,
+					},
+					viewport: {
+						width: 800,
+						height: 600,
+					},
+					view: {
+						boxRange: 500000,
+						center: {
+							lat: 49,
+							lon: 10,
+						},
+					},
+				},
+			},
 		},
 		sets: {
 			set1: {

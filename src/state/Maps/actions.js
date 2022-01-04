@@ -219,6 +219,32 @@ const removeMapLayer = (mapKey, layerKey) => {
 };
 
 /**
+ * Remove all layers satisfying filter from map
+ * @param mapKey {string}
+ * @param filter {object}
+ */
+const removeMapLayersByFilter = (mapKey, filter) => {
+	return (dispatch, getState) => {
+		const state = getState();
+		const mapLayers = Select.maps.getMapLayersStateWithModifiersByMapKey(
+			state,
+			mapKey
+		);
+		const mapLayersByFilter = mapLayers?.filter(l => _isMatch(l, filter));
+
+		if (mapLayersByFilter?.length) {
+			dispatch(actionRemoveMapLayersByFilter(mapKey, filter));
+		} else {
+			dispatch(
+				commonActions.actionGeneralError(
+					`No layers satisfying filter ${filter} found for mapKey ${mapKey}`
+				)
+			);
+		}
+	};
+};
+
+/**
  * Remove layers from map
  * @param mapKey {string}
  * @param layerKeys {Array}
@@ -913,6 +939,13 @@ const actionRemoveMapLayers = (mapKey, layerKeys) => {
 		layerKeys,
 	};
 };
+const actionRemoveMapLayersByFilter = (mapKey, filter) => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.REMOVE_LAYERS_BY_FILTER,
+		mapKey,
+		filter,
+	};
+};
 
 const actionRemoveAllMapLayers = mapKey => {
 	return {
@@ -1082,6 +1115,7 @@ export default {
 	removeMapFromSet,
 	removeMapLayer,
 	removeMapLayers,
+	removeMapLayersByFilter,
 	removeAllMapLayers: actionRemoveAllMapLayers,
 	removeMapSet,
 	setActiveMapKey: actionSetActiveMapKey,

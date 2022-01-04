@@ -46,6 +46,66 @@ export const MapReducersState = {
 				],
 			},
 		},
+		map5: {
+			key: 'map5',
+			data: {
+				backgroundLayer: {
+					layerTemplateKey: 'layerTemplate1',
+				},
+				layers: [
+					{
+						key: 'layer1',
+						name: 'Layer 1',
+						layerTemplateKey: 'layerTemplate1',
+						styleKey: 'style1',
+						metadataModifiers: {
+							placeKey: 'place1',
+							scenarioKeys: ['scenario1', 'scenario2'],
+						},
+						filterByActive: {
+							place: true,
+							layerTemplateKey: true,
+							applicationKey: true,
+						},
+					},
+					{
+						key: 'layer2',
+						name: 'Layer 2',
+						layerTemplateKey: 'layerTemplate1',
+						styleKey: 'style1',
+						metadataModifiers: {
+							placeKey: 'place1',
+							periodKey: 'period1',
+							scenarioKeys: ['scenario1', 'scenario2'],
+						},
+						filterByActive: {
+							place: true,
+							layerTemplateKey: true,
+							applicationKey: true,
+						},
+					},
+					{
+						key: 'layerDefinition1',
+						name: 'Layer with definitions',
+						type: 'vector',
+						options: {
+							features: [],
+							style: {
+								styles: [
+									{
+										fill: '#ff0000',
+									},
+								],
+							},
+						},
+					},
+				],
+				viewport: {
+					width: 100,
+					height: 100,
+				},
+			},
+		},
 		map11: {
 			key: 'map11',
 		},

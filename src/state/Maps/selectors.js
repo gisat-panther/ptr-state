@@ -1015,6 +1015,7 @@ export default {
 	getFinalLayerByDataSourceAndLayerState,
 	getLayerStateByLayerKeyAndMapKey,
 	getLayersStateByMapKey,
+	getLayersStateByMapKeyObserver,
 	getMetadataModifiersByMapKey,
 
 	getMapBackgroundLayerStateByMapKey,
