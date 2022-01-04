@@ -26,7 +26,7 @@ describe('state/Maps/actions/removeMapLayersByFilter', function () {
 		};
 		const dispatch = storeHelpers.getDispatch(getState, store.dispatch);
 
-		const compleateLayerFilter = {
+		const completeLayerFilter = {
 			layerTemplateKey: 'layerTemplate1',
 			styleKey: 'style1',
 			metadataModifiers: {
