@@ -92,7 +92,6 @@ describe('getLayersStateByMapKeyObserver', function () {
 		setState(null);
 	});
 
-
 	it('should return just map layers, if set layers do not exist', () => {
 		const updatedState = {
 			...state,
