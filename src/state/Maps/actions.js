@@ -219,7 +219,7 @@ const removeMapLayer = (mapKey, layerKey) => {
 };
 
 /**
- * Remove all layers from map satisfying filter
+ * Remove all layers satisfying filter from map
  * @param mapKey {string}
  * @param filter {object}
  */
