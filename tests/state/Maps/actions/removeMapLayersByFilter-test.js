@@ -40,14 +40,14 @@ describe('state/Maps/actions/removeMapLayersByFilter', function () {
 			},
 		};
 
-		dispatch(actions.removeMapLayersByFilter('map4', compleateLayerFilter));
+		dispatch(actions.removeMapLayersByFilter('map4', completeLayerFilter));
 
 		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
 			assert.deepStrictEqual(storeHelpers.getDispatchedActions(), [
 				{
 					type: 'MAPS.MAP.LAYERS.REMOVE_LAYERS_BY_FILTER',
 					mapKey: 'map4',
-					filter: _cloneDeep(compleateLayerFilter),
+					filter: _cloneDeep(completeLayerFilter),
 				},
 			]);
 		});
@@ -71,18 +71,18 @@ describe('state/Maps/actions/removeMapLayersByFilter', function () {
 		};
 		const dispatch = storeHelpers.getDispatch(getState, store.dispatch);
 
-		const compleateLayerFilter = {
+		const completeLayerFilter = {
 			layerTemplateKey: 'layerTemplate1',
 		};
 
-		dispatch(actions.removeMapLayersByFilter('map4', compleateLayerFilter));
+		dispatch(actions.removeMapLayersByFilter('map4', completeLayerFilter));
 
 		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
 			assert.deepStrictEqual(storeHelpers.getDispatchedActions(), [
 				{
 					type: 'MAPS.MAP.LAYERS.REMOVE_LAYERS_BY_FILTER',
 					mapKey: 'map4',
-					filter: _cloneDeep(compleateLayerFilter),
+					filter: _cloneDeep(completeLayerFilter),
 				},
 			]);
 		});
@@ -106,11 +106,11 @@ describe('state/Maps/actions/removeMapLayersByFilter', function () {
 		};
 		const dispatch = storeHelpers.getDispatch(getState, store.dispatch);
 
-		const compleateLayerFilter = {
+		const completeLayerFilter = {
 			layerTemplateKey: 'layerTemplate1',
 		};
 
-		dispatch(actions.removeMapLayersByFilter('map4', compleateLayerFilter));
+		dispatch(actions.removeMapLayersByFilter('map4', completeLayerFilter));
 
 		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
 			assert.deepStrictEqual(storeHelpers.getDispatchedActions(), [
