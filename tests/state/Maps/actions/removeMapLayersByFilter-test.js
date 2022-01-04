@@ -8,7 +8,7 @@ import MapsReducers from '../../../../src/state/Maps/reducers';
 import {MapsSelectorsState as state} from '../selectors/_state';
 
 describe('state/Maps/actions/removeMapLayersByFilter', function () {
-	it('dispatch remove map layer that satisfy compleate filter', function () {
+	it('dispatch remove map layer that satisfy complete filter', function () {
 		const storeHelpers = getStoreSet();
 		const reducers = combineReducers({
 			maps: MapsReducers,
