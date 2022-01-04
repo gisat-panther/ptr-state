@@ -261,10 +261,10 @@ const removeMapLayersByFilter = (state, mapKey, filter) => {
 
 		if (mapLayersByFilterIndexes?.length) {
 			let updatedLayers = [...state.maps[mapKey]?.data.layers];
-			mapLayersByFilterIndexes.forEach((li, i) => {
+			mapLayersByFilterIndexes.forEach((layerIndex, i) => {
 				updatedLayers = stateManagement.removeItemByIndex(
 					updatedLayers,
-					li - i
+					layerIndex - i
 				);
 			});
 
