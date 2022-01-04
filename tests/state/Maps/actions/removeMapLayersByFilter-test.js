@@ -52,6 +52,7 @@ describe('state/Maps/actions/removeMapLayersByFilter', function () {
 			]);
 		});
 	});
+
 	it('dispatch remove map layer that satisfy partialy filter', function () {
 		const storeHelpers = getStoreSet();
 		const reducers = combineReducers({
@@ -86,6 +87,7 @@ describe('state/Maps/actions/removeMapLayersByFilter', function () {
 			]);
 		});
 	});
+
 	it('dispatch nothing if filter does not sutisfy any layer', function () {
 		const storeHelpers = getStoreSet();
 		const reducers = combineReducers({
