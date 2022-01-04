@@ -256,9 +256,6 @@ const removeMapLayersByFilter = (state, mapKey, filter) => {
 		mapLayers?.forEach((l, i) => {
 			if (_isMatch(l, filter)) {
 				mapLayersByFilterIndexes.push(i);
-				return true;
-			} else {
-				return false;
 			}
 		});
 
