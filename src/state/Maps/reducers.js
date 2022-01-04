@@ -1,6 +1,7 @@
 import ActionTypes from '../../constants/ActionTypes';
 import {stateManagement} from '@gisatcz/ptr-utils';
 import {
+	isMatch as _isMatch,
 	findIndex as _findIndex,
 	indexOf as _indexOf,
 	isEmpty as _isEmpty,
@@ -236,6 +237,56 @@ const removeMapLayers = (state, mapKey, layerKeys) => {
 				},
 			},
 		};
+	} else {
+		return state;
+	}
+};
+
+/**
+ * Remove layers satisfying filter from map
+ * @param state {Object}
+ * @param mapKey {string}
+ * @param filter {object}
+ * @return {Object} Updated state
+ */
+const removeMapLayersByFilter = (state, mapKey, filter) => {
+	if (!_isEmpty(filter) && mapKey) {
+		const mapLayers = state.maps[mapKey]?.data?.layers;
+		const mapLayersByFilterIndexes = [];
+		mapLayers?.forEach((l, i) => {
+			if (_isMatch(l, filter)) {
+				mapLayersByFilterIndexes.push(i);
+				return true;
+			} else {
+				return false;
+			}
+		});
+
+		if (mapLayersByFilterIndexes?.length) {
+			let updatedLayers = [...state.maps[mapKey]?.data.layers];
+			mapLayersByFilterIndexes.forEach((li, i) => {
+				updatedLayers = stateManagement.removeItemByIndex(
+					updatedLayers,
+					li - i
+				);
+			});
+
+			return {
+				...state,
+				maps: {
+					...state.maps,
+					[mapKey]: {
+						...state.maps[mapKey],
+						data: {
+							...state.maps[mapKey].data,
+							layers: updatedLayers,
+						},
+					},
+				},
+			};
+		} else {
+			return state;
+		}
 	} else {
 		return state;
 	}
@@ -825,6 +876,8 @@ export default function tasksReducer(state = INITIAL_STATE, action) {
 			return removeMapLayer(state, action.mapKey, action.layerKey);
 		case ActionTypes.MAPS.MAP.LAYERS.REMOVE_LAYERS:
 			return removeMapLayers(state, action.mapKey, action.layerKeys);
+		case ActionTypes.MAPS.MAP.LAYERS.REMOVE_LAYERS_BY_FILTER:
+			return removeMapLayersByFilter(state, action.mapKey, action.filter);
 		case ActionTypes.MAPS.MAP.LAYERS.REMOVE_ALL:
 			return removeAllMapLayers(state, action.mapKey);
 		case ActionTypes.MAPS.MAP.LAYERS.SET_OPACITY:

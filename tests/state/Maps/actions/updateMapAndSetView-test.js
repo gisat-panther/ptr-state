@@ -151,7 +151,7 @@ describe('state/Maps/actions/updateMapAndSetView', function () {
 			return store.getState();
 		};
 		const dispatch = storeHelpers.getDispatch(getState, store.dispatch);
-		dispatch(actions.updateMapAndSetView('map4', {center: {lat: 40}}));
+		dispatch(actions.updateMapAndSetView('map5', {center: {lat: 40}}));
 
 		return storeHelpers.runFunctionActions({dispatch, getState}).then(() => {
 			assert.deepStrictEqual(storeHelpers.getDispatchedActions(), []);

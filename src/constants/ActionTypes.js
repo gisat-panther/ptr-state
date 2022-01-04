@@ -391,6 +391,7 @@ export default utils.deepKeyMirror({
 				ADD_TO_INDEX: null,
 				REMOVE_LAYER: null,
 				REMOVE_LAYERS: null,
+				REMOVE_LAYERS_BY_FILTER: null,
 				REMOVE_ALL: null,
 				SET_OPACITY: null,
 				SET_OPTION: null,
