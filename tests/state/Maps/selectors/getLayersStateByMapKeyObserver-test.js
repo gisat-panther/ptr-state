@@ -92,12 +92,6 @@ describe('getLayersStateByMapKeyObserver', function () {
 		setState(null);
 	});
 
-	// testHelpers.testCache(
-	// 	Select.maps.getLayersStateByMapKeyObserver,
-	// 	['map1'],
-	// 	expectedResult,
-	// 	['map2']
-	// );
 
 	it('should return just map layers, if set layers do not exist', () => {
 		const updatedState = {
