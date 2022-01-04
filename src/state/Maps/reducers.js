@@ -5,6 +5,7 @@ import {
 	findIndex as _findIndex,
 	indexOf as _indexOf,
 	isEmpty as _isEmpty,
+	remove as _remove,
 } from 'lodash';
 
 export const INITIAL_STATE = {
@@ -251,23 +252,20 @@ const removeMapLayers = (state, mapKey, layerKeys) => {
  */
 const removeMapLayersByFilter = (state, mapKey, filter) => {
 	if (!_isEmpty(filter) && mapKey) {
-		const mapLayers = state.maps[mapKey]?.data?.layers;
-		const mapLayersByFilterIndexes = [];
-		mapLayers?.forEach((l, i) => {
-			if (_isMatch(l, filter)) {
-				mapLayersByFilterIndexes.push(i);
-			}
-		});
+		const mapLayers = [
+			...(state.maps[mapKey]?.data?.layers
+				? state.maps[mapKey].data.layers
+				: []),
+		];
+		const originalMapLayersLength = mapLayers.length;
 
-		if (mapLayersByFilterIndexes?.length) {
-			let updatedLayers = [...state.maps[mapKey]?.data.layers];
-			mapLayersByFilterIndexes.forEach((layerIndex, i) => {
-				updatedLayers = stateManagement.removeItemByIndex(
-					updatedLayers,
-					layerIndex - i
-				);
-			});
+		// remove layers satisfying filter
+		_remove(mapLayers, (l, i) => _isMatch(l, filter));
 
+		if (
+			originalMapLayersLength > 0 &&
+			originalMapLayersLength !== mapLayers.length
+		) {
 			return {
 				...state,
 				maps: {
@@ -276,7 +274,7 @@ const removeMapLayersByFilter = (state, mapKey, filter) => {
 						...state.maps[mapKey],
 						data: {
 							...state.maps[mapKey].data,
-							layers: updatedLayers,
+							layers: mapLayers,
 						},
 					},
 				},
