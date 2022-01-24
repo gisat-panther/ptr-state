@@ -17,6 +17,7 @@ import Screens from './Screens/actions';
 import Selections from './Selections/actions';
 import Styles from './Styles/actions';
 import Tags from './Tags/actions';
+import Timeline from './Timeline/actions';
 import Users from './Users/actions';
 import Views from './Views/actions';
 import Windows from './Windows/actions';
@@ -41,6 +42,7 @@ export default {
 	selections: Selections,
 	styles: Styles,
 	tags: Tags,
+	timeline: Timeline,
 	users: Users,
 	views: Views,
 	windows: Windows,
