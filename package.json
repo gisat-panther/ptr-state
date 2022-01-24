@@ -31,7 +31,7 @@
 	"dependencies": {
 		"@gisatcz/ptr-core": "^1.6.0",
 		"@gisatcz/ptr-tile-grid": "^0.1.1",
-		"@gisatcz/ptr-utils": "^1.5.3",
+		"@gisatcz/ptr-utils": "^1.5.4",
 		"@jvitela/recompute": "^0.3.4",
 		"@manaflair/redux-batch": "^1.0.0",
 		"fast-stringify": "^2.0.0",
