@@ -37,7 +37,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 		onMount: () => {
 			//ensure layers
 		},
-		ensurePeriods: periodsConfig => {
+		usePeriods: periodsConfig => {
 			//ensure spatial relations related to the layer and periods
 			const {filterByActive, filter} = periodsConfig;
 
