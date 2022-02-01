@@ -1,5 +1,6 @@
 import {isPlainObject as _isPlainObject} from 'lodash';
 import timelineSelectors from './selectors';
+import common from '../../_common/selectors';
 
 /**
  * TODO tests
@@ -9,6 +10,7 @@ import timelineSelectors from './selectors';
  * @param {function} callback
  */
 export const forEachPeriodAndLayerInLayerRow = (state, layerRow, callback) => {
+	const activeKeys = common.getAllActiveKeys(state);
 	layerRow?.items?.forEach(timelineLayer => {
 		//iterate over layer periods defined in array
 		if (timelineLayer?.periods?.length > 0) {
@@ -16,7 +18,8 @@ export const forEachPeriodAndLayerInLayerRow = (state, layerRow, callback) => {
 				const timelineMapLayerDefinition =
 					timelineSelectors.getTimelineMapLayerPeriodDefinition(
 						timelineLayer.layerState,
-						timelineLayerPeriodItem?.key
+						timelineLayerPeriodItem?.key,
+						activeKeys
 					);
 
 				callback(
@@ -42,7 +45,8 @@ export const forEachPeriodAndLayerInLayerRow = (state, layerRow, callback) => {
 				const timelineMapLayerDefinition =
 					timelineSelectors.getTimelineMapLayerPeriodDefinition(
 						timelineLayer.layerState,
-						periodKey
+						periodKey,
+						activeKeys
 					);
 
 				callback(timelineLayer, timelineMapLayerDefinition, periodKey);

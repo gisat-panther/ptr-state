@@ -1,6 +1,8 @@
 import {createSelector} from 'reselect';
-import {isMatch as _isMatch, isEmpty as _isEmpty} from 'lodash';
+import {isMatch as _isMatch, isEmpty as _isEmpty, isEmpty} from 'lodash';
 
+import common from '../../_common/selectors';
+import commonHelpers from '../../_common/helpers';
 import mapsSelectors from '../../Maps/selectors';
 import dataSpatialRelationsSelectors from '../../Data/SpatialRelations/selectors';
 
@@ -8,30 +10,31 @@ import dataSpatialRelationsSelectors from '../../Data/SpatialRelations/selectors
  * Creates standartizet controlled map layer definition object.
  * @param {Object} timelineLayerState Map Layer definition that corresponds with deffinition for map
  * @param {string} timelineLayerOriginPeriodKey optional periodKey
+ * @param {Object} activeKeys optional active app keys
  */
 const getTimelineMapLayerPeriodDefinition = createSelector(
 	[
 		timelineLayerState => timelineLayerState,
 		(timelineLayerState, timelineLayerOriginPeriodKey) =>
 			timelineLayerOriginPeriodKey,
+		(timelineLayerState, timelineLayerOriginPeriodKey, activeKeys) =>
+			activeKeys,
 	],
-	(timelineLayerState, timelineLayerOriginPeriodKey) => {
+	(timelineLayerState, timelineLayerOriginPeriodKey, activeKeys = {}) => {
 		const timelineMapLayerDefinition = {
 			...(timelineLayerState?.key ? {key: timelineLayerState.key} : {}),
 			...(timelineLayerOriginPeriodKey || timelineLayerState?.metadataModifiers
 				? {
-						metadataModifiers: {
-							...(timelineLayerState?.metadataModifiers
-								? timelineLayerState.metadataModifiers
-								: {}),
-							...(timelineLayerOriginPeriodKey
-								? {periodKey: timelineLayerOriginPeriodKey}
-								: {}),
-						},
+						metadataModifiers: commonHelpers.mergeFilters(
+							activeKeys,
+							timelineLayerState.filterByActive,
+							{
+								...(timelineLayerState?.metadataModifiers
+									? timelineLayerState.metadataModifiers
+									: {}),
+							}
+						),
 				  }
-				: {}),
-			...(timelineLayerState?.filterByActive
-				? {filterByActive: timelineLayerState.filterByActive}
 				: {}),
 			...(timelineLayerState?.layerTemplateKey
 				? {layerTemplateKey: timelineLayerState.layerTemplateKey}
@@ -40,6 +43,12 @@ const getTimelineMapLayerPeriodDefinition = createSelector(
 				? {styleKey: timelineLayerState.styleKey}
 				: {}),
 		};
+
+		// put original period to metadataModifiers
+		if (timelineLayerOriginPeriodKey) {
+			timelineMapLayerDefinition.metadataModifiers.periodKey =
+				timelineLayerOriginPeriodKey;
+		}
 
 		return timelineMapLayerDefinition;
 	}
@@ -54,19 +63,23 @@ const getTimelineMapLayerPeriodDefinition = createSelector(
  */
 const getMapLayerByTimelineLayerAndPeriod = createSelector(
 	[
-		mapKey => mapKey,
-		(mapKey, timelineLayer) => timelineLayer,
-		(mapKey, timelineLayer, timelineLayerPeriodItem) => timelineLayerPeriodItem,
+		common.getAllActiveKeys,
+		(state, mapKey) => mapKey,
+		(state, mapKey, timelineLayer) => timelineLayer,
+		(state, mapKey, timelineLayer, timelineLayerPeriodItem) =>
+			timelineLayerPeriodItem,
 	],
-	(mapKey, timelineLayer, timelineLayerPeriodItem) => {
+	(activeKeys, mapKey, timelineLayer, timelineLayerPeriodItem) => {
 		if (mapKey && timelineLayer && timelineLayerPeriodItem) {
-			// const mapLayers = mapsSelectors.getMapLayers(mapKey);
-			const mapLayers = mapsSelectors.getLayersStateByMapKeyObserver(mapKey);
+			const mapLayers =
+				mapsSelectors.getLayersStateWithMergedFiltersByMapKeyObserver(mapKey);
 
 			const timelineMapLayerDefinition = getTimelineMapLayerPeriodDefinition(
 				timelineLayer?.layerState,
-				timelineLayerPeriodItem?.key
+				timelineLayerPeriodItem?.key,
+				activeKeys
 			);
+
 			const mapLayer = mapLayers?.find(l =>
 				_isMatch(l, timelineMapLayerDefinition)
 			);
