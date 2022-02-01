@@ -3,6 +3,7 @@ import {isMatch as _isMatch} from 'lodash';
 import {forEachPeriodAndLayerInLayerRow} from './helpers';
 import mapTimelineSelectors from './selectors';
 import mapsSelectors from '../../Maps/selectors';
+import commonSelectors from '../../_common/selectors';
 import mapsActions from '../../Maps/actions';
 import periodsActions from '../../Periods/actions';
 import dataSpatialRelationsActions from '../../Data/SpatialRelations/actions';
@@ -68,6 +69,7 @@ const toggleTimelineLayer = (
 ) => {
 	return (dispatch, getState) => {
 		const state = getState();
+		const activeKeys = commonSelectors.getAllActiveKeys(state);
 		const period = {
 			...(timelineLayerPeriodItem?.origin?.originPeriod
 				? {key: timelineLayerPeriodItem?.origin?.originPeriod?.key}
@@ -76,9 +78,11 @@ const toggleTimelineLayer = (
 		const timelineMapLayerDefinition =
 			mapTimelineSelectors.getTimelineMapLayerPeriodDefinition(
 				timelineLayer?.layerState,
-				period?.key
+				period?.key,
+				activeKeys
 			);
 		const mapLayer = mapTimelineSelectors.getMapLayerByTimelineLayerAndPeriod(
+			state,
 			mapKey,
 			timelineLayer,
 			period

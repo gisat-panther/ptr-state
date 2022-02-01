@@ -515,8 +515,51 @@ const getLayersStateByMapKey = createCachedSelector(
 	}
 )((state, mapKey) => mapKey);
 
+/**
+ * Similar like 'getLayersStateByMapKey', but this function replace filterByActive by real values and merge then to the metadataModifiers.
+ * @param state {Object}
+ * @param mapKey {string}
+ * @return {Object} Merged layer state from mapState and mapSetState with metadataModifiers and filterByActive.
+ */
+const getLayersStateWithMergedFiltersByMapKey = createCachedSelector(
+	[getLayersStateByMapKey, common.getAllActiveKeys],
+	(layers, activeKeys) => {
+		// merge metadataModifiers and filterByActive
+		if (layers?.length > 0) {
+			const layersWithMergedModifiers = layers.map(l => {
+				const fullFilter = commonHelpers.mergeFilters(
+					activeKeys,
+					l.filterByActive,
+					l.metadataModifiers
+				);
+
+				// override previous version of metadataModifiers by merged
+				const layer = {
+					...l,
+					metadataModifiers: {
+						...fullFilter,
+					},
+				};
+
+				// remove filterByActive from layer
+				delete layer.filterByActive;
+
+				return layer;
+			});
+
+			return layersWithMergedModifiers;
+		} else {
+			return null;
+		}
+	}
+)((state, mapKey) => mapKey);
+
 const getLayersStateByMapKeyObserver = createRecomputeObserver(
 	getLayersStateByMapKey
+);
+
+const getLayersStateWithMergedFiltersByMapKeyObserver = createRecomputeObserver(
+	getLayersStateWithMergedFiltersByMapKey
 );
 
 /**
@@ -1016,6 +1059,8 @@ export default {
 	getLayerStateByLayerKeyAndMapKey,
 	getLayersStateByMapKey,
 	getLayersStateByMapKeyObserver,
+	getLayersStateWithMergedFiltersByMapKey,
+	getLayersStateWithMergedFiltersByMapKeyObserver,
 	getMetadataModifiersByMapKey,
 
 	getMapBackgroundLayerStateByMapKey,
