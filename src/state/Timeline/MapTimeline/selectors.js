@@ -83,9 +83,7 @@ const getMapLayerByTimelineLayerAndPeriod = createSelector(
 			const mapLayer = mapLayers?.find(l =>
 				_isMatch(l, timelineMapLayerDefinition)
 			);
-			if (mapLayer) {
-				console.log('xxx mapLayer', mapLayer, timelineMapLayerDefinition);
-			}
+
 			return mapLayer;
 		} else {
 			return null;
