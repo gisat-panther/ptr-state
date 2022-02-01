@@ -27,7 +27,7 @@ const getTimelineMapLayerPeriodDefinition = createSelector(
 				? {
 						metadataModifiers: commonHelpers.mergeFilters(
 							activeKeys,
-							timelineLayerState.filterByActive,
+							timelineLayerState.filterByActive || {},
 							{
 								...(timelineLayerState?.metadataModifiers
 									? timelineLayerState.metadataModifiers
@@ -44,10 +44,18 @@ const getTimelineMapLayerPeriodDefinition = createSelector(
 				: {}),
 		};
 
+		if (_isEmpty(timelineMapLayerDefinition.metadataModifiers)) {
+			timelineMapLayerDefinition.metadataModifiers = {};
+		}
+
 		// put original period to metadataModifiers
 		if (timelineLayerOriginPeriodKey) {
 			timelineMapLayerDefinition.metadataModifiers.periodKey =
 				timelineLayerOriginPeriodKey;
+		}
+
+		if (_isEmpty(timelineMapLayerDefinition.metadataModifiers)) {
+			delete timelineMapLayerDefinition.metadataModifiers;
 		}
 
 		return timelineMapLayerDefinition;
