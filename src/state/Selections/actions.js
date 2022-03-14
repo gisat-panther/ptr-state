@@ -47,6 +47,7 @@ export default {
 	clearFeatureKeysFilter,
 	setActiveSelectionFeatureKeysFilterKeys,
 	setActiveKey,
+	setFeatureKeysFilterKeys,
 	updateStateFromView,
 	updateStateFromViewWithData,
 };
