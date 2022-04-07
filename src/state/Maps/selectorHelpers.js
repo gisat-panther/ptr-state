@@ -1,4 +1,5 @@
 import createCachedSelector from 're-reselect';
+import {createSelector} from 'reselect';
 import _ from 'lodash';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import {mapConstants} from '@gisatcz/ptr-core';
@@ -135,6 +136,29 @@ const getPreviousView = (map, set) => {
 };
 
 /**
+ * Return default style required by leaflet for rendering COGs
+ */
+const getDefaultCogStyle = createSelector([], () => {
+	return {
+		rules: [
+			{
+				styles: [
+					{
+						color: '#000000',
+					},
+					{
+						bandIndex: 0,
+						values: {
+							0: {color: null},
+						},
+					},
+				],
+			},
+		],
+	};
+});
+
+/**
  * Get zoom level of current view represented by mapWidth, mapHeight and boxRange.
  */
 const getZoomLevel = createCachedSelector(
@@ -200,4 +224,5 @@ export default {
 	getZoomLevel,
 	mergeBackgroundLayerWithLayers,
 	mergeModifiersAndFilterByActiveToLayerStructure,
+	getDefaultCogStyle,
 };

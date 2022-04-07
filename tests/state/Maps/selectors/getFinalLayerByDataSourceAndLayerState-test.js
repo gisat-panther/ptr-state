@@ -13,7 +13,39 @@ const state = {
 			apiBackendHost: 'localhost:3000',
 		},
 	},
-	styles: {byKey: {style1: {key: 'style1', data: {definition: {}}}}},
+	styles: {
+		byKey: {
+			style1: {key: 'style1', data: {definition: {}}},
+			style2: {
+				key: 'style1',
+				data: {
+					definition: {
+						rules: [
+							{
+								styles: [
+									{
+										color: '#000000',
+									},
+									{
+										bandIndex: 0,
+										values: {
+											0: {color: null},
+										},
+									},
+									{
+										bandIndex: 1,
+										values: {
+											0: {color: '#FF0000'},
+										},
+									},
+								],
+							},
+						],
+					},
+				},
+			},
+		},
+	},
 	selections: {
 		byKey: {
 			selection1: {
@@ -248,6 +280,115 @@ describe('getFinalLayerByDataSourceAndLayerState', function () {
 				params: {
 					layers: 'layer1',
 					a: 1,
+				},
+			},
+		};
+
+		const output = Select.maps.getFinalLayerByDataSourceAndLayerState(
+			spatialDataSource,
+			layerState,
+			layerKey
+		);
+		assert.deepStrictEqual(output, expectedOutput);
+		setState(null);
+	});
+
+	it('should select cog layer with default style', () => {
+		setState(state);
+		const spatialDataSource = {
+			key: 'dataSource2',
+			data: {
+				type: 'cog',
+				url: 'https://beautiful.cog',
+			},
+		};
+		const layerKey = 'cogLayer';
+		const layerState = {
+			name: 'COG',
+		};
+
+		const expectedOutput = {
+			key: `${layerKey}_${spatialDataSource.key}`,
+			layerKey,
+			opacity: 1,
+			name: 'COG',
+			type: 'cog',
+			options: {
+				url: 'https://beautiful.cog',
+				style: {
+					rules: [
+						{
+							styles: [
+								{
+									color: '#000000',
+								},
+								{
+									bandIndex: 0,
+									values: {
+										0: {color: null},
+									},
+								},
+							],
+						},
+					],
+				},
+			},
+		};
+
+		const output = Select.maps.getFinalLayerByDataSourceAndLayerState(
+			spatialDataSource,
+			layerState,
+			layerKey
+		);
+		assert.deepStrictEqual(output, expectedOutput);
+		setState(null);
+	});
+
+	it('should select cog layer for asked styleKey', () => {
+		setState(state);
+		const spatialDataSource = {
+			key: 'dataSource2',
+			data: {
+				type: 'cog',
+				url: 'https://beautiful.cog',
+			},
+		};
+		const layerKey = 'cogLayer';
+		const layerState = {
+			name: 'COG',
+			styleKey: 'style2',
+		};
+
+		const expectedOutput = {
+			key: `${layerKey}_${spatialDataSource.key}`,
+			layerKey,
+			opacity: 1,
+			name: 'COG',
+			type: 'cog',
+			options: {
+				url: 'https://beautiful.cog',
+				style: {
+					rules: [
+						{
+							styles: [
+								{
+									color: '#000000',
+								},
+								{
+									bandIndex: 0,
+									values: {
+										0: {color: null},
+									},
+								},
+								{
+									bandIndex: 1,
+									values: {
+										0: {color: '#FF0000'},
+									},
+								},
+							],
+						},
+					],
 				},
 			},
 		};

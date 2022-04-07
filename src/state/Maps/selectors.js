@@ -797,6 +797,15 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 		if (type === 'wmts') {
 			validType = true;
 			options.url = dataSourceOptions.url || dataSourceOptions.urls?.[0];
+		} else if (type === 'cog') {
+			validType = true;
+			options.url = dataSourceOptions.url;
+
+			let style = helpers.getDefaultCogStyle();
+			if (styleKey) {
+				style = StylesSelectors.getDefinitionByKey(styleKey);
+			}
+			options.style = style;
 		} else if (type === 'wms') {
 			validType = true;
 			let {url, params, configuration, ...rest} = dataSourceOptions;
