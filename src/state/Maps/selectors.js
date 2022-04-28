@@ -813,6 +813,10 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 				configuration && configuration.hasOwnProperty('singleTile')
 					? configuration.singleTile
 					: false;
+			const fetchedTile =
+				configuration && configuration.hasOwnProperty('fetchedTile')
+					? configuration.fetchedTile
+					: false;
 
 			const styles = rest.styles;
 
@@ -833,6 +837,7 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 					layers: rest.layers,
 				},
 				singleTile,
+				fetchedTile,
 				url,
 			};
 		} else if (
