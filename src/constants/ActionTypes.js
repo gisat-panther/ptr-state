@@ -275,6 +275,16 @@ export default utils.deepKeyMirror({
 			INDEX: {
 				ADD: null,
 			},
+			USE: {
+				INDEXED: {
+					CLEAR: null,
+					REGISTER: null,
+				},
+				KEYS: {
+					CLEAR: null,
+					REGISTER: null,
+				},
+			},
 		},
 		SPATIAL_RELATIONS: {
 			ADD: null,
