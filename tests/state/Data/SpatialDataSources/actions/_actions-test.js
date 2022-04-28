@@ -5,11 +5,12 @@ import testBatchRunner, {
 	getTestsByActionName,
 } from '../../../helpers';
 
-const actionNames = ['updateStore'];
+const actionNames = ['updateStore', 'useKeys'];
 
 const store = 'DATA.SPATIAL_DATA_SOURCES';
-const dataType = undefined;
-const categoryPath = undefined;
+const storePath = 'data.spatialDataSources';
+const dataType = 'spatial';
+const categoryPath = 'dataSources';
 const tests = getTestsByActionName(actionNames, commonActionsTests);
 describe(
 	'common DATA/SPATIALDATASOURCES actions',
@@ -20,6 +21,7 @@ describe(
 		actions,
 		null,
 		getDispatchedActionsModificator(store),
-		store
+		store,
+		storePath
 	)
 );

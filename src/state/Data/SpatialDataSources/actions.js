@@ -6,6 +6,12 @@ const actionTypes = ActionTypes.DATA.SPATIAL_DATA_SOURCES;
 
 const addIndex = common.addIndex(actionTypes);
 const add = common.add(actionTypes);
+const useKeys = common.useKeys(
+	Select.data.spatialDataSources.getSubstate,
+	'spatial',
+	actionTypes,
+	'dataSources'
+);
 
 // ============ creators ===========
 /**
@@ -53,4 +59,5 @@ export default {
 	add,
 	receiveIndexed,
 	updateStore,
+	useKeys,
 };

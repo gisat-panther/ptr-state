@@ -118,6 +118,8 @@ const getIndexed = createCachedSelector(
 });
 
 export default {
+	getSubstate,
+
 	getByKeys,
 	getByKeyObserver,
 
