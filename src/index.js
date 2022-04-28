@@ -12,6 +12,8 @@ import {connect, Provider, ReactReduxContext} from 'react-redux';
 import connects from './components/connects';
 import MountWrapper from './components/MountWrapper';
 
+import {setFetch} from './state/_common/request';
+
 import commonActionTypes from './constants/ActionTypes';
 import Action from './state/Action';
 import Select from './state/Select';
@@ -207,6 +209,7 @@ export {
 	createRecomputeObserver,
 	createRecomputeSelector,
 	setRecomputeState,
+	setFetch,
 };
 
 // TODO remove?
@@ -222,4 +225,5 @@ export default {
 
 	initialStates,
 	DEFAULT_INITIAL_STATE,
+	setFetch,
 };
