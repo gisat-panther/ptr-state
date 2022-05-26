@@ -37,12 +37,10 @@ const mapStateToProps = (state, ownProps) => {
 	parsedPeriod = getParsedPeriod(parsedPeriod);
 
 	const active = mapTimelineSelectors.getTimelineLayerPeriodActive(
-		state,
 		ownProps.mapKey,
 		ownProps.layer,
 		ownProps.originPeriod
 	);
-
 	return {
 		parsedPeriod,
 		active,

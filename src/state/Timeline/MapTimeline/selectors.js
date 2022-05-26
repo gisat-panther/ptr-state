@@ -1,4 +1,8 @@
 import {createSelector} from 'reselect';
+import {
+	createSelector as createRecomputeSelector,
+	createObserver as createRecomputeObserver,
+} from '@jvitela/recompute';
 import {isMatch as _isMatch, isEmpty as _isEmpty, isEmpty} from 'lodash';
 
 import common from '../../_common/selectors';
@@ -69,16 +73,10 @@ const getTimelineMapLayerPeriodDefinition = createSelector(
  * @param {Object} timelineLayerPeriodItem
  * @returns {Object|null} Map layer definition if any exists in map
  */
-const getMapLayerByTimelineLayerAndPeriod = createSelector(
-	[
-		common.getAllActiveKeys,
-		(state, mapKey) => mapKey,
-		(state, mapKey, timelineLayer) => timelineLayer,
-		(state, mapKey, timelineLayer, timelineLayerPeriodItem) =>
-			timelineLayerPeriodItem,
-	],
-	(activeKeys, mapKey, timelineLayer, timelineLayerPeriodItem) => {
+const getMapLayerByTimelineLayerAndPeriod = createRecomputeSelector(
+	(mapKey, timelineLayer, timelineLayerPeriodItem) => {
 		if (mapKey && timelineLayer && timelineLayerPeriodItem) {
+			const activeKeys = common.getAllActiveKeysObserver();
 			const mapLayers =
 				mapsSelectors.getLayersStateWithMergedFiltersByMapKeyObserver(mapKey);
 
@@ -106,11 +104,20 @@ const getMapLayerByTimelineLayerAndPeriod = createSelector(
  * @param {Object} timelineLayerPeriodItem
  * @returns {Boolean} Whether layer exists in map
  */
-const getTimelineLayerPeriodActive = createSelector(
-	[getMapLayerByTimelineLayerAndPeriod],
-	mapLayer => {
+const getTimelineLayerPeriodActive = createRecomputeSelector(
+	(mapKey, timelineLayer, timelineLayerPeriodItem) => {
+		const mapLayer = getMapLayerByTimelineLayerAndPeriod(
+			mapKey,
+			timelineLayer,
+			timelineLayerPeriodItem
+		);
 		return !!mapLayer;
 	}
+);
+
+const getActiveKeysByFilterByActiveObserver = createRecomputeObserver(
+	(state, filterByActive) =>
+		getActiveKeysByFilterByActive(state, filterByActive)
 );
 
 const getPeriodKeysForFilteredSpatialRelations = createSelector(

@@ -82,7 +82,6 @@ const toggleTimelineLayer = (
 				activeKeys
 			);
 		const mapLayer = mapTimelineSelectors.getMapLayerByTimelineLayerAndPeriod(
-			state,
 			mapKey,
 			timelineLayer,
 			period

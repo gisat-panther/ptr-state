@@ -930,6 +930,12 @@ const getActiveKeysByFilterByActive = createCachedSelector(
 /* 	--- Recompute observers -------------------------------------------------- */
 
 /**
+ * Get activeKey/activeKeys from all relevant substores
+ * @return {Object}
+ */
+const getAllActiveKeysObserver = createRecomputeObserver(getAllActiveKeys);
+
+/**
  * Get activeKey/activeKeys by filterByActive from all relevant substores. Call with:
  * filterByActive {Object}
  * @return {Object}
@@ -1106,6 +1112,7 @@ export default {
 	// recompute observers
 	getActiveKeysByFilterByActiveObserver,
 	getIndexesObserver,
+	getAllActiveKeysObserver,
 
 	// recompute selectors
 	getIndex_recompute,
