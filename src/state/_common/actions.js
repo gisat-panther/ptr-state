@@ -1,37 +1,27 @@
-import _, {isEqual} from "lodash";
-import path from "path";
+import _, {isEqual} from 'lodash';
+import path from 'path';
 import moment from 'moment';
 
 import request from './request';
 import commonHelpers from './helpers';
 import commonSelectors from './selectors';
-import Select from "../Select";
-import ActionTypes from "../../constants/ActionTypes";
+import Select from '../Select';
+import ActionTypes from '../../constants/ActionTypes';
 
-import Action from '../Action';
 import {utils} from '@gisatcz/ptr-utils';
-import {configDefaults} from "@gisatcz/ptr-core";
+import {configDefaults} from '@gisatcz/ptr-core';
 
 const DEFAULT_CATEGORY_PATH = 'metadata';
 
-
 // ============ factories ===========
 
-const add = (action) => {
-	return (data) => {
+const add = action => {
+	return data => {
 		return dispatch => {
 			if (!_.isArray(data)) data = [data];
 			dispatch(action(data));
 		};
-	}
-};
-
-const addIndex = (action) => {
-	return (filter, order, count, start, data, changedOn) => {
-		return dispatch => {
-			dispatch(action(filter, order, count, start, data, changedOn));
-		};
-	}
+	};
 };
 
 const apiDelete = (dataType, categoryPath, data) => {
@@ -40,13 +30,18 @@ const apiDelete = (dataType, categoryPath, data) => {
 		const apiPath = 'rest/' + categoryPath;
 		const payload = {
 			data: {
-				[dataType]: data
-			}
+				[dataType]: data,
+			},
 		};
 		return request(localConfig, apiPath, 'DELETE', null, payload)
 			.then(result => {
-				if (result.errors && result.errors[dataType] || result.data && !result.data[dataType]) {
-					dispatch(actionGeneralError(result.errors[dataType] || new Error('no data')));
+				if (
+					(result.errors && result.errors[dataType]) ||
+					(result.data && !result.data[dataType])
+				) {
+					dispatch(
+						actionGeneralError(result.errors[dataType] || new Error('no data'))
+					);
 				} else {
 					const itemsDeleted = result.data[dataType];
 					if (itemsDeleted.length > 0) {
@@ -62,21 +57,40 @@ const apiDelete = (dataType, categoryPath, data) => {
 	};
 };
 
-const apiUpdate = (getSubstate, dataType, actionTypes, categoryPath, editedData) => {
+const apiUpdate = (
+	getSubstate,
+	dataType,
+	actionTypes,
+	categoryPath,
+	editedData
+) => {
 	return (dispatch, getState) => {
 		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
 		const apiPath = 'rest/' + categoryPath;
 		const payload = {
 			data: {
-				[dataType]: editedData
-			}
+				[dataType]: editedData,
+			},
 		};
 		return request(localConfig, apiPath, 'PUT', null, payload)
 			.then(result => {
-				if (result.errors && result.errors[dataType] || result.data && !result.data[dataType]) {
-					dispatch(actionGeneralError(result.errors[dataType] || new Error('no data')));
+				if (
+					(result.errors && result.errors[dataType]) ||
+					(result.data && !result.data[dataType])
+				) {
+					dispatch(
+						actionGeneralError(result.errors[dataType] || new Error('no data'))
+					);
 				} else {
-					dispatch(receiveUpdated(getSubstate, actionTypes, result, dataType, categoryPath));
+					dispatch(
+						receiveUpdated(
+							getSubstate,
+							actionTypes,
+							result,
+							dataType,
+							categoryPath
+						)
+					);
 				}
 			})
 			.catch(error => {
@@ -89,101 +103,195 @@ const updateEdited = (getSubstate, actionTypes) => {
 	return (modelKey, key, value) => {
 		return (dispatch, getState) => {
 			if (!getSubstate) {
-				return dispatch(actionGeneralError('common/actions#updateEdited: setSubstate parameter is missing!'));
+				return dispatch(
+					actionGeneralError(
+						'common/actions#updateEdited: setSubstate parameter is missing!'
+					)
+				);
 			}
 			if (!actionTypes) {
-				return dispatch(actionGeneralError('common/actions#updateEdited: actionTypes parameter is missing!'));
+				return dispatch(
+					actionGeneralError(
+						'common/actions#updateEdited: actionTypes parameter is missing!'
+					)
+				);
 			}
 			if (!modelKey) {
-				return dispatch(actionGeneralError('common/actions#updateEdited: Model key is missing!'));
+				return dispatch(
+					actionGeneralError(
+						'common/actions#updateEdited: Model key is missing!'
+					)
+				);
 			}
 			if (!key) {
-				return dispatch(actionGeneralError('common/actions#updateEdited: Property key is missing!'));
+				return dispatch(
+					actionGeneralError(
+						'common/actions#updateEdited: Property key is missing!'
+					)
+				);
 			}
 
-			let originalModel = commonSelectors.getByKey(getSubstate)(getState(), modelKey);
+			let originalModel = commonSelectors.getByKey(getSubstate)(
+				getState(),
+				modelKey
+			);
 
 			// delete property from edited, if the value in update is the same as in state
 			//TODO - test
-			if (originalModel && (value === originalModel.data[key] || isEqual(originalModel.data[key], value))){
+			if (
+				originalModel &&
+				(value === originalModel.data[key] ||
+					isEqual(originalModel.data[key], value))
+			) {
 				dispatch(actionRemovePropertyFromEdited(actionTypes, modelKey, key));
 			} else {
-				dispatch(actionUpdateEdited(actionTypes, [{key: modelKey, data: {[key]: value}}]));
+				dispatch(
+					actionUpdateEdited(actionTypes, [
+						{key: modelKey, data: {[key]: value}},
+					])
+				);
 			}
 		};
-	}
+	};
 };
 
-const removePropertyFromEdited = (actionTypes) => {
-	return (modelKey, key) => {
-		return dispatch(actionRemovePropertyFromEdited(actionTypes, modelKey, key));
-	}
-}
+const updateStore = (getSubstate, actionTypes) => {
+	return data => {
+		return dispatch => {
+			dispatch(actionUpdateStore(actionTypes, data));
+		};
+	};
+};
 
-const deleteItem = (getSubstate, dataType, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH) => {
-	return (item) => {
+const removePropertyFromEdited = actionTypes => {
+	return (modelKey, key) => {
+		return dispatch => {
+			return dispatch(
+				actionRemovePropertyFromEdited(actionTypes, modelKey, key)
+			);
+		};
+	};
+};
+
+const deleteItem = (
+	getSubstate,
+	dataType,
+	actionTypes,
+	categoryPath = DEFAULT_CATEGORY_PATH
+) => {
+	return item => {
 		return (dispatch, getState) => {
 			if (!item) {
-				return dispatch(actionGeneralError('common/actions#deleteItem: item to delete is missing!'));
+				return dispatch(
+					actionGeneralError(
+						'common/actions#deleteItem: item to delete is missing!'
+					)
+				);
 			}
 
 			if (!item.key) {
-				return dispatch(actionGeneralError('common/actions#deleteItem: item key to delete is missing!'));
+				return dispatch(
+					actionGeneralError(
+						'common/actions#deleteItem: item key to delete is missing!'
+					)
+				);
 			}
 			//dispatch deleting?
 			//TODO
-			return dispatch(apiDelete(dataType, categoryPath, [{key: item.key}])).then((result) => {
+			return dispatch(
+				apiDelete(dataType, categoryPath, [{key: item.key}])
+			).then(result => {
 				const data = result.data[dataType];
 				const deletedKeys = data.map(d => d.key);
 
 				//Check if item deleted
-				if(isEqual(deletedKeys, [item.key])) {
+				if (isEqual(deletedKeys, [item.key])) {
 					// mark deleted items by "deleted" date
 					const deleteDate = moment(new Date().toISOString()).utc().format();
-					deletedKeys.forEach((key) => {
+					deletedKeys.forEach(key => {
 						dispatch(actionMarkAsDeleted(actionTypes, key, deleteDate));
 					});
 
 					// remove dependencies in all edited metadata
-					dispatch(actionRemovePropertyValuesFromAllEdited(dataType, deletedKeys));
+					dispatch(
+						actionRemovePropertyValuesFromAllEdited(dataType, deletedKeys)
+					);
 					// TODO check original metadata dependencies
 
 					//refresh proper indexes
 					const state = getState();
-					const indexes = commonSelectors.getIndexesByFilteredItem(getSubstate)(state, item) || [];
-					if(!_.isEmpty(indexes)) {
+					const indexes =
+						commonSelectors.getIndexesByFilteredItem(getSubstate)(
+							state,
+							item
+						) || [];
+					if (!_.isEmpty(indexes)) {
 						indexes.forEach(index => {
-							if(index) {
+							if (index) {
 								//invalidate data
-								dispatch(actionClearIndex(actionTypes, index.filter, index.order));
+								dispatch(
+									actionClearIndex(actionTypes, index.filter, index.order)
+								);
 								//refresh data
-								dispatch(refreshIndex(getSubstate, dataType, index.filter, index.order, actionTypes, categoryPath));
+								dispatch(
+									refreshIndex(
+										getSubstate,
+										dataType,
+										index.filter,
+										index.order,
+										actionTypes,
+										categoryPath
+									)
+								);
 							}
-						})
+						});
 					}
 				} else {
 					//error
-					return dispatch(actionGeneralError('common/actions#deleteItem: Deleted key is not equal to key to delete!'));
+					return dispatch(
+						actionGeneralError(
+							'common/actions#deleteItem: Deleted key is not equal to key to delete!'
+						)
+					);
 				}
 			});
-		}
-	}
+		};
+	};
 };
 
-const saveEdited = (getSubstate, dataType, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH) => {
-	return (key) => {
+const saveEdited = (
+	getSubstate,
+	dataType,
+	actionTypes,
+	categoryPath = DEFAULT_CATEGORY_PATH
+) => {
+	return key => {
 		return (dispatch, getState) => {
 			if (!getSubstate) {
-				return dispatch(actionGeneralError('common/actions#saveEdited: setSubstate parameter is missing!'));
+				return dispatch(
+					actionGeneralError(
+						'common/actions#saveEdited: setSubstate parameter is missing!'
+					)
+				);
 			}
 			if (!dataType) {
-				return dispatch(actionGeneralError('common/actions#saveEdited: dataType parameter is missing!'));
+				return dispatch(
+					actionGeneralError(
+						'common/actions#saveEdited: dataType parameter is missing!'
+					)
+				);
 			}
 			if (!actionTypes) {
-				return dispatch(actionGeneralError('common/actions#saveEdited: actionTypes parameter is missing!'));
+				return dispatch(
+					actionGeneralError(
+						'common/actions#saveEdited: actionTypes parameter is missing!'
+					)
+				);
 			}
 			if (!key) {
-				return dispatch(actionGeneralError('common/actions#saveEdited: Model key is missing!'));
+				return dispatch(
+					actionGeneralError('common/actions#saveEdited: Model key is missing!')
+				);
 			}
 			let state = getState();
 			let saved = commonSelectors.getByKey(getSubstate)(state, key);
@@ -191,118 +299,150 @@ const saveEdited = (getSubstate, dataType, actionTypes, categoryPath = DEFAULT_C
 
 			if (saved) {
 				// update
-				return dispatch(apiUpdate(getSubstate, dataType, actionTypes, categoryPath, [edited]));
+				return dispatch(
+					apiUpdate(getSubstate, dataType, actionTypes, categoryPath, [edited])
+				);
 			} else {
 				// create
-				debugger;
+				// debugger;
 			}
 		};
-	}
+	};
 };
 
-const useKeys = (getSubstate, dataType, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH) => {
+const useKeys = (
+	getSubstate,
+	dataType,
+	actionTypes,
+	categoryPath = DEFAULT_CATEGORY_PATH
+) => {
 	return (keys, componentId) => {
-		return dispatch => {
-			dispatch(actionUseKeysRegister(actionTypes, componentId, keys));
-			return dispatch(ensureKeys(getSubstate, dataType, actionTypes, keys, categoryPath));
+		return (dispatch, getState) => {
+			const state = getState();
+			const isRegistered = commonSelectors.haveAllKeysRegisteredUse(
+				getSubstate
+			)(state, componentId, keys);
+			if (!isRegistered) {
+				dispatch(actionUseKeysRegister(actionTypes, componentId, keys));
+			}
+
+			return dispatch(
+				ensureKeys(getSubstate, dataType, actionTypes, keys, categoryPath)
+			);
 		};
-	}
+	};
 };
 
-const useIndexed = (getSubstate, dataType, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH) => {
+const useIndexed = (
+	getSubstate,
+	dataType,
+	actionTypes,
+	categoryPath = DEFAULT_CATEGORY_PATH
+) => {
 	return (filterByActive, filter, order, start, length, componentId) => {
 		return (dispatch, getState) => {
-			dispatch(actionUseIndexedRegister(actionTypes, componentId, filterByActive, filter, order, start, length));
+			dispatch(
+				actionUseIndexedRegister(
+					actionTypes,
+					componentId,
+					filterByActive,
+					filter,
+					order,
+					start,
+					length
+				)
+			);
 			let state = getState();
-			let fullFilter = commonHelpers.mergeFilters({
-				activeApplicationKey: state.app.key,
-				activeAttributeKey: commonSelectors.getActiveKey(state => state.attributes)(state),
-				activeScopeKey: commonSelectors.getActiveKey(state => state.scopes)(state),
-				activePeriodKey: commonSelectors.getActiveKey(state => state.periods)(state),
-				activePeriodKeys: commonSelectors.getActiveKeys(state => state.periods)(state),
-				activePlaceKey: commonSelectors.getActiveKey(state => state.places)(state),
-				activePlaceKeys: commonSelectors.getActiveKeys(state => state.places)(state),
-			}, filterByActive, filter);
-			return dispatch(ensureIndexed(getSubstate, dataType, fullFilter, order, start, length, actionTypes, categoryPath));
-		};
-	}
-};
+			const activeKeys = commonSelectors.getAllActiveKeys(state);
 
-const useIndexedBatch = (dataType, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH) => {
-	return (filterByActive, filter, order, componentId, key, additionalParams) => {
-		return (dispatch, getState) => {
-			dispatch(actionUseIndexedBatchRegister(actionTypes, componentId, filterByActive, filter, order));
-			let state = getState();
-			let fullFilter = commonHelpers.mergeFilters({
-				activeApplicationKey: state.app.key,
-				activeScopeKey: commonSelectors.getActiveKey(state => state.scopes)(state),
-				activePeriodKey: commonSelectors.getActiveKey(state => state.periods)(state),
-				activePeriodKeys: commonSelectors.getActiveKeys(state => state.periods)(state),
-				activePlaceKey: commonSelectors.getActiveKey(state => state.places)(state),
-				activePlaceKeys: commonSelectors.getActiveKeys(state => state.places)(state),
-			}, filterByActive, filter);
-			return dispatch(ensureIndexedBatch(dataType, fullFilter, order, actionTypes, categoryPath, key, additionalParams));
-		};
-	}
-};
-
-const setActiveKeyAndEnsureDependencies = (actionTypes, filterKey) => {
-	return key => {
-		return dispatch => {
-			dispatch(actionSetActiveKey(actionTypes, key));
-			dispatch(ensureIndexesWithActiveKey(filterKey));
+			let fullFilter = commonHelpers.mergeFilters(
+				activeKeys,
+				filterByActive,
+				filter
+			);
+			return dispatch(
+				ensureIndexed(
+					getSubstate,
+					dataType,
+					fullFilter,
+					order,
+					start,
+					length,
+					actionTypes,
+					categoryPath
+				)
+			);
 		};
 	};
 };
 
-const setActiveKeysAndEnsureDependencies = (actionTypes, filterKey) => {
-	return keys => {
-		return dispatch => {
-			dispatch(actionSetActiveKeys(actionTypes, keys));
-			dispatch(ensureIndexesWithActiveKey(filterKey));
-		};
-	};
-};
 /**
  * If not refresh data, call clearIndex to invalidate data.
  */
-function refreshIndex(getSubstate, dataType, filter, order, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH) {
+function refreshIndex(
+	getSubstate,
+	dataType,
+	filter,
+	order,
+	actionTypes,
+	categoryPath = DEFAULT_CATEGORY_PATH
+) {
 	return (dispatch, getState) => {
 		let state = getState();
-		let usesForIndex = commonSelectors.getUsesForIndex(getSubstate)(state, filter, order);
-		if (usesForIndex){
-			_.each(usesForIndex.uses, (use) => {
-				dispatch(ensureIndexed(getSubstate, dataType, usesForIndex.filter, usesForIndex.order, use.start, use.length, actionTypes, categoryPath))
+		let usesForIndex = commonSelectors.getUsedIndexPage(getSubstate)(
+			state,
+			filter,
+			order
+		);
+		if (usesForIndex) {
+			_.each(usesForIndex.uses, use => {
+				dispatch(
+					ensureIndexed(
+						getSubstate,
+						dataType,
+						usesForIndex.filter,
+						usesForIndex.order,
+						use.start,
+						use.length,
+						actionTypes,
+						categoryPath
+					)
+				);
 			});
 		}
-	}
+	};
 }
 
 function receiveIndexed(actionTypes, result, dataType, filter, order, start) {
-		return dispatch => {
-			// add data to store
-			if (result.data[dataType].length){
-				dispatch(actionAdd(actionTypes, result.data[dataType], filter));
-			}
-
-			// add to index
-			dispatch(actionAddIndex(actionTypes, filter, order, result.total, start, result.data[dataType], result.changes && result.changes[dataType]));
+	return dispatch => {
+		// add data to store
+		if (result.data[dataType].length) {
+			dispatch(actionAdd(actionTypes, result.data[dataType], filter));
 		}
+
+		// add to index
+		dispatch(
+			actionAddIndex(
+				actionTypes,
+				filter,
+				order,
+				result.total,
+				start,
+				result.data[dataType],
+				result.changes && result.changes[dataType]
+			)
+		);
+	};
 }
 
-function receiveIndexedBatch(actionTypes, result, dataType, filter, order, key) {
-		return dispatch => {
-			// add data to store
-			if (result.data[dataType].length){
-				dispatch(actionAddBatch(actionTypes, result.data[dataType], key));
-			}
-
-			// add to index
-			dispatch(actionAddBatchIndex(actionTypes, filter, order, result.data[dataType], key));
-		}
-}
-
-function requestWrapper(apiPath, method, query, payload, successAction, errorAction) {
+function requestWrapper(
+	apiPath,
+	method,
+	query,
+	payload,
+	successAction,
+	errorAction
+) {
 	return (dispatch, getState) => {
 		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
 
@@ -313,10 +453,15 @@ function requestWrapper(apiPath, method, query, payload, successAction, errorAct
 			.catch(error => {
 				dispatch(errorAction(error));
 			});
-	}
+	};
 }
 
-function create(getSubstate, dataType, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH) {
+function create(
+	getSubstate,
+	dataType,
+	actionTypes,
+	categoryPath = DEFAULT_CATEGORY_PATH
+) {
 	return (key, appKey) => {
 		return (dispatch, getState) => {
 			const state = getState();
@@ -334,110 +479,132 @@ function create(getSubstate, dataType, actionTypes, categoryPath = DEFAULT_CATEG
 			}
 
 			const payload = getCreatePayload(dataType, key, applicationKey);
-			return request(localConfig, apiPath, 'POST', null, payload).then(result => {
-				if (result.errors && result.errors[dataType] || result.data && !result.data[dataType]) {
-					dispatch(actionGeneralError(result.errors[dataType] || new Error('no data')));
-				} else {
-					const items = result.data[dataType];
-					dispatch(actionAdd(actionTypes, items));
-
-					let indexes = [];
-					items.forEach(item => {
-						indexes = indexes.concat(commonSelectors.getIndexesByFilteredItem(getSubstate)(getState(), item)) || [];
-					});
-
-					let uniqueIndexes = commonHelpers.getUniqueIndexes(indexes);
-					if(!_.isEmpty(uniqueIndexes)) {
-						uniqueIndexes.forEach(index => {
-							if(index) {
-								//invalidate data
-								dispatch(actionClearIndex(actionTypes, index.filter, index.order));
-								//refresh data
-								dispatch(refreshIndex(getSubstate, dataType, index.filter, index.order, actionTypes, categoryPath));
-							}
-						});
-					}
-				}
-			})
-			.catch(error => {
-				dispatch(actionGeneralError(error));
-			});
-		}
-	}
-}
-
-function loadAll(dataType, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH) {
-	return (dispatch, getState) => {
-		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
-		const PAGE_SIZE = localConfig.requestPageSize || configDefaults.requestPageSize;
-		const apiPath = getAPIPath(categoryPath, dataType);
-		let payload = {
-			limit: PAGE_SIZE
-		};
-		return request(localConfig, apiPath, 'POST', null, payload)
-			.then(result => {
-				if (result.errors && result.errors[dataType] || result.data && !result.data[dataType]) {
-					dispatch(actionGeneralError(result.errors[dataType] || new Error('no data')));
-				} else {
-					if (result.total <= PAGE_SIZE) {
-						// everything already loaded
-						dispatch(actionAdd(actionTypes, result.data[dataType]));
+			return request(localConfig, apiPath, 'POST', null, payload)
+				.then(result => {
+					if (
+						(result.errors && result.errors[dataType]) ||
+						(result.data && !result.data[dataType])
+					) {
+						dispatch(
+							actionGeneralError(
+								result.errors[dataType] || new Error('no data')
+							)
+						);
 					} else {
-						// load remaining pages
-						let promises = [];
-						let remainingPageCount = Math.ceil((result.total - PAGE_SIZE) / PAGE_SIZE);
-						for (let i = 0; i < remainingPageCount; i++) {
-							let pagePayload = {
-								offset: (i + 1) * PAGE_SIZE,
-								limit: PAGE_SIZE
-							};
-							promises.push(request(localConfig, apiPath, 'POST', null, pagePayload)); //todo what if one fails?
-						}
-						Promise.all(promises).then(results => {
-							let remainingData = _.flatten(results.map(res => res.data[dataType]));
-							dispatch(actionAdd(actionTypes, [...result.data[dataType], ...remainingData]));
-						});
-					}
-				}
+						const items = result.data[dataType];
+						dispatch(actionAdd(actionTypes, items));
 
-			})
-			.catch(error => {
-				dispatch(actionGeneralError(error));
-			});
+						let indexes = [];
+						items.forEach(item => {
+							indexes =
+								indexes.concat(
+									// Find out indexes which could include new item
+									commonSelectors.getIndexesByFilteredItem(getSubstate)(
+										getState(),
+										item
+									)
+								) || [];
+						});
+
+						let uniqueIndexes = commonHelpers.getUniqueIndexes(indexes);
+						if (!_.isEmpty(uniqueIndexes)) {
+							uniqueIndexes.forEach(index => {
+								if (index) {
+									//invalidate data
+									dispatch(
+										actionClearIndex(actionTypes, index.filter, index.order)
+									);
+									//refresh data
+									dispatch(
+										refreshIndex(
+											getSubstate,
+											dataType,
+											index.filter,
+											index.order,
+											actionTypes,
+											categoryPath
+										)
+									);
+								}
+							});
+						}
+					}
+				})
+				.catch(error => {
+					dispatch(actionGeneralError(error));
+				});
+		};
 	};
 }
 
-function ensureKeys(getSubstate, dataType, actionTypes, keys, categoryPath = DEFAULT_CATEGORY_PATH){
+function ensureKeys(
+	getSubstate,
+	dataType,
+	actionTypes,
+	keys,
+	categoryPath = DEFAULT_CATEGORY_PATH
+) {
 	return (dispatch, getState) => {
 		const state = getState();
-		const PAGE_SIZE = Select.app.getLocalConfiguration(state, 'requestPageSize') || configDefaults.requestPageSize;
+		const PAGE_SIZE =
+			Select.app.getLocalConfiguration(state, 'requestPageSize') ||
+			configDefaults.requestPageSize;
 
 		let keysToLoad = commonSelectors.getKeysToLoad(getSubstate)(state, keys);
 		let promises = [];
 
-		if (keysToLoad){
+		if (keysToLoad) {
 			keysToLoad = _.chunk(keysToLoad, PAGE_SIZE);
 			_.each(keysToLoad, keysToLoadPage => {
-				promises.push(dispatch(loadKeysPage(dataType, actionTypes, keysToLoadPage, categoryPath)));
+				promises.push(
+					dispatch(
+						loadKeysPage(dataType, actionTypes, keysToLoadPage, categoryPath)
+					)
+				);
 			});
 		}
 
 		return Promise.all(promises);
-	}
+	};
 }
 
-function ensureIndexed(getSubstate, dataType, filter, order, start, length, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH){
+function ensureIndexed(
+	getSubstate,
+	dataType,
+	filter,
+	order,
+	start,
+	length,
+	actionTypes,
+	categoryPath = DEFAULT_CATEGORY_PATH
+) {
 	return (dispatch, getState) => {
 		const state = getState();
 		const localConfig = Select.app.getCompleteLocalConfiguration(state);
-		const PAGE_SIZE = localConfig.requestPageSize || configDefaults.requestPageSize;
-		let total = commonSelectors.getIndexTotal(getSubstate)(state, filter, order);
-		let changedOn = commonSelectors.getIndexChangedOn(getSubstate)(state, filter, order);
+		const PAGE_SIZE =
+			localConfig.requestPageSize || configDefaults.requestPageSize;
+		let total = commonSelectors.getIndexTotal(getSubstate)(
+			state,
+			filter,
+			order
+		);
+		let changedOn = commonSelectors.getIndexChangedOn(getSubstate)(
+			state,
+			filter,
+			order
+		);
 
-		if (total != null){
+		if (total != null) {
 			// we have existing index, we only load what we don't have
 
-			const indexPage = commonSelectors.getIndexPage(getSubstate)(state, filter, order, start, length) || {};
+			const indexPage =
+				commonSelectors.getIndexPage(getSubstate)(
+					state,
+					filter,
+					order,
+					start,
+					length
+				) || {};
 			const pages = _.chunk(Object.values(indexPage), PAGE_SIZE);
 			const promises = pages.map((page, i) => {
 				const loadedKeys = page.filter(v => v != null);
@@ -445,67 +612,119 @@ function ensureIndexed(getSubstate, dataType, filter, order, start, length, acti
 					return; // page is already loaded
 				}
 
-				const completeFilter = loadedKeys.length ? {...filter, key: {notin: loadedKeys}} : filter;
+				const completeFilter = loadedKeys.length
+					? {...filter, key: {notin: loadedKeys}}
+					: filter;
 
-				return dispatch(loadIndexedPage(dataType, completeFilter, order, start + (i * PAGE_SIZE), changedOn, actionTypes, categoryPath))
-					.catch((err) => {
-						if (err.message === 'Index outdated'){
-							dispatch(refreshIndex(getSubstate, dataType, filter, order, actionTypes, categoryPath));
-						}
-					});
+				return dispatch(
+					loadIndexedPage(
+						dataType,
+						completeFilter,
+						order,
+						start + i * PAGE_SIZE,
+						changedOn,
+						actionTypes,
+						categoryPath
+					)
+				).catch(err => {
+					if (err.message === 'Index outdated') {
+						dispatch(
+							refreshIndex(
+								getSubstate,
+								dataType,
+								filter,
+								order,
+								actionTypes,
+								categoryPath
+							)
+						);
+					}
+				});
 			});
 
 			return Promise.all(promises);
-
 		} else {
 			// we don't have index, we need to load everything
 
-			return dispatch(loadIndexedPage(dataType, filter, order, start, changedOn, actionTypes, categoryPath)).then((response) => {
-				// check success to make sure it's our error from BE and not anything broken in render chain
-				if (response && response.message && response.success === false){
-					// do nothing
-				} else {
-					// remaining pages
-					if (length > PAGE_SIZE) {
-						return dispatch(ensureIndexed(getSubstate, dataType, filter, order, start + PAGE_SIZE, length - PAGE_SIZE, actionTypes, categoryPath));
-					} // else already done
-				}
-			}).catch((err)=>{
-				if (err.message === 'Index outdated'){
-					dispatch(refreshIndex(getSubstate, dataType, filter, order, actionTypes, categoryPath));
-				} else {
-					throw new Error(`_common/actions#ensure: ${err}`);
-				}
-			});
+			return dispatch(
+				loadIndexedPage(
+					dataType,
+					filter,
+					order,
+					start,
+					changedOn,
+					actionTypes,
+					categoryPath
+				)
+			)
+				.then(response => {
+					// check success to make sure it's our error from BE and not anything broken in render chain
+					if (response && response.message && response.success === false) {
+						// do nothing
+					} else {
+						// remaining pages
+						if (length > PAGE_SIZE) {
+							return dispatch(
+								ensureIndexed(
+									getSubstate,
+									dataType,
+									filter,
+									order,
+									start + PAGE_SIZE,
+									length - PAGE_SIZE,
+									actionTypes,
+									categoryPath
+								)
+							);
+						} // else already done
+					}
+				})
+				.catch(err => {
+					if (err.message === 'Index outdated') {
+						dispatch(
+							refreshIndex(
+								getSubstate,
+								dataType,
+								filter,
+								order,
+								actionTypes,
+								categoryPath
+							)
+						);
+					} else {
+						throw new Error(`_common/actions#ensure: ${err}`);
+					}
+				});
 		}
 	};
 }
 
-function ensureIndexedBatch(dataType, filter, order, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH, key, additionalParams) {
-	return (dispatch) => {
-		return dispatch(loadIndexedBatch(dataType, filter, order, actionTypes, categoryPath, key, additionalParams)).then((response) => {
-				//success
-			}).catch((err)=>{
-				throw new Error(`_common/actions#ensure: ${err}`);
-		});
-	};
-}
-
-function loadKeysPage(dataType, actionTypes, keys, categoryPath = DEFAULT_CATEGORY_PATH) {
+function loadKeysPage(
+	dataType,
+	actionTypes,
+	keys,
+	categoryPath = DEFAULT_CATEGORY_PATH
+) {
 	return (dispatch, getState) => {
 		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
 		const apiPath = getAPIPath(categoryPath, dataType);
+		const PAGE_SIZE =
+			localConfig.requestPageSize || configDefaults.requestPageSize;
 
 		let payload = {
 			filter: {
 				key: {
-					in: keys
-				}
-			}
+					in: keys,
+				},
+			},
+			limit: PAGE_SIZE,
 		};
 		return request(localConfig, apiPath, 'POST', null, payload)
 			.then(result => {
-				if (result.errors && result.errors[dataType] || result.data && !result.data[dataType]) {
+				if (
+					(result.errors && result.errors[dataType]) ||
+					(result.data && !result.data[dataType])
+				) {
 					throw new Error(result.errors[dataType] || 'no data');
 				} else {
 					dispatch(receiveKeys(actionTypes, result, dataType, keys));
@@ -515,29 +734,47 @@ function loadKeysPage(dataType, actionTypes, keys, categoryPath = DEFAULT_CATEGO
 				dispatch(actionGeneralError(error));
 				return error;
 			});
-	}
+	};
 }
 
-function loadIndexedPage(dataType, filter, order, start, changedOn, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH) {
+function loadIndexedPage(
+	dataType,
+	filter,
+	order,
+	start,
+	changedOn,
+	actionTypes,
+	categoryPath = DEFAULT_CATEGORY_PATH
+) {
 	return (dispatch, getState) => {
 		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
-		const PAGE_SIZE = localConfig.requestPageSize || configDefaults.requestPageSize;
+		const PAGE_SIZE =
+			localConfig.requestPageSize || configDefaults.requestPageSize;
 		const apiPath = getAPIPath(categoryPath, dataType);
 
 		let payload = {
 			filter: filter && {...filter},
-			offset: start -1,
+			offset: start - 1,
 			order: order,
-			limit: PAGE_SIZE
+			limit: PAGE_SIZE,
 		};
 		return request(localConfig, apiPath, 'POST', null, payload)
 			.then(result => {
-				if (result.errors && result.errors[dataType] || result.data && !result.data[dataType]) {
+				if (
+					(result.errors && result.errors[dataType]) ||
+					(result.data && !result.data[dataType])
+				) {
 					throw new Error(result.errors[dataType] || 'no data');
-				} else if (result.changes && result.changes[dataType] && moment(result.changes[dataType]).isAfter(changedOn)) {
+				} else if (
+					result.changes &&
+					result.changes[dataType] &&
+					moment(result.changes[dataType]).isAfter(changedOn)
+				) {
 					throw new Error('Index outdated');
 				} else {
-					dispatch(receiveIndexed(actionTypes, result, dataType, filter, order, start));
+					dispatch(
+						receiveIndexed(actionTypes, result, dataType, filter, order, start)
+					);
 				}
 			})
 			.catch(error => {
@@ -547,117 +784,84 @@ function loadIndexedPage(dataType, filter, order, start, changedOn, actionTypes,
 	};
 }
 
-function loadIndexedBatch(dataType, filter, order, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH, key, additionalParams) {
-	return (dispatch, getState) => {
-		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
-		const apiPath = getAPIPath(categoryPath, dataType);
-
-		let payload = {
-			filter: {...filter},
-			order: order
-		};
-
-		if (additionalParams) {
-			payload = {...payload, ...additionalParams};
-		}
-
-		return request(localConfig, apiPath, 'POST', null, payload)
-			.then(result => {
-				if (result.errors && result.errors[dataType] || result.data && !result.data[dataType]) {
-					throw new Error(result.errors[dataType] || 'no data');
-				} else {
-					dispatch(receiveIndexedBatch(actionTypes, result, dataType, filter, order, key));
-				}
-			})
-			.catch(error => {
-				dispatch(actionGeneralError(error));
-				return error;
-			});
-	};
-}
-
-function loadFiltered(dataType, actionTypes, filter, categoryPath = DEFAULT_CATEGORY_PATH) {
-	return (dispatch, getState) => {
-		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
-		const PAGE_SIZE = localConfig.requestPageSize || configDefaults.requestPageSize;
-		const apiPath = getAPIPath(categoryPath, dataType);
-		const payload = {
-			filter: filter,
-			limit: PAGE_SIZE
-		};
-		return request(localConfig, apiPath, 'POST', null, payload)
-			.then(result => {
-				if (result.errors && result.errors[dataType] || result.data && !result.data[dataType]) {
-					dispatch(actionGeneralError(result.errors[dataType] || new Error('no data')));
-				} else {
-					if (result.total <= PAGE_SIZE) {
-						// everything already loaded
-						return dispatch(actionAdd(actionTypes, result.data[dataType]));
-					} else {
-						// load remaining pages
-						let promises = [];
-						let remainingPageCount = Math.ceil((result.total - PAGE_SIZE) / PAGE_SIZE);
-						for (let i = 0; i < remainingPageCount; i++) {
-							let pagePayload = {
-								filter: filter,
-								offset: (i + 1) * PAGE_SIZE,
-								limit: PAGE_SIZE
-							};
-							promises.push(request(localConfig, apiPath, 'POST', null, pagePayload)); //todo what if one fails?
-						}
-						return Promise.all(promises).then(results => {
-							let remainingData = _.flatten(results.map(res => res.data[dataType]));
-							dispatch(actionAdd(actionTypes, [...result.data[dataType], ...remainingData]));
-						});
-					}
-				}
-
-			})
-			.catch(error => {
-				dispatch(actionGeneralError(error));
-			});
-	};
-}
-
-function receiveUpdated(getSubstate, actionTypes, result, dataType, categoryPath) {
+function receiveUpdated(
+	getSubstate,
+	actionTypes,
+	result,
+	dataType,
+	categoryPath
+) {
 	return (dispatch, getState) => {
 		let data = result.data[dataType];
-		if (data.length){
-			let originalData = commonSelectors.getAllAsObject(getSubstate)(getState());
+		if (data.length) {
+			let originalData = commonSelectors.getAllAsObject(getSubstate)(
+				getState()
+			);
 			dispatch(actionAdd(actionTypes, data));
-			let editedData = commonSelectors.getEditedAllAsObject(getSubstate)(getState());
-
+			let editedData = commonSelectors.getEditedAllAsObject(getSubstate)(
+				getState()
+			);
 
 			let indexes = [];
 			data.forEach(model => {
-				let original = originalData[model.key];
-				let edited = editedData[model.key].data;
+				let original = originalData?.[model.key];
+				let edited = editedData?.[model.key]?.data;
 				_.forIn(edited, (value, key) => {
 					if (model.data[key] === value) {
-						dispatch(actionRemovePropertyFromEdited(actionTypes, model.key, key));
+						dispatch(
+							actionRemovePropertyFromEdited(actionTypes, model.key, key)
+						);
 					} else if (_.isObject(value)) {
 						if (JSON.stringify(value) === JSON.stringify(model.data[key])) {
-							dispatch(actionRemovePropertyFromEdited(actionTypes, model.key, key));
+							dispatch(
+								actionRemovePropertyFromEdited(actionTypes, model.key, key)
+							);
 						} else if (_.isArray(value) && _.isEmpty(value)) {
-							if (_.isEmpty(model.data[key]) || (model.data && !model.data[key])) {
-								dispatch(actionRemovePropertyFromEdited(actionTypes, model.key, key));
+							if (
+								_.isEmpty(model.data[key]) ||
+								(model.data && !model.data[key])
+							) {
+								dispatch(
+									actionRemovePropertyFromEdited(actionTypes, model.key, key)
+								);
 							}
 						}
 					}
 				});
 
-				indexes = indexes.concat(commonSelectors.getIndexesByFilteredItem(getSubstate)(getState() || [], model));
-				indexes = indexes.concat(commonSelectors.getIndexesByFilteredItem(getSubstate)(getState() || [], original));
+				//Find corresponding indexes for new model
+				indexes = indexes.concat(
+					commonSelectors.getIndexesByFilteredItem(getSubstate)(
+						getState() || [],
+						model
+					)
+				);
+				//Find corresponding indexes for original model
+				indexes = indexes.concat(
+					commonSelectors.getIndexesByFilteredItem(getSubstate)(
+						getState() || [],
+						original
+					)
+				);
 			});
 
 			let uniqueIndexes = commonHelpers.getUniqueIndexes(indexes);
-			if(!_.isEmpty(uniqueIndexes)) {
+			if (!_.isEmpty(uniqueIndexes)) {
 				uniqueIndexes.forEach(index => {
-					if(index) {
+					if (index) {
 						//invalidate data
 						dispatch(actionClearIndex(actionTypes, index.filter, index.order));
 						//refresh data
-						dispatch(refreshIndex(getSubstate, dataType, index.filter, index.order, actionTypes, categoryPath));
+						dispatch(
+							refreshIndex(
+								getSubstate,
+								dataType,
+								index.filter,
+								index.order,
+								actionTypes,
+								categoryPath
+							)
+						);
 					}
 				});
 			}
@@ -670,7 +874,7 @@ function receiveUpdated(getSubstate, actionTypes, result, dataType, categoryPath
 function receiveKeys(actionTypes, result, dataType, keys) {
 	return dispatch => {
 		// add data to store
-		if (result.data[dataType].length){
+		if (result.data[dataType].length) {
 			dispatch(actionAdd(actionTypes, result.data[dataType]));
 		}
 
@@ -681,92 +885,111 @@ function receiveKeys(actionTypes, result, dataType, keys) {
 		if (keys.length) {
 			dispatch(actionAddUnreceivedKeys(actionTypes, keys));
 		}
-	}
+	};
 }
 
-function refreshUses(getSubstate, dataType, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH) {
+function refreshUses(
+	getSubstate,
+	dataType,
+	actionTypes,
+	categoryPath = DEFAULT_CATEGORY_PATH
+) {
 	return () => {
-		return(dispatch, getState) => {
+		return (dispatch, getState) => {
 			dispatch(actionClearIndexes(actionTypes));
 
 			let state = getState();
 
-			let usedKeys = commonSelectors.getUsedKeys(getSubstate)(state);
-			dispatch(ensureKeys(getSubstate, dataType, actionTypes, usedKeys, categoryPath));
+			let usedKeys = commonSelectors.getKeysInUse(getSubstate)(state);
+			dispatch(
+				ensureKeys(getSubstate, dataType, actionTypes, usedKeys, categoryPath)
+			);
 
-			let usedIndexPages = commonSelectors.getUsedIndexPages(getSubstate)(state);
+			let usedIndexPages =
+				commonSelectors.getUsedIndexPages(getSubstate)(state);
 
-			const promises = _.flatMap(usedIndexPages, (usedIndexPage) => {
-				_.map(usedIndexPage.uses, (use) => {
-					return dispatch(ensureIndexed(getSubstate, dataType, usedIndexPage.filter, usedIndexPage.order, use.start, use.length, actionTypes, categoryPath))
+			const promises = _.flatMap(usedIndexPages, usedIndexPage => {
+				_.map(usedIndexPage.uses, use => {
+					return dispatch(
+						ensureIndexed(
+							getSubstate,
+							dataType,
+							usedIndexPage.filter,
+							usedIndexPage.order,
+							use.start,
+							use.length,
+							actionTypes,
+							categoryPath
+						)
+					);
 				});
-			})
+			});
 
 			return Promise.all(promises);
-		}
-	}
+		};
+	};
 }
 
-function ensureIndexesWithFilterByActive(getSubstate, dataType, actionTypes, categoryPath = DEFAULT_CATEGORY_PATH) {
+function ensureIndexesWithFilterByActive(
+	getSubstate,
+	dataType,
+	actionTypes,
+	categoryPath = DEFAULT_CATEGORY_PATH
+) {
 	return filterByActive => {
 		return (dispatch, getState) => {
-
 			const state = getState();
-			const usedIndexes = commonSelectors.getUsesWithActiveDependency(getSubstate)(state, filterByActive);
+			const usedIndexes = commonSelectors.getUsesWithActiveDependency(
+				getSubstate
+			)(state, filterByActive);
 
-			const promises = _.flatMap(usedIndexes, (usedIndex) => {
-				_.map(usedIndex.uses, (use) => {
-					return dispatch(ensureIndexed(getSubstate, dataType, usedIndex.filter, usedIndex.order, use.start, use.length, actionTypes, categoryPath))
+			const promises = _.flatMap(usedIndexes, usedIndex => {
+				_.map(usedIndex.uses, use => {
+					return dispatch(
+						ensureIndexed(
+							getSubstate,
+							dataType,
+							usedIndex.filter,
+							usedIndex.order,
+							use.start,
+							use.length,
+							actionTypes,
+							categoryPath
+						)
+					);
 				});
 			});
 
 			return Promise.all(promises);
-		}
-	}
-}
-
-function ensureIndexesWithActiveKey(filterKey, categoryPath = DEFAULT_CATEGORY_PATH) {
-		return dispatch => {
-
-			let filterByActive = {
-				[filterKey]: true
-			};
-
-			// dispatch ensureIndexesWithFilterByActive on all stores implementing it
-			_.map(Action, actions => {
-				if (actions.hasOwnProperty('ensureIndexesWithFilterByActive')) {
-					dispatch(actions.ensureIndexesWithFilterByActive(filterByActive, categoryPath))
-				}
-			});
-
 		};
+	};
 }
 
 function updateSubstateFromView(actionTypes) {
-	return (data) => {
+	return data => {
 		return dispatch => {
 			if (data && data.activeKey) {
 				dispatch(actionSetActiveKey(actionTypes, data.activeKey));
 			} else if (data && data.activeKeys) {
 				dispatch(actionSetActiveKeys(actionTypes, data.activeKeys));
 			}
-		}
-	}
+		};
+	};
 }
 
 // ============ common namespace actions ===========
 
 function actionDataSetOutdated() {
 	return {
-		type: ActionTypes.COMMON.DATA.SET_OUTDATED
-	}
+		type: ActionTypes.COMMON.DATA.SET_OUTDATED,
+	};
 }
 
 function actionRemovePropertyValuesFromAllEdited(dataType, keys) {
 	return {
 		type: ActionTypes.COMMON.EDITED.REMOVE_PROPERTY_VALUES,
 		dataType,
-		keys
+		keys,
 	};
 }
 
@@ -777,8 +1000,8 @@ function actionGeneralError(e) {
 
 // ============ specific store namespace actions ===========
 
-const creator = (action) => {
-	return (actionTypes) => {
+const creator = action => {
+	return actionTypes => {
 		return (...args) => {
 			return dispatch => {
 				dispatch(action(actionTypes, ...args));
@@ -791,12 +1014,17 @@ function action(actionTypes, type, payload) {
 	type = type.split('.');
 	_.each(type, pathSegment => {
 		if (!actionTypes.hasOwnProperty(pathSegment)) {
-			console.error('common/actions#action: Action not in namespace', type, payload);
+			console.error(
+				'common/actions#action: Action not in namespace',
+				type,
+				payload
+			);
 			throw new Error('common/actions#action: Action not in namespace');
 		}
 		actionTypes = actionTypes[pathSegment];
 	});
-	if (typeof actionTypes !== 'string') throw new Error('common/actions#action: Action type not string');
+	if (typeof actionTypes !== 'string')
+		throw new Error('common/actions#action: Action type not string');
 	return {...payload, type: actionTypes};
 }
 
@@ -805,28 +1033,43 @@ function actionAdd(actionTypes, data, filter) {
 	return action(actionTypes, 'ADD', {data, filter});
 }
 
-function actionAddBatch(actionTypes, data, key) {
-	if (!_.isArray(data)) data = [data];
-	const payload = {
-		data,
-		key //FIXME - key should be union of filter and key?
-	}
-	return action(actionTypes, 'ADD_BATCH', payload);
-}
-
 function actionAddUnreceivedKeys(actionTypes, keys) {
 	if (!_.isArray(keys)) keys = [keys];
 	return action(actionTypes, 'ADD_UNRECEIVED', {keys});
 }
 
-function actionAddIndex(actionTypes, filter, order, count, start, data, changedOn) {
-	return action(actionTypes, 'INDEX.ADD', {filter, order, count, start, data, changedOn});
+/**
+ *
+ * @param {Object} actionTypes
+ * @param {Object} filter
+ * @param {Array?} order
+ * @param {Number?} count
+ * @param {Number} start
+ * @param {Array} data
+ * @param {string?} changedOn
+ * @param {Number?} limit limitation for loading data
+ * @returns
+ */
+function actionAddIndex(
+	actionTypes,
+	filter,
+	order,
+	count,
+	start,
+	data,
+	changedOn,
+	limit //optional
+) {
+	return action(actionTypes, 'INDEX.ADD', {
+		filter,
+		order,
+		count,
+		start,
+		data,
+		changedOn,
+		...(limit && {limit: limit}),
+	});
 }
-
-function actionAddBatchIndex(actionTypes, filter, order, data, key) {
-	return action(actionTypes, 'INDEX.ADD_BATCH', {filter, order, data, key});
-}
-
 /**
  * Useful for invalidate data before refresh indexes
  */
@@ -834,10 +1077,9 @@ function actionClearIndex(actionTypes, filter, order) {
 	return action(actionTypes, 'INDEX.CLEAR_INDEX', {filter, order});
 }
 
-
 const actionMarkAsDeleted = (actionTypes, key, date) => {
 	return action(actionTypes, 'MARK_DELETED', {key, date});
-}
+};
 
 function actionClearIndexes(actionTypes) {
 	return action(actionTypes, 'INDEX.CLEAR_ALL');
@@ -867,12 +1109,23 @@ function actionRemovePropertyFromEdited(actionTypes, key, property) {
 	return action(actionTypes, 'EDITED.REMOVE_PROPERTY', {key, property});
 }
 
-function actionUseIndexedRegister(actionTypes, componentId, filterByActive, filter, order, start, length) {
-	return action(actionTypes, 'USE.INDEXED.REGISTER', {componentId, filterByActive, filter, order, start, length});
-}
-
-function actionUseIndexedBatchRegister(actionTypes, componentId, filterByActive, filter, order) {
-	return action(actionTypes, 'USE.INDEXED_BATCH.REGISTER', {componentId, filterByActive, filter, order});
+function actionUseIndexedRegister(
+	actionTypes,
+	componentId,
+	filterByActive,
+	filter,
+	order,
+	start,
+	length
+) {
+	return action(actionTypes, 'USE.INDEXED.REGISTER', {
+		componentId,
+		filterByActive,
+		filter,
+		order,
+		start,
+		length,
+	});
 }
 
 function actionUseIndexedClear(actionTypes, componentId) {
@@ -883,8 +1136,8 @@ function actionUseIndexedClearAll(actionTypes) {
 	return action(actionTypes, 'USE.INDEXED.CLEAR_ALL');
 }
 
-function actionSetInitial(actionTypes) {
-	return action(actionTypes, 'SET_INITIAL');
+function actionUpdateStore(actionTypes, data) {
+	return action(actionTypes, 'UPDATE_STORE', data);
 }
 
 function actionUseKeysClear(actionTypes, componentId) {
@@ -897,12 +1150,12 @@ function actionUseKeysRegister(actionTypes, componentId, keys) {
 
 // ============ utilities ===========
 const getAPIPath = (categoryPath = DEFAULT_CATEGORY_PATH, dataType) => {
-	return path.join('rest', categoryPath ,'filtered', dataType);
+	return path.join('rest', categoryPath, 'filtered', dataType);
 };
 
 const getCreatePayload = (datatype, key = utils.uuid(), applicationKey) => {
 	const payload = {
-		"data": {}
+		data: {},
 	};
 
 	let model = {key, data: {}};
@@ -918,59 +1171,39 @@ const getCreatePayload = (datatype, key = utils.uuid(), applicationKey) => {
 // ============ export ===========
 
 export default {
-	add: creator(actionAdd),
-	addBatch: creator(actionAddBatch),
-	addBatchIndex: creator(actionAddBatchIndex),
 	action,
-	actionAdd,
+	actionDataSetOutdated,
 	actionGeneralError,
+	actionSetActiveKey,
+	add: creator(actionAdd),
+	addIndex: creator(actionAddIndex),
 	apiUpdate,
-	creator,
+	clearIndex: creator(actionClearIndex),
 	create,
+	creator,
 	delete: deleteItem,
 	ensure: ensureKeys,
 	ensureIndexed,
 	ensureIndexesWithFilterByActive,
 	ensureKeys,
-	loadAll,
-	loadFiltered,
-	useIndexedBatch,
 	loadIndexedPage,
 	loadKeysPage,
-	setActiveKey: creator(actionSetActiveKey),
-	setActiveKeyAndEnsureDependencies,
-	setActiveKeysAndEnsureDependencies,
-	setActiveKeys: creator(actionSetActiveKeys),
-	receiveUpdated,
 	receiveIndexed,
 	receiveKeys,
+	receiveUpdated,
 	refreshUses,
 	removePropertyFromEdited,
 	request: requestWrapper,
 	saveEdited,
-	updateSubstateFromView,
+	setActiveKey: creator(actionSetActiveKey),
+	setActiveKeys: creator(actionSetActiveKeys),
 	updateEdited,
-	useKeys,
-	useKeysClear: creator(actionUseKeysClear),
+	updateStore,
+	updateSubstateFromView,
 	useIndexed,
-	clearIndex: creator(actionClearIndex),
-
-	useIndexedRegister: actionUseIndexedRegister,
 	useIndexedClear: creator(actionUseIndexedClear),
 	useIndexedClearAll: creator(actionUseIndexedClearAll),
-	setInitial: creator(actionSetInitial),
-	actionDataSetOutdated,
-	actionSetActiveKey
-}
-
-// useIndexedBatch
-// ensureIndexedBatch
-// actionUseIndexedBatchRegister
-// loadIndexedBatch
-// receiveIndexedBatch
-//actionAddBatchIndex
-
-//reducer
-// - USE.INDEXED_BATCH.REGISTER
-// - INDEX.ADD_BATCH
-// - ADD_BATCH
+	useIndexedRegister: creator(actionUseIndexedRegister),
+	useKeys,
+	useKeysClear: creator(actionUseKeysClear),
+};

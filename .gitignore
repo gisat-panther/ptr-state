@@ -5,6 +5,7 @@
 
 # testing
 /coverage
+/.nyc_output
 
 # production
 /build
@@ -13,7 +14,7 @@
 
 # misc
 /.idea
-/.vscode
+.vscode
 .DS_Store
 .env
 npm-debug.log*

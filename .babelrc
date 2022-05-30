@@ -1,15 +1,24 @@
 {
-  "presets": [
-        ["@babel/preset-env", {
-            "modules": "auto"
-        }],
-        "@babel/preset-react"],
-  "plugins": [
-    [
-      "@babel/plugin-proposal-class-properties",
-      {
-        "loose": true
-      }
-    ]
-  ]
+	"presets": [
+		[
+			"@babel/preset-env",
+			{
+				"modules": "auto"
+			}
+		],
+		"@babel/preset-react"
+	],
+	"plugins": [
+		[
+			"@babel/plugin-transform-runtime",
+			{
+				"useESModules": false
+			}
+		]
+	],
+	"env": {
+		"test": {
+			"plugins": ["istanbul"]
+		}
+	}
 }

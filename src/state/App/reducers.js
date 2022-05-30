@@ -1,7 +1,7 @@
 import ActionTypes from '../../constants/ActionTypes';
 
-const INITIAL_STATE = {
-	key: null
+export const INITIAL_STATE = {
+	key: null,
 };
 
 /**
@@ -12,30 +12,43 @@ const INITIAL_STATE = {
  */
 const setKey = (state, action) => {
 	return {
-		...state, key: action.key
+		...state,
+		key: action.key,
 	};
 };
 
 const setBaseUrl = (state, action) => {
 	return {
-		...state, baseUrl: action.url
+		...state,
+		baseUrl: action.url,
 	};
 };
 
 const setLocalConfiguration = (state, action) => {
 	let path = action.path.split('.');
-	return {...state, localConfiguration: setHelper(state.localConfiguration, path, action.value)};
+	return {
+		...state,
+		localConfiguration: setHelper(state.localConfiguration, path, action.value),
+	};
 };
 
 const updateLocalConfiguration = (state, action) => {
-	return {...state, localConfiguration: state.localConfiguration ? {...state.localConfiguration, ...action.update} : action.update};
+	return {
+		...state,
+		localConfiguration: state.localConfiguration
+			? {...state.localConfiguration, ...action.update}
+			: action.update,
+	};
 };
 
 function setHelper(state, path, value) {
 	let remainingPath = [...path];
 	let currentKey = remainingPath.shift();
 	if (remainingPath.length) {
-		return {...state, [currentKey]: setHelper(state[currentKey], remainingPath, value)};
+		return {
+			...state,
+			[currentKey]: setHelper(state[currentKey], remainingPath, value),
+		};
 	} else {
 		return {...state, [currentKey]: value};
 	}
@@ -60,4 +73,4 @@ export default (state = INITIAL_STATE, action) => {
 		default:
 			return state;
 	}
-}
+};

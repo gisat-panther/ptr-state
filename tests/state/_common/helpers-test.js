@@ -2,38 +2,7 @@ import {assert} from 'chai';
 import helpers from '../../../src/state/_common/helpers';
 
 describe('state/_common/helpers', function () {
-	describe('getIndex', function () {
-		const tests = [
-			{
-				name: 'empty indexes',
-				indexes: [],
-				filter: 'fil',
-				order: 'asc',
-				expectedResult: null,
-			},
-			{
-				name: 'indexes',
-				indexes: [
-					{filter: 'fil2', order: 'desc'},
-					{filter: 'fil', order: 'desc'},
-					{filter: 'fil', order: 'asc'},
-					{filter: 'fil2', order: 'asc'},
-				],
-				filter: 'fil',
-				order: 'asc',
-				expectedResult: {filter: 'fil', order: 'asc'},
-			},
-		];
-		tests.forEach((test) => {
-			it(test.name, function () {
-				assert.deepStrictEqual(
-					helpers.getIndex(test.indexes, test.filter, test.order),
-					test.expectedResult
-				);
-			});
-		});
-	});
-
+	// TODO refactor tests after method refactoring
 	describe('getUniqueIndexes', function () {
 		const tests = [
 			{
@@ -85,69 +54,10 @@ describe('state/_common/helpers', function () {
 			},
 		];
 
-		tests.forEach((test) => {
+		tests.forEach(test => {
 			it(test.name, function () {
 				assert.deepStrictEqual(
 					helpers.getUniqueIndexes(test.indexes),
-					test.expectedResult
-				);
-			});
-		});
-	});
-
-	describe('isCorrespondingIndex', function () {
-		const tests = [
-			{
-				name: 'corresponding',
-				index: {
-					filter: 'fil',
-					order: 'asc',
-				},
-				filter: 'fil',
-				order: 'asc',
-				expectedResult: true,
-			},
-			{
-				name: 'corresponding with extra key',
-				index: {
-					filter: 'fil',
-					order: 'asc',
-					extraKey: 'val',
-				},
-				filter: 'fil',
-				order: 'asc',
-				expectedResult: true,
-			},
-			{
-				name: 'different order',
-				index: {
-					filter: 'fil',
-					order: 'asc',
-				},
-				filter: 'fil',
-				order: 'desc',
-				expectedResult: false,
-			},
-			{
-				name: 'different filter',
-				index: {
-					filter: 'fil',
-					order: 'asc',
-				},
-				filter: 'fil2',
-				order: 'asc',
-				expectedResult: false,
-			},
-		];
-
-		tests.forEach((test) => {
-			it(test.name, function () {
-				assert.strictEqual(
-					helpers.isCorrespondingIndex(
-						test.index,
-						test.filter,
-						test.order
-					),
 					test.expectedResult
 				);
 			});
@@ -240,13 +150,47 @@ describe('state/_common/helpers', function () {
 			},
 		];
 
-		tests.forEach((test) => {
+		tests.forEach(test => {
 			it(test.name, function () {
 				assert.strictEqual(
 					helpers.itemFitFilter(test.filter, test.item),
 					test.expectedResult
 				);
 			});
+		});
+	});
+
+	describe('removeIndex', function () {
+		const indexes = [
+			{
+				filter: {},
+				order: null,
+			},
+			{
+				filter: {
+					test: 1,
+				},
+				order: [],
+			},
+		];
+
+		it('return new instance of indexes without filtered index', function () {
+			assert.deepStrictEqual(helpers.removeIndex(indexes, {}, null), [
+				{
+					filter: {
+						test: 1,
+					},
+					order: [],
+				},
+			]);
+		});
+
+		it('return same instance of indexes', function () {
+			assert.equal(helpers.removeIndex(indexes, {}, []), indexes);
+		});
+
+		it('return empty array if indexes are empty', function () {
+			assert.deepStrictEqual(helpers.removeIndex([], {}, []), []);
 		});
 	});
 });

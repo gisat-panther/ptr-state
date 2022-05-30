@@ -3,11 +3,11 @@ import _ from 'lodash';
 
 import common from '../_common/reducers';
 
-import {DEFAULT_INITIAL_STATE} from "../_common/reducers";
+import {DEFAULT_INITIAL_STATE} from '../_common/reducers';
 
-const INITIAL_STATE = {
+export const INITIAL_STATE = {
 	...DEFAULT_INITIAL_STATE,
-	groups: {...DEFAULT_INITIAL_STATE}
+	groups: {...DEFAULT_INITIAL_STATE},
 };
 
 function update(state, action) {
@@ -46,10 +46,16 @@ export default (state = INITIAL_STATE, action) => {
 			return common.useKeysRegister(state, action);
 		case ActionTypes.COMMON.DATA.SET_OUTDATED:
 			//set outdated for users and users.groups
-			return {...common.dataSetOutdated(state, action), groups: common.dataSetOutdated(state.groups, action)};
+			return {
+				...common.dataSetOutdated(state, action),
+				groups: common.dataSetOutdated(state.groups, action),
+			};
 		case ActionTypes.COMMON.DATA.CLEANUP_ON_LOGOUT:
 			//clear users and users.groups
-			return {...common.cleanupOnLogout(state, action), groups: common.cleanupOnLogout(state.groups, action)};
+			return {
+				...common.cleanupOnLogout(state, action),
+				groups: common.cleanupOnLogout(state.groups, action),
+			};
 		case ActionTypes.USERS_LOAD_REQUEST:
 			return loadRequest(state, action);
 		case ActionTypes.USERS_LOAD_REQUEST_ERROR:
@@ -69,8 +75,11 @@ export default (state = INITIAL_STATE, action) => {
 		case ActionTypes.USERS.GROUPS.USE.KEYS.CLEAR:
 			return {...state, groups: common.useKeysClear(state.groups, action)};
 		case ActionTypes.USERS.GROUPS.USE.INDEXED.REGISTER:
-			return {...state, groups: common.registerUseIndexed(state.groups, action)};
+			return {
+				...state,
+				groups: common.registerUseIndexed(state.groups, action),
+			};
 		default:
 			return state;
 	}
-}
+};

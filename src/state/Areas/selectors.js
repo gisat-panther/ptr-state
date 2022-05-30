@@ -3,5 +3,5 @@ import areaTrees from './AreaTrees/selectors';
 
 export default {
 	areaTreeLevels,
-	areaTrees
+	areaTrees,
 };

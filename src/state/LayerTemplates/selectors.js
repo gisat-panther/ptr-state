@@ -1,76 +1,63 @@
-import _ from 'lodash';
-import common from "../_common/selectors";
-import createCachedSelector from "re-reselect";
+import common from '../_common/selectors';
 
 const getSubstate = state => state.layerTemplates;
 
+const getActive = common.getActive(getSubstate);
 const getActiveKey = common.getActiveKey(getSubstate);
+const getActiveKeys = common.getActiveKeys(getSubstate);
+const getActiveModels = common.getActiveModels(getSubstate);
 const getAll = common.getAll(getSubstate);
 const getAllAsObject = common.getAllAsObject(getSubstate);
+
 const getByKey = common.getByKey(getSubstate);
+const getByKeys = common.getByKeys(getSubstate);
+const getByKeysAsObject = common.getByKeysAsObject(getSubstate);
+
 const getDataByKey = common.getDataByKey(getSubstate);
 const getDeletePermissionByKey = common.getDeletePermissionByKey(getSubstate);
+
+const getEditedActive = common.getEditedActive(getSubstate);
+const getEditedAll = common.getEditedAll(getSubstate);
+const getEditedAllAsObject = common.getEditedAllAsObject(getSubstate);
+const getEditedByKey = common.getEditedByKey(getSubstate);
 const getEditedDataByKey = common.getEditedDataByKey(getSubstate);
+const getEditedKeys = common.getEditedKeys(getSubstate);
+
+const getIndexed = common.getIndexed(getSubstate);
+const getStateToSave = common.getStateToSave(getSubstate);
 const getUpdatePermissionByKey = common.getUpdatePermissionByKey(getSubstate);
-
-const getFilteredTemplatesGroupedByLayerKey = createCachedSelector(
-	[
-		getAllAsObject,
-		(state, layersState) => layersState
-	],
-	(layerTemplates, layersState) => {
-		if (layerTemplates && !_.isEmpty(layerTemplates) && layersState) {
-			let layerTemplatesByLayerKey = {};
-			layersState.forEach(layer => {
-				if (layer.filter.layerTemplateKey) {
-					layerTemplatesByLayerKey[layer.key] = layerTemplates[layer.filter.layerTemplateKey];
-				}
-			});
-
-			return layerTemplatesByLayerKey;
-		} else {
-			return null;
-		}
-	}
-)((state, layersState) => layersState.map(l => l.filter && l.filter.layerTemplateKey).join(','));
-
-const getFilteredTemplatesGroupedByLayerTemplateKey = createCachedSelector(
-	[
-		getAllAsObject,
-		(state, layersState) => layersState
-	],
-	(layerTemplates, layersState) => {
-		if (layerTemplates && !_.isEmpty(layerTemplates) && layersState) {
-			let layerTemplatesByLayerKey = {};
-			layersState.forEach(layer => {
-				if (layer.filter.layerTemplateKey) {
-					layerTemplatesByLayerKey[layer.filter.layerTemplateKey] = layerTemplates[layer.filter.layerTemplateKey];
-				}
-			});
-
-			return layerTemplatesByLayerKey;
-		} else {
-			return null;
-		}
-	}
-)((state, layersState) => layersState.map(l => l.filter && l.filter.layerTemplateKey).join(','));
+const getUsedKeysForComponent = common.getUsedKeysForComponent(getSubstate);
+const haveAllKeysRegisteredUse = common.haveAllKeysRegisteredUse(getSubstate);
 
 export default {
+	getActive,
 	getActiveKey,
+	getActiveKeys,
+	getActiveModels,
 	getAll,
 	getAllAsObject,
 
 	getByKey,
+	getByKeys,
+	getByKeysAsObject,
 
 	getDataByKey,
 	getDeletePermissionByKey,
 
+	getEditedActive,
+	getEditedAll,
+	getEditedAllAsObject,
+	getEditedByKey,
 	getEditedDataByKey,
-	
-	getIndexed: common.getIndexed(getSubstate),
+	getEditedKeys,
+
+	getIndexed,
+
+	getStateToSave,
+	getSubstate,
 
 	getUpdatePermissionByKey,
-	getFilteredTemplatesGroupedByLayerKey,
-	getFilteredTemplatesGroupedByLayerTemplateKey,
-	getSubstate
+	getUsedKeysForComponent,
+
+	haveAllKeysRegisteredUse,
 };

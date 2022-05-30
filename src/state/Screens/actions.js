@@ -4,7 +4,7 @@ import Select from '../Select';
 let timeouts = {};
 
 // ============ creators ===========
-function addOrUpdate (setKey, lineage, width, minActiveWidth, component, props) {
+function addOrUpdate(setKey, lineage, width, minActiveWidth, component, props) {
 	return (dispatch, getState) => {
 		let existingScreen = Select.screens.getScreenByLineage(getState(), lineage);
 
@@ -12,27 +12,23 @@ function addOrUpdate (setKey, lineage, width, minActiveWidth, component, props) 
 			if (timeouts[lineage]) {
 				clearTimeout(timeouts[lineage]);
 			}
-			dispatch(actionUpdate(
-				setKey,
-				lineage,
-				{
+			dispatch(
+				actionUpdate(setKey, lineage, {
 					width,
 					minActiveWidth,
 					desiredState: 'opening',
 					component,
-					props
+					props,
 				})
 			);
 		} else {
-			dispatch(actionAdd(
-				setKey,
-				lineage,
-				{
+			dispatch(
+				actionAdd(setKey, lineage, {
 					width,
 					minActiveWidth,
 					desiredState: 'opening',
 					component,
-					props
+					props,
 				})
 			);
 		}
@@ -50,7 +46,7 @@ function ensureSet(setKey) {
 		if (!existingSet) {
 			dispatch(actionAddSet(setKey));
 		}
-	}
+	};
 }
 
 function open(setKey, screenLineage) {
@@ -68,13 +64,13 @@ function close(setKey, screenLineage) {
 		dispatch(actionTopHistory(setKey, screenLineage));
 
 		timeouts[screenLineage] = setTimeout(() => {
-			dispatch(actionRemove(setKey, screenLineage))
+			dispatch(actionRemove(setKey, screenLineage));
 		}, 550);
 	};
 }
 
 function removeAllScreensFromSet(setKey) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(actionRemoveAllScreensFromSet(setKey));
 	};
 }
@@ -87,7 +83,7 @@ function retract(setKey, screenLineage) {
 }
 
 function topHistory(setKey, screenLineage) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(ensureSet(setKey));
 		dispatch(actionTopHistory(setKey, screenLineage));
 	};
@@ -99,62 +95,62 @@ const actionAdd = (setKey, lineage, data) => {
 		type: ActionTypes.SCREENS.ADD,
 		setKey,
 		lineage,
-		data
-	}
+		data,
+	};
 };
 
-const actionAddSet = (setKey) => {
+const actionAddSet = setKey => {
 	return {
 		type: ActionTypes.SCREENS.SETS.ADD,
-		setKey
-	}
+		setKey,
+	};
 };
 
 const actionOpen = (setKey, lineage) => {
 	return {
 		type: ActionTypes.SCREENS.OPEN,
 		setKey,
-		lineage
-	}
+		lineage,
+	};
 };
 
 const actionClose = (setKey, lineage) => {
 	return {
 		type: ActionTypes.SCREENS.CLOSE,
 		setKey,
-		lineage
-	}
+		lineage,
+	};
 };
 
 const actionRemove = (setKey, lineage) => {
 	return {
 		type: ActionTypes.SCREENS.REMOVE,
 		setKey,
-		lineage
-	}
+		lineage,
+	};
 };
 
-const actionRemoveAllScreensFromSet = (setKey) => {
+const actionRemoveAllScreensFromSet = setKey => {
 	return {
 		type: ActionTypes.SCREENS.REMOVE_ALL,
-		setKey
-	}
+		setKey,
+	};
 };
 
 const actionRetract = (setKey, lineage) => {
 	return {
 		type: ActionTypes.SCREENS.RETRACT,
 		setKey,
-		lineage
-	}
+		lineage,
+	};
 };
 
 const actionTopHistory = (setKey, lineage) => {
 	return {
 		type: ActionTypes.SCREENS.TOP_HISTORY,
 		setKey,
-		lineage
-	}
+		lineage,
+	};
 };
 
 const actionUpdate = (setKey, lineage, data) => {
@@ -162,10 +158,9 @@ const actionUpdate = (setKey, lineage, data) => {
 		type: ActionTypes.SCREENS.UPDATE,
 		setKey,
 		lineage,
-		data
-	}
+		data,
+	};
 };
-
 
 // ============ export ===========
 
@@ -176,5 +171,5 @@ export default {
 	open,
 	removeAllScreensFromSet,
 	retract,
-	topHistory
-}
+	topHistory,
+};

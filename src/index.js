@@ -2,67 +2,106 @@ import {createStore, combineReducers, applyMiddleware, compose} from 'redux';
 import thunk from 'redux-thunk';
 import logger from 'redux-logger';
 import {reduxBatch} from '@manaflair/redux-batch';
-import {connect, Provider} from 'react-redux';
+import {
+	setState as setRecomputeState,
+	createSelector as createRecomputeSelector,
+	createObserver as createRecomputeObserver,
+} from '@jvitela/recompute';
+import {connect, Provider, ReactReduxContext} from 'react-redux';
 
-import connects from "./components/connects";
+import connects from './components/connects';
+import MountWrapper from './components/MountWrapper';
 
-import commonActionTypes from "./constants/ActionTypes";
-import Action from "./state/Action";
-import Select from "./state/Select";
+import {setFetch} from './state/_common/request';
 
-import commonActions from "./state/_common/actions";
-import commonHelpers from "./state/_common/helpers";
-import commonReducers, {DEFAULT_INITIAL_STATE} from "./state/_common/reducers";
-import commonSelectors from "./state/_common/selectors";
+import commonActionTypes from './constants/ActionTypes';
+import Action from './state/Action';
+import Select from './state/Select';
 
-import appReducers from './state/App/reducers';
-import areasReducers from './state/Areas/reducers';
-import areaRelationsReducers from './state/AreaRelations/reducers';
-import attributesReducers from './state/Attributes/reducers';
-import attributeDataReducers from './state/AttributeData/reducers';
-import attributeDataSourcesReducers from './state/AttributeDataSources/reducers';
-import attributeRelationsReducers from './state/AttributeRelations/reducers';
-import attributeSetsReducers from './state/AttributeSets/reducers';
-import casesReducers from './state/Cases/reducers';
-import componentsReducers from './state/Components/reducers';
-import chartsReducers from './state/Charts/reducers';
-import layerPeriodsReducers from './state/LayerPeriods/reducers';
-import layerTemplatesReducers from './state/LayerTemplates/reducers';
-import layerTreesReducers from './state/LayerTrees/reducers';
-import mapsReducers from './state/Maps/reducers';
-import periodsReducers from './state/Periods/reducers';
-import placesReducers from './state/Places/reducers';
-import scenariosReducers from './state/Scenarios/reducers';
-import scopesReducers from './state/Scopes/reducers';
-import screensReducers from './state/Screens/reducers';
-import selectionsReducers from './state/Selections/reducers';
-import snapshotsReducers from './state/Snapshots/reducers';
-import spatialDataReducers from './state/SpatialData/reducers';
-import spatialDataSourcesReducers from './state/SpatialDataSources/reducers';
-import spatialVectorDataSourcesReducers from './state/SpatialDataSources/vector/reducers';
-import spatialRelationsReducers from './state/SpatialRelations/reducers';
-import stylesReducers from './state/Styles/reducers';
-import attributeStatisticsReducers from './state/AttributeStatistics/reducers';
-import tagsReducers from './state/Tags/reducers';
-import usersReducers from './state/Users/reducers';
-import viewsReducers from './state/Views/reducers';
-import windowsReducers from './state/Windows/reducers';
+import commonActions from './state/_common/actions';
+import commonHelpers from './state/_common/helpers';
+import commonReducers, {DEFAULT_INITIAL_STATE} from './state/_common/reducers';
+import commonSelectors from './state/_common/selectors';
 
+import activeMetadataActions from './state/_activeMetadata/actions';
+import {STORES_TO_ENSURE_WITH_FILTER_BY_ACTIVE} from './state/_activeMetadata/constants';
+
+import appReducers, {
+	INITIAL_STATE as appInitialState,
+} from './state/App/reducers';
+import areasReducers, {
+	INITIAL_STATE as areasInitialState,
+} from './state/Areas/reducers';
+import areaRelationsReducers, {
+	INITIAL_STATE as areaRelationsInitialState,
+} from './state/AreaRelations/reducers';
+import attributesReducers, {
+	INITIAL_STATE as attributesInitialState,
+} from './state/Attributes/reducers';
+import attributeSetsReducers, {
+	INITIAL_STATE as attributeSetsInitialState,
+} from './state/AttributeSets/reducers';
+import casesReducers, {
+	INITIAL_STATE as casesInitialState,
+} from './state/Cases/reducers';
+import componentsReducers, {
+	INITIAL_STATE as componentsInitialState,
+} from './state/Components/reducers';
+import dataReducers, {
+	INITIAL_STATE as dataInitialState,
+} from './state/Data/reducers';
+import layerTemplatesReducers, {
+	INITIAL_STATE as layerTemplatesInitialState,
+} from './state/LayerTemplates/reducers';
+import layerTreesReducers, {
+	INITIAL_STATE as layerTreesInitialState,
+} from './state/LayerTrees/reducers';
+import mapsReducers, {
+	INITIAL_STATE as mapsInitialState,
+} from './state/Maps/reducers';
+import periodsReducers, {
+	INITIAL_STATE as periodsInitialState,
+} from './state/Periods/reducers';
+import placesReducers, {
+	INITIAL_STATE as placesInitialState,
+} from './state/Places/reducers';
+import scenariosReducers, {
+	INITIAL_STATE as scenariosInitialState,
+} from './state/Scenarios/reducers';
+import scopesReducers, {
+	INITIAL_STATE as scopesInitialState,
+} from './state/Scopes/reducers';
+import screensReducers, {
+	INITIAL_STATE as screensInitialState,
+} from './state/Screens/reducers';
+import selectionsReducers, {
+	INITIAL_STATE as selectionsInitialState,
+} from './state/Selections/reducers';
+import stylesReducers, {
+	INITIAL_STATE as stylesInitialState,
+} from './state/Styles/reducers';
+import tagsReducers, {
+	INITIAL_STATE as tagsInitialState,
+} from './state/Tags/reducers';
+import usersReducers, {
+	INITIAL_STATE as usersInitialState,
+} from './state/Users/reducers';
+import viewsReducers, {
+	INITIAL_STATE as viewsInitialState,
+} from './state/Views/reducers';
+import windowsReducers, {
+	INITIAL_STATE as windowsInitialState,
+} from './state/Windows/reducers';
 
 const baseStores = {
 	app: appReducers,
 	areas: areasReducers,
 	areaRelations: areaRelationsReducers,
 	attributes: attributesReducers,
-	attributeRelations: attributeRelationsReducers,
-	attributeStatistics: attributeStatisticsReducers,
 	attributeSets: attributeSetsReducers,
-	attributeData: attributeDataReducers,
-	attributeDataSources: attributeDataSourcesReducers,
 	cases: casesReducers,
-	charts: chartsReducers,
 	components: componentsReducers,
-	layerPeriods: layerPeriodsReducers,
+	data: dataReducers,
 	layerTemplates: layerTemplatesReducers,
 	layerTrees: layerTreesReducers,
 	maps: mapsReducers,
@@ -72,11 +111,6 @@ const baseStores = {
 	scopes: scopesReducers,
 	screens: screensReducers,
 	selections: selectionsReducers,
-	snapshots: snapshotsReducers,
-	spatialData: spatialDataReducers,
-	spatialDataSources: spatialDataSourcesReducers,
-	spatialVectorDataSources: spatialVectorDataSourcesReducers,
-	spatialRelations: spatialRelationsReducers,
 	styles: stylesReducers,
 	tags: tagsReducers,
 	users: usersReducers,
@@ -84,13 +118,66 @@ const baseStores = {
 	windows: windowsReducers,
 };
 
-const createBaseStore = (specificStores, rootStores, middleware) => {
-	let appliedMiddleware = applyMiddleware(thunk, ...middleware);
+const initialStates = {
+	app: appInitialState,
+	areas: areasInitialState,
+	areaRelations: areaRelationsInitialState,
+	attributes: attributesInitialState,
+	attributeSets: attributeSetsInitialState,
+	cases: casesInitialState,
+	components: componentsInitialState,
+	data: dataInitialState,
+	layerTemplates: layerTemplatesInitialState,
+	layerTrees: layerTreesInitialState,
+	maps: mapsInitialState,
+	periods: periodsInitialState,
+	places: placesInitialState,
+	scenarios: scenariosInitialState,
+	scopes: scopesInitialState,
+	screens: screensInitialState,
+	selections: selectionsInitialState,
+	styles: stylesInitialState,
+	tags: tagsInitialState,
+	users: usersInitialState,
+	views: viewsInitialState,
+	windows: windowsInitialState,
+};
+
+/**
+ * Helper function for creating redux store.
+ * @param {Object} specificStores Object with speficic store/stores. Stores will by available in state under "specific" key.
+ * @param {Array} rootStores Array of redux stores
+ * @param {Array} middleware Array of redux middlewares.
+ * @param {Object?} preloadedState Optional object used for store initialization as a default state.
+ * @returns {Object} redux store instance
+ */
+const createBaseStore = (
+	specificStores,
+	rootStores = [],
+	middleware = [],
+	preloadedState
+) => {
+	const enhancedThunk = thunk.withExtraArgument(activeMetadataActions);
+
+	let appliedMiddleware = applyMiddleware(enhancedThunk, ...middleware);
 	if (process.env.NODE_ENV === 'development') {
-		appliedMiddleware = applyMiddleware(thunk, logger, ...middleware);
+		appliedMiddleware = applyMiddleware(enhancedThunk, logger, ...middleware);
 	}
-	let stores = specificStores ? {...baseStores, ...rootStores, specific: combineReducers(specificStores)} : {...baseStores, ...rootStores};
-	return createStore(combineReducers(stores), compose(reduxBatch, appliedMiddleware, reduxBatch, applyMiddleware(thunk), reduxBatch));
+	let stores = specificStores
+		? {...baseStores, ...rootStores, specific: combineReducers(specificStores)}
+		: {...baseStores, ...rootStores};
+	if (preloadedState) {
+		return createStore(
+			combineReducers(stores),
+			preloadedState,
+			compose(reduxBatch, appliedMiddleware, reduxBatch)
+		);
+	} else {
+		return createStore(
+			combineReducers(stores),
+			compose(reduxBatch, appliedMiddleware, reduxBatch)
+		);
+	}
 };
 
 export {
@@ -98,30 +185,32 @@ export {
 	combineReducers,
 	applyMiddleware,
 	compose,
-
 	connect,
+	initialStates,
 	Provider,
-
+	ReactReduxContext,
+	MountWrapper,
 	baseStores,
 	createBaseStore,
-
 	connects,
-
 	commonActionTypes,
 	Action,
 	Select,
-
 	commonActions,
 	commonHelpers,
 	commonReducers,
 	commonSelectors,
-
 	DEFAULT_INITIAL_STATE,
-
+	activeMetadataActions,
+	STORES_TO_ENSURE_WITH_FILTER_BY_ACTIVE,
 	thunk,
 	logger,
 	reduxBatch,
-}
+	createRecomputeObserver,
+	createRecomputeSelector,
+	setRecomputeState,
+	setFetch,
+};
 
 // TODO remove?
 export default {
@@ -134,5 +223,7 @@ export default {
 	commonReducers,
 	commonSelectors,
 
-	DEFAULT_INITIAL_STATE
-}
+	initialStates,
+	DEFAULT_INITIAL_STATE,
+	setFetch,
+};

@@ -1,18 +1,11 @@
-import _deprecatedSelections from './_deprecatedSelections/selectors';
-
 import App from './App/selectors';
 import Areas from './Areas/selectors';
 import AreaRelations from './AreaRelations/selectors';
 import Attributes from './Attributes/selectors';
-import AttributeDataSources from './AttributeDataSources/selectors';
-import AttributeData from './AttributeData/selectors';
-import AttributeRelations from './AttributeRelations/selectors';
 import AttributeSets from './AttributeSets/selectors';
-import AttributeStatistics from './AttributeStatistics/selectors';
 import Cases from './Cases/selectors';
-import Charts from './Charts/selectors';
 import Components from './Components/selectors';
-import LayerPeriods from './LayerPeriods/selectors';
+import Data from './Data/selectors';
 import LayerTemplates from './LayerTemplates/selectors';
 import LayerTrees from './LayerTrees/selectors';
 import Maps from './Maps/selectors';
@@ -22,31 +15,22 @@ import Scenarios from './Scenarios/selectors';
 import Scopes from './Scopes/selectors';
 import Screens from './Screens/selectors';
 import Selections from './Selections/selectors';
-import Snapshots from './Snapshots/selectors';
-import SpatialData from './SpatialData/selectors';
-import SpatialDataSources from './SpatialDataSources/selectors';
-import SpatialRelations from './SpatialRelations/selectors';
 import Styles from './Styles/selectors';
 import Tags from './Tags/selectors';
+import Timeline from './Timeline/selectors';
 import Users from './Users/selectors';
 import Views from './Views/selectors';
 import Windows from './Windows/selectors';
 
 export default {
-	_deprecatedSelections: _deprecatedSelections,
 	app: App,
 	areas: Areas,
 	areaRelations: AreaRelations,
 	attributes: Attributes,
-	attributeData: AttributeData,
-	attributeDataSources: AttributeDataSources,
-	attributeStatistics: AttributeStatistics,
-	attributeRelations: AttributeRelations,
 	attributeSets: AttributeSets,
 	cases: Cases,
-	charts: Charts,
 	components: Components,
-	layerPeriods: LayerPeriods,
+	data: Data,
 	layerTemplates: LayerTemplates,
 	layerTrees: LayerTrees,
 	maps: Maps,
@@ -56,13 +40,10 @@ export default {
 	scopes: Scopes,
 	screens: Screens,
 	selections: Selections,
-	snapshots: Snapshots,
-	spatialData: SpatialData,
-	spatialDataSources: SpatialDataSources,
-	spatialRelations: SpatialRelations,
 	styles: Styles,
 	tags: Tags,
+	timeline: Timeline,
 	users: Users,
 	views: Views,
-	windows: Windows
+	windows: Windows,
 };

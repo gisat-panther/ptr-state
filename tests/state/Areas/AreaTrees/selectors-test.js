@@ -2,197 +2,6 @@ import {assert} from 'chai';
 import selectors from '../../../../src/state/Areas/AreaTrees/selectors';
 
 describe('state/Areas/AreaTrees/selectors', function () {
-	describe('getAll', function () {
-		const tests = [
-			{
-				name: 'null',
-				state: {
-					areas: {
-						areaTrees: {
-							byKey: null,
-						},
-					},
-				},
-				expectedResult: [],
-			},
-			{
-				name: 'empty',
-				state: {
-					areas: {
-						areaTrees: {
-							byKey: {},
-						},
-					},
-				},
-				expectedResult: [],
-			},
-			{
-				name: 'some',
-				state: {
-					areas: {
-						areaTrees: {
-							byKey: {
-								k1: {n: 1},
-								k2: {n: 2},
-								k3: {n: 3, removed: true},
-							},
-						},
-					},
-				},
-				expectedResult: [{n: 1}, {n: 2}],
-			},
-		];
-
-		tests.forEach((test) => {
-			it(test.name, function () {
-				assert.deepStrictEqual(
-					selectors.getAll(test.state),
-					test.expectedResult
-				);
-			});
-		});
-	});
-
-	describe('getAllAsObject', function () {
-		const tests = [
-			{
-				name: 'null',
-				state: {
-					areas: {
-						areaTrees: {
-							byKey: {},
-						},
-					},
-				},
-				expectedResult: {},
-			},
-			{
-				name: 'empty',
-				state: {
-					areas: {
-						areaTrees: {
-							byKey: {},
-						},
-					},
-				},
-				expectedResult: {},
-			},
-			{
-				name: 'some',
-				state: {
-					areas: {
-						areaTrees: {
-							byKey: {
-								k1: {n: 1},
-								k2: {n: 2},
-								k3: {n: 3, removed: true},
-							},
-						},
-					},
-				},
-				expectedResult: {
-					k1: {n: 1},
-					k2: {n: 2},
-				},
-			},
-		];
-
-		tests.forEach((test) => {
-			it(test.name, function () {
-				assert.deepStrictEqual(
-					selectors.getAllAsObject(test.state),
-					test.expectedResult
-				);
-			});
-		});
-	});
-
-	describe('getAllForActiveScope', function () {
-		const tests = [
-			{
-				name: 'empty models',
-				state: {
-					areas: {
-						areaTrees: {},
-					},
-					scopes: {
-						activeKey: 'scopeK',
-					},
-				},
-				expectedResult: null,
-			},
-			{
-				name: 'empty indexes',
-				state: {
-					areas: {
-						areaTrees: {
-							byKey: {k1: {n: 1}, k2: {n: 2}},
-							indexes: [],
-						},
-					},
-					scopes: {
-						activeKey: 'scopeK',
-					},
-				},
-				expectedResult: null,
-			},
-			{
-				name: 'no active skope key',
-				state: {
-					areas: {
-						areaTrees: {
-							byKey: {k1: {n: 1}, k2: {n: 2}},
-							indexes: [
-								{filter: 'fil', order: 'desc'},
-								{
-									filter: {scopeKey: 'scopeK'},
-									order: 'asc',
-									count: 4,
-									index: [null, 'k1', 'k2', 'k3'],
-								},
-							],
-						},
-					},
-					scopes: {},
-				},
-				expectedResult: null,
-			},
-			{
-				name: 'some',
-				state: {
-					areas: {
-						areaTrees: {
-							byKey: {k1: {n: 1}, k2: {n: 2}},
-							indexes: [
-								{filter: 'fil', order: 'desc'},
-								{
-									filter: {scopeKey: 'scopeK'},
-									order: 'asc',
-									count: 4,
-									index: [null, 'k1', 'k2', 'k3'],
-								},
-							],
-						},
-					},
-					scopes: {
-						activeKey: 'scopeK',
-					},
-				},
-				expectedResult: [{n: 1}, {n: 2}, {key: 'k3'}, null],
-			},
-		];
-		const order = 'asc';
-
-		tests.forEach((test) => {
-			it(test.name, function () {
-				assert.deepStrictEqual(
-					selectors.getAllForActiveScope(test.state, order),
-					test.expectedResult
-				);
-			});
-		});
-	});
-
 	it('getActiveKey', function () {
 		const state = {
 			areas: {
@@ -204,7 +13,7 @@ describe('state/Areas/AreaTrees/selectors', function () {
 	});
 
 	describe('getActive', function () {
-		const createState = (activeKey) => ({
+		const createState = activeKey => ({
 			areas: {
 				areaTrees: {
 					byKey: {
@@ -301,7 +110,7 @@ describe('state/Areas/AreaTrees/selectors', function () {
 			},
 		];
 
-		tests.forEach((test) => {
+		tests.forEach(test => {
 			it(test.name, function () {
 				assert.deepStrictEqual(
 					selectors.getByKeys(test.state, test.keys),
@@ -354,7 +163,7 @@ describe('state/Areas/AreaTrees/selectors', function () {
 			},
 		];
 
-		tests.forEach((test) => {
+		tests.forEach(test => {
 			it(test.name, function () {
 				assert.deepStrictEqual(
 					selectors.getByKeysAsObject(test.state, test.keys),

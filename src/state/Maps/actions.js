@@ -1,931 +1,846 @@
-import _ from 'lodash';
+import {
+	each as _each,
+	isMatch as _isMatch,
+	isNumber as _isNumber,
+	omitBy as _omitBy,
+	pickBy as _pickBy,
+	includes as _includes,
+	isEmpty as _isEmpty,
+} from 'lodash';
+import {map as mapUtils} from '@gisatcz/ptr-utils';
+
 import ActionTypes from '../../constants/ActionTypes';
 import Select from '../../state/Select';
 import commonActions from '../_common/actions';
 import commonHelpers from '../_common/helpers';
 import commonSelectors from '../_common/selectors';
-import {utils, map as mapUtils, layerTree} from '@gisatcz/ptr-utils'
 
-import LayerTemplatesAction from "../LayerTemplates/actions";
-import AreasAction from "../Areas/actions";
-import SelectionsAction from "../Selections/actions";
-import SpatialRelationsAction from "../SpatialRelations/actions";
-import AreaRelationsAction from "../AreaRelations/actions";
-import SpatialDataSourcesAction from "../SpatialDataSources/actions";
-import SpatialDataAction from "../SpatialData/actions";
-import AttributesAction from "../Attributes/actions";
-import AttributeRelationsAction from "../AttributeRelations/actions";
-import AttributeDataSourcesAction from "../AttributeDataSources/actions";
-import AttributeDataAction from "../AttributeData/actions";
-import StylesAction from "../Styles/actions";
+import DataActions from '../Data/actions';
+import {
+	TILED_VECTOR_LAYER_TYPES,
+	SINGLE_VECTOR_LAYER_TYPES,
+} from '../Data/constants';
+import StylesActions from '../Styles/actions';
 
-const {actionGeneralError} = commonActions;
-
-const setInitial = commonActions.setInitial(ActionTypes.MAPS);
-
-/*
-Table of contents
-	- creators
-	- deprecated creators
-	- actions
-	- deprecated actions
-	- exports
-*/
-
+import helpers from './selectorHelpers';
+import SelectionsAction from '../Selections/actions';
 
 /* ==================================================
  * CREATORS
  * ================================================== */
 
-const setActiveMapKey = (mapKey) => {
+/**
+ * Add map to store and dispatch use
+ * @param mapState {Object}
+ */
+const addMap = mapState => {
 	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(mapByKey) {
-			const activeMapKey = Select.maps.getActiveMapKey(state);
-			if(mapKey !== activeMapKey) {
-				dispatch(actionSetActiveMapKey(mapKey));
-				const setByMapKey = Select.maps.getMapSetByMapKey(state, mapKey);
-				if(setByMapKey) {
-					dispatch(setActiveSetKey(setByMapKey.key));
-				}
-			}
+		if (!mapState) {
+			dispatch(commonActions.actionGeneralError(`No map state given`));
+		} else if (!mapState.key) {
+			dispatch(
+				commonActions.actionGeneralError(`Undefined mapKey for map ${mapState}`)
+			);
 		} else {
-			return dispatch(actionGeneralError(`Can not set mapKey ${mapKey} as active, because map with this key dont exists.`));
+			dispatch(actionAddMap(mapState));
+			dispatch(use(mapState.key, null, null));
 		}
-	};
-};
-
-const setMapSetActiveMapKey = (mapKey) => {
-	return (dispatch, getState) => {
-		let set = Select.maps.getMapSetByMapKey(getState(), mapKey);
-		if (set) {
-			dispatch(actionSetMapSetActiveMapKey(set.key, mapKey));
-		}
-	};
-};
-
-const setActiveSetKey = (setKey) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const setByKey = Select.maps.getMapSetByKey(state, setKey);
-		if(setByKey) {
-			const activeSetKey = Select.maps.getActiveSetKey(state);
-			if(setKey !== activeSetKey) {
-				return dispatch(actionSetActiveSetKey(setKey));
-			}
-		} else {
-			return dispatch(actionGeneralError(`Can not set setKey ${setKey} as active, because set with this key dont exists.`));
-		}
-	};
-};
-
-const addSet = (set) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const setKey = set.key;
-		if(!setKey) {
-			return dispatch(actionGeneralError(`Undefined setKey for set ${set}`));
-		} else {
-			const setByKey = Select.maps.getMapSetByKey(state, setKey);
-			if(setByKey) {
-				return dispatch(actionGeneralError(`Set with given setKey (${setKey}) already exists ${setByKey}`));
-			} else {
-				dispatch(actionAddSet(set));
-				//if no set is active, set set as active
-				const activeSetKey = Select.maps.getActiveSetKey(state);
-				if(!activeSetKey) {
-					dispatch(actionSetActiveSetKey(setKey));
-				}
-			}
-		}
-
 	};
 };
 
 /**
- * {Object} layerTreesFilter
- * {Array} mapKeys
+ * If map set exists, add map to map set and dispatch use
+ * @param mapKey {string}
+ * @param mapSetKey {string}
  */
-const addLayersToMaps = (layerTreesFilter, mapKeys, useActiveMetadataKeys) => {
+const addMapToSet = (mapKey, mapSetKey) => {
 	return (dispatch, getState) => {
-		const state = getState();
-		// getIndexed
-		const layerTreesData = Select.layerTrees.getByFilterOrder(state, layerTreesFilter, null);
-		
-		if(layerTreesData) {
-			//BE should return only one record, but could be bore fore scopeKey and applicationKey. 
-			//Take last record
-			const lastLTdata = layerTreesData[layerTreesData.length - 1];
-			
-			//parse to map state
-			if(lastLTdata && lastLTdata.data && lastLTdata.data.structure && lastLTdata.data.structure.length > 0) {
-				const layerTreeStructure = lastLTdata.data.structure;
-				dispatch(addTreeLayers(layerTreeStructure, 'layers', mapKeys, useActiveMetadataKeys));
-				dispatch(addTreeLayers(layerTreeStructure, 'backgroundLayers', mapKeys, useActiveMetadataKeys));
-			}
-		}
-	}
-};
-
-const addTreeLayers = (treeLayers, layerTreeBranchKey, mapKeys, useActiveMetadataKeys) => {
-	return (dispatch, getState) => {
-		const state = getState();
-
-		//no array but object
-		const flattenLT = layerTree.getFlattenLayers(treeLayers[0][layerTreeBranchKey]);
-		const visibleLayers = flattenLT.filter((l) => l.visible);
-		//add all visible layers in layerTree to map
-		const visibleLayersKeys = visibleLayers.map(l => l.key);
-
-
-		if(mapKeys) {
-			mapKeys.forEach((mapKey) => {
-
-				// check if layer in map
-				const layersState = Select.maps.getLayersStateByMapKey_deprecated(state, mapKey, useActiveMetadataKeys);
-
-				// clean templateKeys found in map
-				const uniqVisibleLayersKeys = layersState ? visibleLayersKeys.filter((lk) => !layersState.some(ls => ls.layer && ls.layer.layerTemplate === lk)) : visibleLayersKeys;
-				uniqVisibleLayersKeys.forEach((layerKey) => {
-					const zIndex = layerTree.getLayerZindex(treeLayers[0], layerKey);
-					const layer = {layerTemplate: layerKey};
-
-					switch (layerTreeBranchKey) {
-						case 'backgroundLayers':
-							return dispatch(setMapBackgroundLayer(mapKey, layer, zIndex));
-						case 'layers':
-							return dispatch(addLayer(mapKey, layer, zIndex, useActiveMetadataKeys));
-						default:
-							return dispatch(addLayer(mapKey, layer, zIndex, useActiveMetadataKeys));
-					}
-				}) 
-			})
-		}
-	}
-};
-
-const removeSet = (setKey) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const setByKey = Select.maps.getMapSetByKey(state, setKey);
-		if(!setByKey) {
-			return dispatch(actionGeneralError(`No set found for setKey ${setKey}.`));
-		} else {
-			return dispatch(actionRemoveSet(setKey));
-		}
-	};
-};
-
-const addMapToSet = (setKey, mapKey) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const setByKey = Select.maps.getMapSetByKey(state, setKey);
-		if(!setByKey) {
-			return dispatch(actionGeneralError(`No set found for setKey ${setKey}.`));
-		} else {
-			//check map exist
-			if (setByKey.maps && setByKey.maps.includes(mapKey)) {
-				return dispatch(actionGeneralError(`Set ${setKey} alredy contains map ${mapKey}.`));
-			} else {
-				dispatch(actionAddMapToSet(setKey, mapKey));
-				//if no map is active, set map as active
-				const activeMapKey = Select.maps.getMapSetActiveMapKey(state, setKey);
-				if(!activeMapKey) {
-					dispatch(setMapSetActiveMapKey(mapKey));
-				}
-				
-			}
-		}
-	};
-};
-
-const removeMapKeyFromSet = (setKey, mapKey) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const setByKey = Select.maps.getMapSetByKey(state, setKey);
-		if(!setByKey) {
-			return dispatch(actionGeneralError(`No set found for setKey ${setKey}.`));
-		} else {
-			//check map exist
-			if (setByKey.maps && setByKey.maps.includes(mapKey)) {
-				const activeMapKey = Select.maps.getMapSetActiveMapKey(state, setKey);
-				dispatch(actionRemoveMapKeyFromSet(setKey, mapKey));
-
-				if (activeMapKey === mapKey) {
-					const mapSetMapKeys = Select.maps.getMapSetMapKeys(getState(), setKey);
-					if (mapSetMapKeys) {
-						dispatch(actionSetMapSetActiveMapKey(setKey, mapSetMapKeys[0]));
-					}
-				}
-			} else {
-				return dispatch(actionGeneralError(`Set ${setKey} do not contains map ${mapKey}.`));
-			}
-		}
-	}
-};
-
-const setSetView = (setKey, view) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const setByKey = Select.maps.getMapSetByKey(state, setKey);
-		if(!setByKey) {
-			return dispatch(actionGeneralError(`No set found for setKey ${setKey}.`));
-		} else {
-			return dispatch(actionSetSetView(setKey, view));
-		}
-	}
-};
-
-const setSetSync = (setKey, sync) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const setByKey = Select.maps.getMapSetByKey(state, setKey);
-		if(!setByKey) {
-			return dispatch(actionGeneralError(`No set found for setKey ${setKey}.`));
-		} else {
-			return dispatch(actionSetSetSync(setKey, sync));
-		}
-	}
-};
-
-const orderSetByMapPeriod = (setKey) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		let setMaps = Select.maps.getMapSetMapKeys(state, setKey);
-		let maps = Select.maps.getMapsAsObject(state);
-		let periods = Select.periods.getAllAsObject(state);
-		if (setMaps && maps && periods) {
-			let extendedSetMaps = setMaps.map(mapKey => {
-				let map = _.cloneDeep(maps[mapKey]);
-				let periodKey = map && map.data && map.data.metadataModifiers && map.data.metadataModifiers.period;
-				if (periodKey && periods[periodKey]) {
-					map.data.metadataModifiers.period = periods[periodKey].data.period || periods[periodKey].data.nameDisplay;
-				}
-				return map;
-			});
-
-			if (extendedSetMaps && extendedSetMaps.length) {
-				let orderedExtendedSetMaps = _.orderBy(extendedSetMaps, ['data.metadataModifiers.period'], ['asc']);
-				let orderedMapKeys = orderedExtendedSetMaps.map(map => map.key);
-				dispatch(actionSetSetMaps(setKey, orderedMapKeys))
-			}
-		}
-	};
-};
-
-const addMap = (map) => {
-	return (dispatch, getState) => {
-		if(map && !map.key) {
-			return dispatch(actionGeneralError(`Undefined mapKey for map ${map}`));
-		} else {
+		if (mapKey && mapSetKey) {
 			const state = getState();
-			const mapByKey = Select.maps.getMapByKey(state, map.key);
-			
-			if (mapByKey) {
-				return dispatch(actionGeneralError(`Map with given mapKey (${map.key}) already exists ${mapByKey}`));
+			const mapSet = Select.maps.getMapSetByKey(state, mapSetKey);
+			if (mapSet) {
+				dispatch(actionAddMapToSet(mapKey, mapSetKey));
+				dispatch(use(mapKey, null, null));
 			} else {
-				return dispatch(actionAddMap(map));
+				dispatch(
+					commonActions.actionGeneralError(
+						`No mapSet found for given key ${mapSetKey}`
+					)
+				);
+			}
+		} else {
+			dispatch(
+				commonActions.actionGeneralError(`No mapKey or mapSetKey given`)
+			);
+		}
+	};
+};
+
+/**
+ * Add map set to store and dispatch use for all maps from the map set
+ * @param mapSetState {Object}
+ */
+const addMapSet = mapSetState => {
+	return (dispatch, getState) => {
+		if (!mapSetState) {
+			dispatch(commonActions.actionGeneralError(`No map state given`));
+		} else if (!mapSetState.key) {
+			dispatch(
+				commonActions.actionGeneralError(
+					`Undefined mapKey for map ${mapSetState}`
+				)
+			);
+		} else {
+			dispatch(actionAddMapSet(mapSetState));
+			if (mapSetState.maps?.length) {
+				dispatch(actionMapSetUseRegister(mapSetState.key));
+				mapSetState.maps.forEach(mapKey => dispatch(use(mapKey, null, null)));
 			}
 		}
 	};
 };
 
-const addMapForPeriod = (periodKey, setKey) => {
+/**
+ * Add layers at the end of map layers list
+ * @param mapKey {string}
+ * @param layerStates {Array} A collection, where each object represents state of the layer
+ */
+const addMapLayers = (mapKey, layerStates) => {
 	return (dispatch, getState) => {
 		const state = getState();
-		let map = Select.maps.getMapByMetadata_deprecated(state, {period: periodKey});
-
-		if (!map) {
-			let mapKey = utils.uuid();
-			map = {
-				key: mapKey,
-				data: {
-					metadataModifiers: {
-						period: periodKey
-					}
-				}
-			};
-			dispatch(addMap(map));
+		const map = Select.maps.getMapByKey(state, mapKey);
+		if (map) {
+			dispatch(actionAddMapLayers(mapKey, layerStates));
+			dispatch(use(mapKey, null, null));
+		} else {
+			dispatch(
+				commonActions.actionGeneralError(`No map exists for mapKey ${mapKey}`)
+			);
 		}
-
-		dispatch(addMapToSet(setKey, map.key));
-		dispatch(orderSetByMapPeriod(setKey));
 	};
 };
 
-const removeMap = (mapKey) => {
+/**
+ * Add map layer to the specific position in the list
+ * @param mapKey {string}
+ * @param layerState {Object}
+ * @param index {number} position
+ */
+const addMapLayerToIndex = (mapKey, layerState, index) => {
 	return (dispatch, getState) => {
 		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
+		const map = Select.maps.getMapByKey(state, mapKey);
+		if (map) {
+			dispatch(actionAddMapLayerToIndex(mapKey, layerState, index));
+			dispatch(use(mapKey, null, null));
 		} else {
+			dispatch(
+				commonActions.actionGeneralError(`No map exists for mapKey ${mapKey}`)
+			);
+		}
+	};
+};
+
+/**
+ * Remove map from store
+ * @param mapKey {string}
+ */
+const removeMap = mapKey => {
+	return (dispatch, getState) => {
+		const state = getState();
+		const existingMap = Select.maps.getMapByKey(state, mapKey);
+
+		if (existingMap) {
+			const inUse = Select.maps.isMapInUse(state, mapKey);
 			const mapSets = Select.maps.getMapSets(state);
+
+			if (inUse) {
+				dispatch(actionMapUseClear(mapKey));
+			}
+
 			if (mapSets) {
-				_.each(mapSets, mapSet => {
-					const mapSetMapKey = _.includes(mapSet.maps, mapKey);
+				_each(mapSets, mapSet => {
+					const mapSetMapKey = _includes(mapSet?.maps, mapKey);
 					if (mapSetMapKey) {
-						dispatch(removeMapKeyFromSet(mapSet.key, mapKey));
+						dispatch(removeMapFromSet(mapSet.key, mapKey));
 					}
 				});
 			}
+
 			dispatch(actionRemoveMap(mapKey));
 		}
 	};
 };
 
-const removeMapForPeriod = (periodKey, setKey) => {
+/**
+ * Remove map set from store
+ * @param setKey {string}
+ */
+const removeMapSet = setKey => {
 	return (dispatch, getState) => {
 		const state = getState();
-		const map = Select.maps.getMapByMetadata_deprecated(state, {period: periodKey});
-		if(!map) {
-			dispatch(actionGeneralError(`No map found for period ${periodKey}.`));
-		} else {
-			dispatch(removeMap(map.key));
+		const existingSet = Select.maps.getMapSetByKey(state, setKey);
+
+		if (existingSet) {
+			const inUse = Select.maps.isMapSetInUse(state, setKey);
+
+			if (inUse) {
+				dispatch(actionMapSetUseClear(setKey));
+			}
+
+			dispatch(actionRemoveMapSet(setKey));
 		}
 	};
 };
 
-const setMapName = (mapKey, name) => {
+/**
+ * Remove layer from map
+ * @param mapKey {string}
+ * @param layerKey {string}
+ */
+const removeMapLayer = (mapKey, layerKey) => {
 	return (dispatch, getState) => {
 		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
+		const layerState = Select.maps.getLayerStateByLayerKeyAndMapKey(
+			state,
+			mapKey,
+			layerKey
+		);
+		if (layerState) {
+			dispatch(actionRemoveMapLayer(mapKey, layerKey));
 		} else {
-			return dispatch(actionSetMapName(mapKey, name));
+			dispatch(
+				commonActions.actionGeneralError(
+					`No layer with key ${layerKey} found for mapKey ${mapKey}`
+				)
+			);
 		}
 	};
 };
 
-const setMapData = (mapKey, data) => {
+/**
+ * Remove all layers satisfying filter from map
+ * @param mapKey {string}
+ * @param filter {object}
+ */
+const removeMapLayersByFilter = (mapKey, filter) => {
 	return (dispatch, getState) => {
 		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
+		const mapLayers = Select.maps.getMapLayersStateWithModifiersByMapKey(
+			state,
+			mapKey
+		);
+		const mapLayersByFilter = mapLayers?.filter(l => _isMatch(l, filter));
+
+		if (mapLayersByFilter?.length) {
+			dispatch(actionRemoveMapLayersByFilter(mapKey, filter));
 		} else {
-			return dispatch(actionSetMapData(mapKey, data));
+			dispatch(
+				commonActions.actionGeneralError(
+					`No layers satisfying filter ${filter} found for mapKey ${mapKey}`
+				)
+			);
 		}
 	};
 };
 
-const setMapView = (mapKey, view) => {
+/**
+ * Remove layers from map
+ * @param mapKey {string}
+ * @param layerKeys {Array}
+ */
+const removeMapLayers = (mapKey, layerKeys) => {
 	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			return dispatch(actionSetMapView(mapKey, view));
-		}
-	};
-};
-
-const setMapViewport = (mapKey, width, height) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		const viewport = mapByKey?.data?.viewport;
-
-		// set viewport only if was really changed
-		if (viewport?.width !== width || viewport?.height !== height) {
-			return dispatch(actionSetMapViewport(mapKey, width, height));
-		}
-	};
-};
-
-const addLayer = (mapKey, layer, index, useActiveMetadataKeys) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		if (!layer.key){
-			layer.key = utils.uuid();
-		}
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			dispatch(actionAddLayer(mapKey, layer, index));
-			dispatch(use(mapKey, useActiveMetadataKeys));
-		}
-	};
-};
-
-const addLayers = (mapKey, layers) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			return layers.map(layer => dispatch(addLayer(mapKey, layer)))
-		}
-	}
-};
-
-const removeLayer = (mapKey, layerKey) => {
-	return (dispatch, getState) => {
-		if(!layerKey) {
-			return dispatch(actionGeneralError(`Undefined layer key.`));
-		} else {
+		if (layerKeys?.length) {
 			const state = getState();
-			const mapByKey = Select.maps.getMapByKey(state, mapKey);
-			if(!mapByKey) {
-				return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-			} else {
-				//check if layer exist
-				const layer = Select.maps.getMapLayerByMapKeyAndLayerKey(state, mapKey, layerKey);
-				if(layer) {
-					return dispatch(actionRemoveLayer(mapKey, layerKey));
+			const layersToRemove = [];
+
+			layerKeys.forEach(layerKey => {
+				const layerState = Select.maps.getLayerStateByLayerKeyAndMapKey(
+					state,
+					mapKey,
+					layerKey
+				);
+
+				if (layerState) {
+					layersToRemove.push(layerKey);
 				} else {
-					return dispatch(actionGeneralError(`No layer (${layerKey}) found in mapKey ${mapKey}.`));
+					dispatch(
+						commonActions.actionGeneralError(
+							`No layer with key ${layerKey} found for mapKey ${mapKey}`
+						)
+					);
 				}
+			});
+
+			if (layersToRemove.length) {
+				dispatch(actionRemoveMapLayers(mapKey, layersToRemove));
 			}
 		}
 	};
 };
 
-const removeLayers = (mapKey, layersKeys) => {
+/**
+ * Clear use of the map set
+ * @param mapSetKey {string}
+ */
+const mapSetUseClear = mapSetKey => {
 	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			return layersKeys.map(layerKey => dispatch(removeLayer(mapKey, layerKey)))
+		const registered = Select.maps.isMapSetInUse(getState(), mapSetKey);
+		if (registered) {
+			dispatch(actionMapSetUseClear(mapSetKey));
 		}
-	}
+	};
 };
 
-const setLayerIndex = (mapKey, layerKey, index) => {
+/**
+ * Register use of the map set
+ * @param mapSetKey {string}
+ */
+const mapSetUseRegister = mapSetKey => {
 	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			dispatch(actionSetLayerIndex(mapKey, layerKey, index));
+		const alreadyRegistered = Select.maps.isMapSetInUse(getState(), mapSetKey);
+		if (!alreadyRegistered) {
+			dispatch(actionMapSetUseRegister(mapSetKey));
 		}
-	}
+	};
 };
 
-const setLayerHoveredFeatureKeys = (mapKey, layerKey, hoveredFeatureKeys) => {
+/**
+ * Clear use of the map
+ * @param mapKey {string}
+ */
+const mapUseClear = mapKey => {
 	return (dispatch, getState) => {
-		const state = getState();
-		const mapLayer = Select.maps.getMapLayerByMapKeyAndLayerKey(state, mapKey, layerKey);
-		if (mapLayer) {
-			const prevKeys = mapLayer && mapLayer.options && mapLayer.options.hovered && mapLayer.options.hovered.keys;
-
-			if (prevKeys) {
-				const prevKeysString = JSON.stringify(_.sortBy(prevKeys));
-				const nextKeysString = JSON.stringify(_.sortBy(hoveredFeatureKeys));
-				if (prevKeysString !== nextKeysString) {
-					dispatch(actionSetMapLayerHoveredFeatureKeys(mapKey, layerKey, hoveredFeatureKeys));
-				}
-			} else {
-				dispatch(actionSetMapLayerHoveredFeatureKeys(mapKey, layerKey, hoveredFeatureKeys));
-			}
+		const registered = Select.maps.isMapInUse(getState(), mapKey);
+		if (registered) {
+			dispatch(actionMapUseClear(mapKey));
 		}
+	};
+};
 
-		// TODO
+/**
+ * Register use of the map
+ * @param mapKey {string}
+ */
+const mapUseRegister = mapKey => {
+	return (dispatch, getState) => {
+		const alreadyRegistered = Select.maps.isMapInUse(getState(), mapKey);
+		if (!alreadyRegistered) {
+			dispatch(actionMapUseRegister(mapKey));
+		}
+	};
+};
+
+/**
+ * @param mapKey {string}
+ * @param backgroundLayer {Object} background layer definition
+ * @param layers {Object} layers definition
+ */
+function use(mapKey, backgroundLayer, layers) {
+	return (dispatch, getState) => {
+		dispatch(mapUseRegister(mapKey));
+		const state = getState();
+		const mapViewport = Select.maps.getViewportByMapKey(state, mapKey);
+		if (!mapViewport) {
+			return;
+		}
+		const {width: mapWidth, height: mapHeight} = mapViewport;
+
+		const spatialFilter = Select.maps.getVisibleTilesByMapKey(
+			state,
+			mapKey,
+			mapWidth,
+			mapHeight
+		);
+		//spatial filter is required for now
+		if (!spatialFilter) {
+			return;
+		}
+		// uncontrolled map - the map is not controlled from store, but layer data is collected based on stored metadata.
+		if (backgroundLayer || layers) {
+			layers = helpers.mergeBackgroundLayerWithLayers(layers, backgroundLayer);
+		}
+		// controlled map (with stateMapKey) - the map is completely controlled from store
 		else {
-			let set = Select.maps.getMapSetByMapKey(state, mapKey);
-			if (set) {
-				// let setLayer = Select.maps.getSetLayerBySetKeyAndLayerKey(state, set.key, layerKey);
-				// if (setLayer) {
-				// 	 dispatch(actionSetSetLayerHoveredFeatureKeys(state, setKey, layerKey, hoveredFeatureKeys));
-				// }
-			}
+			layers = Select.maps.getAllLayersStateByMapKey(state, mapKey);
 		}
-	}
-};
 
-// TODO refactor - where to decide if selections are enabled
-const setLayerSelectedFeatureKeys = (mapKey, layerKey, selectedFeatureKeys) => {
+		if (layers) {
+			layers.forEach(layer => {
+				// apply layerUse asynchronous on each leyer
+				// it cause better FPS and prevent long synchronous tasks
+				if (!layer.type) {
+					setTimeout(() => {
+						dispatch(layerUse(layer, spatialFilter));
+					}, 0);
+				}
+			});
+		}
+	};
+}
+
+/**
+ * @param layerState {Object} layer definition
+ * @param spatialFilter {{level: number}, {tiles: Array}}
+ */
+function layerUse(layerState, spatialFilter) {
 	return (dispatch, getState) => {
 		const state = getState();
-		const mapLayer = Select.maps.getMapLayerByMapKeyAndLayerKey(state, mapKey, layerKey);
-		const activeSelectionKey = Select.selections.getActiveKey(state);
-		const selectionKey = activeSelectionKey || utils.uuid();
 
-		// set selection in selections store
-		if (!activeSelectionKey) {
-			const defaultSelection = {
-				key: selectionKey,
-				data: {
-					colour: "#00ffff",
-					//style: styleKey // TODO???
-					featureKeysFilter: {
-						keys: selectedFeatureKeys
+		// modifiers defined by key
+		let metadataDefinedByKey = layerState.metadataModifiers
+			? {...layerState.metadataModifiers}
+			: {};
+
+		// add layerTemplate od areaTreeLevelKey
+		if (layerState.layerTemplateKey) {
+			metadataDefinedByKey.layerTemplateKey = layerState.layerTemplateKey;
+			// TODO use layerTemplate here?
+		} else if (layerState.areaTreeLevelKey) {
+			metadataDefinedByKey.areaTreeLevelKey = layerState.areaTreeLevelKey;
+			// TODO use areaTreeLevelKey here?
+		}
+
+		// Get actual metadata keys defined by filterByActive
+		const activeMetadataKeys = layerState.filterByActive
+			? commonSelectors.getActiveKeysByFilterByActive(
+					state,
+					layerState.filterByActive
+			  )
+			: null;
+
+		// Merge metadata, metadata defined by key have priority
+		const mergedMetadataKeys = commonHelpers.mergeMetadataKeys(
+			metadataDefinedByKey,
+			activeMetadataKeys
+		);
+
+		// Decouple modifiers from templates
+		const {areaTreeLevelKey, layerTemplateKey, ...modifiers} =
+			mergedMetadataKeys;
+
+		// It converts modifiers from metadataKeys: ["A", "B"] to metadataKey: {in: ["A", "B"]}
+		const modifiersForRequest =
+			commonHelpers.convertModifiersToRequestFriendlyFormat(modifiers);
+		if (layerTemplateKey || areaTreeLevelKey) {
+			let commonRelationsFilter = {};
+			if (areaTreeLevelKey) {
+				commonRelationsFilter = {
+					...(modifiersForRequest && {modifiers: modifiersForRequest}),
+					areaTreeLevelKey,
+				};
+			}
+
+			if (layerTemplateKey) {
+				commonRelationsFilter = {
+					...(modifiersForRequest && {modifiers: modifiersForRequest}),
+					layerTemplateKey,
+				};
+			}
+
+			if (layerTemplateKey) {
+				const order = null;
+				const spatialDataSources = Select.data.spatialDataSources.getIndexed(
+					state,
+					commonRelationsFilter,
+					order
+				);
+
+				//also for single tile
+				const sdsContainsVector =
+					spatialDataSources?.some(spatialDataSource =>
+						[
+							...TILED_VECTOR_LAYER_TYPES,
+							...SINGLE_VECTOR_LAYER_TYPES,
+						].includes(spatialDataSource?.data?.type)
+					) || false;
+				// load only dataSources that are supported type
+				if (spatialDataSources && !sdsContainsVector) {
+					return;
+				}
+			}
+
+			const styleKey = layerState.styleKey || null;
+
+			// TODO ensure style here for now
+			if (styleKey) {
+				dispatch(
+					StylesActions.useKeys(
+						[layerState.styleKey],
+						layerState.key + '_layerUse'
+					)
+				);
+			}
+
+			const attributeDataFilterExtension = {
+				...(layerState?.options?.attributeFilter && {
+					attributeFilter: layerState.options.attributeFilter,
+				}),
+				...(layerState?.options?.dataSourceKeys && {
+					dataSourceKeys: layerState.options.dataSourceKeys,
+				}),
+				...(layerState?.options?.featureKeys && {
+					featureKeys: layerState.options.featureKeys,
+				}),
+			};
+
+			dispatch(
+				DataActions.ensure(
+					styleKey,
+					commonRelationsFilter,
+					spatialFilter,
+					attributeDataFilterExtension
+				)
+			);
+		}
+	};
+}
+
+/**
+ * Ensure indexes with filter by active for each active map
+ * @param filterByActive {Object}
+ */
+function ensureWithFilterByActive(filterByActive) {
+	return (dispatch, getState) => {
+		const state = getState();
+		const activeKeys = commonSelectors.getAllActiveKeys(state);
+		const mapKeys = Select.maps.getAllMapsInUse(state);
+
+		if (mapKeys && activeKeys) {
+			mapKeys.forEach(mapKey => {
+				const mapViewport = Select.maps.getViewportByMapKey(state, mapKey);
+				if (mapViewport) {
+					const {width, height} = mapViewport;
+					const spatialFilter = Select.maps.getVisibleTilesByMapKey(
+						state,
+						mapKey,
+						width,
+						height
+					);
+
+					if (spatialFilter) {
+						const layers = Select.maps.getAllLayersStateByMapKey(state, mapKey);
+						if (layers) {
+							layers.forEach(layer => {
+								if (
+									layer.filterByActive &&
+									_isMatch(layer.filterByActive, filterByActive)
+								) {
+									// apply layerUse asynchronous on each leyer
+									// it cause better FPS and prevent long synchronous tasks
+									setTimeout(() => {
+										dispatch(layerUse(layer, spatialFilter, activeKeys));
+									}, 0);
+								}
+							});
+						}
 					}
 				}
-			};
-			dispatch(SelectionsAction.add([defaultSelection]));
-			dispatch(SelectionsAction.setActiveKey(selectionKey));
-		} else {
-			dispatch(SelectionsAction.setActiveSelectionFeatureKeysFilterKeys(selectedFeatureKeys));
+			});
 		}
-
-		// TODO it shouldn't be needed since this only clear and set again empty selection object
-		// set selection in map store
-		// if (mapLayer) {
-		// 	dispatch(actionClearSelectionInAllLayers(mapKey, selectionKey));
-		// 	dispatch(actionSetMapLayerSelection(mapKey, layerKey, selectionKey));
-		// }
-		//
-		// // TODO
-		// else {
-		// 	let set = Select.maps.getMapSetByMapKey(state, mapKey);
-		// 	if (set) {
-		//
-		// 	}
-		// }
-	}
-};
+	};
+}
 
 /**
- * 
- * Similar like add layer.
- * It enables to set any layer property except layerKey. 
- * Layer object is merged with default layer option.
+ * @param mapKey {string}
+ * @param layerKey {string}
+ * @param selectedFeatureKeys {Array}
  */
-const setMapLayer = (mapKey, layerKey, layer) => {
+function setLayerSelectedFeatureKeys(mapKey, layerKey, selectedFeatureKeys) {
 	return (dispatch, getState) => {
 		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			//check if layer exist
-			const layerExists = Select.maps.getMapLayerByMapKeyAndLayerKey(state, mapKey, layerKey);
-			if(layerExists) {
-				dispatch(actionSetMapLayer(mapKey, layerKey, layer));
+		const layer = Select.maps.getLayerStateByLayerKeyAndMapKey(
+			state,
+			mapKey,
+			layerKey
+		);
+		if (layer?.options?.selectable) {
+			const activeSelectionKey = Select.selections.getActiveKey(state);
+			if (
+				activeSelectionKey &&
+				layer.options.selected?.hasOwnProperty(activeSelectionKey)
+			) {
+				// TODO possible conflicts if features with same key from different layers are selected
+				dispatch(
+					SelectionsAction.setActiveSelectionFeatureKeysFilterKeys(
+						selectedFeatureKeys
+					)
+				);
 			} else {
-				return dispatch(actionGeneralError(`No layer (${layerKey}) found in mapKey ${mapKey}.`));
+				// TODO what if there is no active selection?
 			}
 		}
-	}
-};
-
-const setMapLayerStyle = (mapKey, layerKey, style) => {
-    return (dispatch, getState) => {
-        const state = getState();
-        const mapByKey = Select.maps.getMapByKey(state, mapKey);
-        if(!mapByKey) {
-            return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-        } else {
-            //check if layer exist
-            const layerExists = Select.maps.getMapLayerByMapKeyAndLayerKey(state, mapKey, layerKey);
-            if(layerExists) {
-                dispatch(actionSetMapLayerStyle(mapKey, layerKey, style));
-            } else {
-                return dispatch(actionGeneralError(`No layer (${layerKey}) found in mapKey ${mapKey}.`));
-            }
-        }
-    }
-};
-
+	};
+}
 
 /**
- * 
- * It enables to update any layer property except layerKey. 
- * Layer object is merged with actual layer option.
+ * @param mapKey {string}
+ * @param layerKey {string}
+ * @param styleKey {string}
  */
-const updateMapLayer = (mapKey, layerKey, layer) => {
+function setMapLayerStyleKey(mapKey, layerKey, styleKey) {
+	return (dispatch, getState) => {
+		const layer = Select.maps.getLayerStateByLayerKeyAndMapKey(
+			getState(),
+			mapKey,
+			layerKey
+		);
+		if (layer) {
+			dispatch(actionSetMapLayerStyleKey(mapKey, layerKey, styleKey));
+		}
+	};
+}
+
+/**
+ * Set map layer opacity
+ * @param mapKey {string}
+ * @param layerKey {string}
+ * @param opacity {number} from 0 to 1
+ */
+function setMapLayerOpacity(mapKey, layerKey, opacity) {
+	return (dispatch, getState) => {
+		const layer = Select.maps.getLayerStateByLayerKeyAndMapKey(
+			getState(),
+			mapKey,
+			layerKey
+		);
+		if (layer) {
+			dispatch(actionSetMapLayerOpacity(mapKey, layerKey, opacity));
+		} else {
+			dispatch(
+				commonActions.actionGeneralError(
+					`No layer found for mapKey ${mapKey} and layerKey ${layerKey}`
+				)
+			);
+		}
+	};
+}
+
+/**
+ * Set map layer option
+ * @param mapKey {string}
+ * @param layerKey {string}
+ * @param optionKey {string}
+ * @param optionValue {*}
+ */
+function setMapLayerOption(mapKey, layerKey, optionKey, optionValue) {
+	return (dispatch, getState) => {
+		const layer = Select.maps.getLayerStateByLayerKeyAndMapKey(
+			getState(),
+			mapKey,
+			layerKey
+		);
+		if (layer) {
+			dispatch(
+				actionSetMapLayerOption(mapKey, layerKey, optionKey, optionValue)
+			);
+		} else {
+			dispatch(
+				commonActions.actionGeneralError(
+					`No layer found for mapKey ${mapKey} and layerKey ${layerKey}`
+				)
+			);
+		}
+	};
+}
+
+/**
+ * @param mapKey {string}
+ */
+function setMapSetActiveMapKey(mapKey) {
 	return (dispatch, getState) => {
 		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			//check if layer exist
-			const layerExists = Select.maps.getMapLayerByMapKeyAndLayerKey(state, mapKey, layerKey);
-			if(layerExists) {
-				dispatch(actionUpdateMapLayer(mapKey, layerKey, layer));
-			} else {
-				return dispatch(actionGeneralError(`No layer (${layerKey}) found in mapKey ${mapKey}.`));
+		const set = Select.maps.getMapSetByMapKey(state, mapKey);
+		if (set) {
+			const activeMapKey = Select.maps.getMapSetActiveMapKey(state, set.key);
+			if (activeMapKey !== mapKey) {
+				dispatch(actionSetMapSetActiveMapKey(set.key, mapKey));
 			}
 		}
-	}
-};
+	};
+}
 
-const updateMapAndSetView = (mapKey, update) => {
+/**
+ * @param setKey {string}
+ * @param backgroundLayer {Object} background layer definition
+ */
+function setMapSetBackgroundLayer(setKey, backgroundLayer) {
 	return (dispatch, getState) => {
-		let set = Select.maps.getMapSetByMapKey(getState(), mapKey);
-		let forSet = null;
-		let forMap = null;
+		dispatch(actionSetMapSetBackgroundLayer(setKey, backgroundLayer));
+		const maps = Select.maps.getMapSetMaps(getState(), setKey);
+		if (maps) {
+			maps.forEach(map => {
+				// TODO is viewport always defined?
+				dispatch(use(map.key, null, null));
+			});
+		}
+	};
+}
 
-		if (set && set.sync) {
+/**
+ * Set background layer for map.
+ * @param mapKey {string}
+ * @param backgroundLayer {Object} background layer definition
+ */
+function setMapBackgroundLayer(mapKey, backgroundLayer) {
+	return (dispatch, getState) => {
+		const map = Select.maps.getMapByKey(getState(), mapKey);
+		if (map) {
+			dispatch(actionSetMapBackgroundLayer(mapKey, backgroundLayer));
+
+			// Call use action only on state controlled layers
+			if (!backgroundLayer.type) {
+				const backgroundLayerState =
+					Select.maps.getMapBackgroundLayerStateByMapKey(getState(), mapKey);
+
+				const spatialFilter = Select.maps.getVisibleTilesByMapKey(
+					getState(),
+					mapKey,
+					map?.data?.viewport?.width,
+					map?.data?.viewport?.height
+				);
+				//spatial filter is required for now
+				if (!spatialFilter || !backgroundLayerState) {
+					return;
+				}
+				dispatch(layerUse(backgroundLayerState, spatialFilter));
+			} else {
+				return;
+			}
+		}
+	};
+}
+
+/**
+ * @param setKey {string}
+ * @param layers {Array} layers definitions
+ */
+function setMapSetLayers(setKey, layers) {
+	return (dispatch, getState) => {
+		const set = Select.maps.getMapSetByKey(getState(), setKey);
+		if (set) {
+			dispatch(actionSetMapSetLayers(setKey, layers));
+			const maps = Select.maps.getMapSetMaps(getState(), setKey);
+			if (maps) {
+				maps.forEach(map => {
+					dispatch(use(map.key, null, null));
+				});
+			}
+		} else {
+			dispatch(
+				commonActions.actionGeneralError(`No set exists for setKey ${setKey}`)
+			);
+		}
+	};
+}
+
+/**
+ * Set sync for map set. It tells which view params are synchronized for all maps in the set.
+ * @param setKey {string}
+ * @param sync {Object} layers definitions
+ */
+function setMapSetSync(setKey, sync) {
+	return (dispatch, getState) => {
+		const set = Select.maps.getMapSetByKey(getState(), setKey);
+		if (set) {
+			dispatch(actionSetMapSetSync(setKey, sync));
+		}
+	};
+}
+
+/**
+ * @param setKey {string}
+ */
+function refreshMapSetUse(setKey) {
+	return (dispatch, getState) => {
+		const maps = Select.maps.getMapSetMaps(getState(), setKey);
+		if (maps) {
+			maps.forEach(map => {
+				// TODO is viewport always defined?
+				dispatch(use(map.key, null, null));
+			});
+		}
+	};
+}
+
+/**
+ * @param setKey {string}
+ * @param mapKey {string}
+ */
+function removeMapFromSet(setKey, mapKey) {
+	return (dispatch, getState) => {
+		const state = getState();
+		const mapSetMapKeys = Select.maps.getMapSetMapKeys(state, setKey);
+		if (mapSetMapKeys && mapSetMapKeys.includes(mapKey)) {
+			const activeMapKey = Select.maps.getMapSetActiveMapKey(state, setKey);
+			dispatch(actionRemoveMapFromSet(setKey, mapKey));
+
+			// if map to remove is active at the same time
+			if (activeMapKey === mapKey) {
+				// check map set map keys again & set first map as active
+				const mapSetMapKeys = Select.maps.getMapSetMapKeys(getState(), setKey);
+				if (!_isEmpty(mapSetMapKeys)) {
+					dispatch(actionSetMapSetActiveMapKey(setKey, mapSetMapKeys[0]));
+				}
+			}
+		}
+	};
+}
+
+/**
+ * @param mapKey {string}
+ * @param update {Object} map view fragment
+ */
+function updateMapAndSetView(mapKey, update) {
+	return (dispatch, getState) => {
+		const set = Select.maps.getMapSetByMapKey(getState(), mapKey);
+		let forSet, forMap;
+		const map = Select.maps.getMapByKey(getState(), mapKey);
+		if (set && set.sync && map) {
 			// pick key-value pairs that are synced for set
-			forSet = _.pickBy(update, (updateVal, updateKey) => {
+			forSet = _pickBy(update, (updateVal, updateKey) => {
 				return set.sync[updateKey];
 			});
 
-			forMap = _.omitBy(update, (updateVal, updateKey) => {
+			forMap = _omitBy(update, (updateVal, updateKey) => {
 				return set.sync[updateKey];
 			});
-		} else {
+		} else if (map) {
 			forMap = update;
 		}
 
-		if (forSet && !_.isEmpty(forSet)) {
+		if (forSet && !_isEmpty(forSet)) {
 			//check data integrity
 			forSet = mapUtils.view.ensureViewIntegrity(forSet); //TODO test
 			dispatch(actionUpdateSetView(set.key, forSet));
 		}
 
-		if (forMap && !_.isEmpty(forMap)) {
+		if (forMap && !_isEmpty(forMap)) {
 			//check data integrity
 			forMap = mapUtils.view.ensureViewIntegrity(forMap); //TODO test
 			dispatch(actionUpdateMapView(mapKey, forMap));
 		}
-	}
-};
+	};
+}
 
-const updateSetView = (setKey, update) => {
+/**
+ * @param setKey {string}
+ * @param update {Object} map view fragment
+ */
+function updateSetView(setKey, update) {
 	return (dispatch, getState) => {
 		let activeMapKey = Select.maps.getMapSetActiveMapKey(getState(), setKey);
-		dispatch(updateMapAndSetView(activeMapKey, update));
-	};
-};
-
-const resetViewHeading = (mapKey) => {
-	return (dispatch, getState) => {
-		const view = Select.maps.getView(getState(), mapKey);
-		mapUtils.resetHeading(view.heading, heading => dispatch(updateMapAndSetView(mapKey, {heading})));
-	}
-};
-
-const setMapScope = (mapKey, scope) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			dispatch(actionSetMapScope(mapKey, scope));
+		if (activeMapKey) {
+			dispatch(updateMapAndSetView(activeMapKey, update));
 		}
 	};
-};
+}
 
-const setMapScenario = (mapKey, scenario) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			dispatch(actionSetMapScenario(mapKey, scenario));
-		}
-	};
-};
-
-const setMapPeriod = (mapKey, period) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			dispatch(actionSetMapPeriod(mapKey, period));
-		}
-	};
-};
-
-const setMapPlace = (mapKey, place) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			dispatch(actionSetMapPlace(mapKey, place));
-		}
-	};
-};
-
-const setMapCase = (mapKey, caseKey) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			dispatch(actionSetMapCase(mapKey, caseKey));
-		}
-	};
-};
-
-const setMapBackgroundLayer = (mapKey, backgroundLayer) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		if (backgroundLayer && !backgroundLayer.key){
-			backgroundLayer.key = utils.uuid();
-		}
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			dispatch(actionSetMapBackgroundLayer(mapKey, backgroundLayer));
-			dispatch(deprecated_use(mapKey));
-		}
-	};
-};
 /**
- * Set (replace) all map layers, and refresh use
- * @param mapKey
- * @param layers - complete layers array
- * @returns {Function}
+ * Update whole maps state from view definition
+ * @param data {Object}
  */
-const setMapLayers = (mapKey, layers) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			dispatch(actionSetMapLayers(mapKey, layers));
-			dispatch(use(mapKey));
-		}
-	};
-};
-
-const setSetBackgroundLayer = (setKey, backgroundLayer) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const setByKey = Select.maps.getMapSetByKey(state, setKey);
-		if(!setByKey) {
-			return dispatch(actionGeneralError(`No map set found for setKey ${setKey}.`));
-		} else {
-			dispatch(actionSetSetBackgroundLayer(setKey, backgroundLayer));
-		}
-	};
-};
-
-const setSetLayers = (setKey, layers) => {
-    return (dispatch, getState) => {
-        const state = getState();
-        const setByKey = Select.maps.getMapSetByKey(state, setKey);
-        if(!setByKey) {
-            return dispatch(actionGeneralError(`No map set found for setKey ${setKey}.`));
-        } else {
-            dispatch(actionSetSetLayers(setKey, layers));
-        }
-    };
-};
-
-function use(mapKey, backgroundLayer, layers) {
-	return (dispatch, getState) => {
-		dispatch(useClear(mapKey));
-		let state = getState();
-
-		// let filterByActive = Select.maps.getFilterByActiveByMapKey(state, mapKey);
-		if (backgroundLayer || layers) {
-			if (backgroundLayer) {
-				backgroundLayer = {...backgroundLayer, key: 'pantherBackgroundLayer'};
-				layers = layers || [];
-				layers = [backgroundLayer, ...layers];
-			}
-		} else {
-			layers = Select.maps.getAllLayersStateByMapKey(state, mapKey);
-		}
-
-		let activeKeys = commonSelectors.getAllActiveKeys(state);
-
-		if (layers) {
-			const componentId = `map_${mapKey}`;
-			layers.forEach(layer => {
-				let filter = {...layer.metadataModifiers};
-				if (layer.layerTemplateKey) {
-					filter.layerTemplateKey = layer.layerTemplateKey;
-					dispatch(LayerTemplatesAction.useKeys([layer.layerTemplateKey], componentId));
-				} else if (layer.areaTreeLevelKey) {
-					filter.areaTreeLevelKey = layer.areaTreeLevelKey;
-					dispatch(AreasAction.areaTreeLevels.useKeys([layer.areaTreeLevelKey], componentId));
-				}
-
-				let filterByActive = layer.filterByActive || null;
-				let mergedFilter = commonHelpers.mergeFilters(activeKeys, filterByActive, filter);
-
-
-				/* Ensure spatial relations or area relations */
-				if (layer.layerTemplateKey || layer.areaTreeLevelKey || mergedFilter.layerTemplateKey) {
-					let action, select;
-					if (layer.layerTemplateKey || mergedFilter.layerTemplateKey) {
-						action = SpatialRelationsAction;
-						select = Select.spatialRelations;
-					} else if (layer.areaTreeLevelKey) {
-						action = AreaRelationsAction;
-						select = Select.areaRelations;
-					}
-					dispatch(action.useIndexedRegister(componentId, filterByActive, filter, null, 1, 1000));
-					dispatch(action.ensureIndexed(mergedFilter, null, 1, 1000)).then(() => {
-						/* Ensure spatial data sources */
-						const relations = select.getFilteredData(getState(), mergedFilter);
-						if (relations && relations.length) {
-							const spatialFilters = relations.map(relation => {
-								return {
-									spatialDataSourceKey: relation.spatialDataSourceKey,
-									fidColumnName: relation.fidColumnName
-								}
-							});
-							const spatialDataSourcesKeys = _.uniq(spatialFilters.map(filter => filter.spatialDataSourceKey));
-							
-							dispatch(SpatialDataSourcesAction.useKeys(spatialDataSourcesKeys, componentId)).then(() => {
-								const dataSources = Select.spatialDataSources.getByKeys(getState(), spatialDataSourcesKeys);
-								if (dataSources) {
-									dataSources.forEach(dataSource => {
-										
-										// TODO load raster data?
-										if (dataSource && dataSource.data && dataSource.data.type === 'vector') {
-											const spatialFilter = _.find(spatialFilters, {spatialDataSourceKey: dataSource.key});
-											dispatch(SpatialDataAction.useIndexed(null, spatialFilter, null, 1, 1, componentId));
-										}
-									});
-								}
-							});
-						}
-					});
-				}
-				
-				
-				// Ensure attribute data //todo
-				// TODO layer.attributeKey case?
-				// TODO handle "key: in {}" case in filters
-				if (layer.attributeKeys) {
-					dispatch(AttributesAction.useKeys(layer.attributeKeys, componentId));
-
-					let attributeFilter = {
-						...layer.attributeMetadataModifiers,
-						attributeKey: {
-							in: layer.attributeKeys
-						}
-					};
-
-					if (layer.layerTemplateKey) {
-						attributeFilter.layerTemplateKey = layer.layerTemplateKey;
-					} else if (layer.areaTreeLevelKey) {
-						attributeFilter.areaTreeLevelKey = layer.areaTreeLevelKey;
-					}
-
-					let attributeFilterByActive = layer.attributeFilterByActive || null;
-					let mergedAttributeFilter = commonHelpers.mergeFilters(activeKeys, attributeFilterByActive, attributeFilter);
-
-					dispatch(AttributeRelationsAction.useIndexedRegister( componentId, attributeFilterByActive, attributeFilter, null, 1, 2000));
-					dispatch(AttributeRelationsAction.ensureIndexed(mergedAttributeFilter, null, 1, 2000)).then(() => {
-						/* Ensure data sources */
-						const relations = Select.attributeRelations.getIndexed(getState(), attributeFilterByActive, attributeFilter, null, 1, 2000);
-						if (relations && relations.length) {
-							const filters = relations.map(relation => {return {
-								attributeDataSourceKey: relation.data && relation.data.attributeDataSourceKey,
-								fidColumnName: relation.data && relation.data.fidColumnName
-							}});
-							const dataSourcesKeys = filters.map(filter => filter.attributeDataSourceKey);
-
-							dispatch(AttributeDataSourcesAction.useKeys(dataSourcesKeys, componentId)).then(() => {
-								const dataSources = Select.attributeDataSources.getByKeys(getState(), dataSourcesKeys);
-								if (dataSources) {
-
-									let dataSourceKeys = [];
-									dataSources.forEach(dataSource => {
-										dataSourceKeys.push(dataSource.key);
-									});
-
-									// TODO fidColumnName!!!
-									const filter = {
-										attributeDataSourceKey: {
-											in: dataSourceKeys
-										},
-										fidColumnName: relations[0].data.fidColumnName
-									};
-									dispatch(AttributeDataAction.useIndexed(null, filter, null, 1, 1, componentId));
-
-								}
-							});
-						}
-					});
-
-				}
-
-				if (layer.styleKey) {
-					dispatch(StylesAction.useKeys([layer.styleKey],componentId));
-				}
-			});
-		}
-	}
-}
-
-function useClear(mapKey) {
-	return (dispatch) => {
-		dispatch(commonActions.useIndexedClear(ActionTypes.SPATIAL_RELATIONS)(`map_${mapKey}`));
-		dispatch(commonActions.useKeysClear(ActionTypes.SPATIAL_DATA_SOURCES)(`map_${mapKey}`));
-		dispatch(commonActions.useKeysClear(ActionTypes.LAYER_TEMPLATES)(`map_${mapKey}`));
-		dispatch(commonActions.useKeysClear(ActionTypes.AREAS.AREA_TREE_LEVELS)(`map_${mapKey}`));
-		dispatch(commonActions.useKeysClear(ActionTypes.STYLES)(`map_${mapKey}`));
-	};
-}
-
 function updateStateFromView(data) {
 	return dispatch => {
 		if (data) {
@@ -934,526 +849,192 @@ function updateStateFromView(data) {
 	};
 }
 
-function goToPlace(placeString) {
+function setMapViewport(mapKey, width, height) {
 	return (dispatch, getState) => {
-		if (placeString && placeString.length) {
-			mapUtils.getLocationFromPlaceString(placeString).then(location => {
-				if (location) {
-					let mapKey = Select.maps.getActiveMapKey(getState());
-					dispatch(updateMapAndSetView(mapKey, location));
-
-					// TODO temporary solution for old map state
-					let navigatorUpdate = {
-						range: location.boxRange,
-						lookAtLocation: {
-							latitude: location.center.lat,
-							longitude: location.center.lon
-						}
-					};
-					dispatch(deprecated_updateWorldWindNavigator(mapKey,navigatorUpdate)); // TODO deprecated
-				}
-			});
+		if (mapKey && _isNumber(width) && _isNumber(height)) {
+			const state = getState();
+			const existingMap = Select.maps.getMapByKey(state, mapKey);
+			const currentViewport = Select.maps.getViewportByMapKey(state, mapKey);
+			if (
+				existingMap &&
+				(!currentViewport ||
+					currentViewport?.width !== width ||
+					currentViewport?.height !== height)
+			) {
+				dispatch(actionSetMapViewport(mapKey, width, height));
+			}
 		}
 	};
 }
 
 /* ==================================================
- * DEPRECATED CREATORS
- * ================================================== */
-
-function deprecated_use(mapKey, useActiveMetadataKeys) {
-	return (dispatch, getState) => {
-		let state = getState();
-		let layers = Select.maps.getLayersStateByMapKey_deprecated(state, mapKey, useActiveMetadataKeys);
-		let backgroundLayer = Select.maps.getBackgroundLayerStateByMapKey_deprecated(state, mapKey);
-		let finalLayers = [];
-
-		if (backgroundLayer) {
-			finalLayers.push(backgroundLayer);
-		}
-
-		if (layers) {
-			finalLayers = finalLayers.concat(layers);
-		}
-
-		if (finalLayers.length) {
-			const componentId = `map_${mapKey}`;
-
-			finalLayers.forEach(filters => {
-
-				//assume, that spatial data dont need period
-				const spatialRelationsFilter = _.cloneDeep(filters.mergedFilter);
-				const spatialRelationsFilterByActive= _.cloneDeep(filters.filterByActive);
-
-				if (spatialRelationsFilter.periodKey) {
-					delete spatialRelationsFilter.periodKey;
-				}
-
-				if (spatialRelationsFilter.attributeKey) {
-					delete spatialRelationsFilter.attributeKey;
-				}
-
-				if (spatialRelationsFilterByActive.attribute) {
-					delete spatialRelationsFilterByActive.attribute;
-				}
-
-
-				dispatch(SpatialRelationsAction.useIndexedRegister( componentId, spatialRelationsFilterByActive, spatialRelationsFilter, null, 1, 1000));
-				dispatch(SpatialRelationsAction.ensureIndexed(spatialRelationsFilter, null, 1, 1000))
-					.then(() => {
-						let spatialDataSourcesKeys = Select.spatialRelations.getDataSourceKeysFiltered(getState(), spatialRelationsFilter);
-						if (spatialDataSourcesKeys && spatialDataSourcesKeys.length) {
-
-							dispatch(SpatialDataSourcesAction.useKeys([spatialDataSourcesKeys[0]], componentId)).then(() => {
-								let dataSource = Select.spatialDataSources.getByKeys(getState(), spatialDataSourcesKeys);
-								//datasource is only one
-								//if vector dataSource, then load attribute data
-								if(dataSource && dataSource[0] && dataSource[0].data.type === 'vector') {
-									let spatialDataSources = Select.spatialRelations.getFilteredData(getState(), spatialRelationsFilter);
-
-									const spatialFilter = {
-										spatialDataSourceKey: dataSource[0].key,
-										fidColumnName: spatialDataSources[0].fidColumnName
-									};
-
-									const spatialData = Select.spatialDataSources.vector.getBatchByFilterOrder(getState(), spatialFilter, null);
-									//if data already loaded, skip loading
-									if(!spatialData) {
-										dispatch(SpatialDataSourcesAction.vector.loadLayerData(spatialFilter, componentId));
-									}
-									const attributeFilter = _.cloneDeep(filters.mergedFilter);
-
-									dispatch(AttributeRelationsAction.useIndexedRegister( componentId, filters.filterByActive, attributeFilter, null, 1, 1000));
-									dispatch(AttributeRelationsAction.ensureIndexedSpecific(attributeFilter, null, 1, 1000, componentId));
-								}
-
-							});
-						}
-					})
-					.catch((err) => {
-						dispatch(commonActions.actionGeneralError(err));
-					});
-
-				// TODO register and ensure layer templates
-			});
-		}
-	};
-};
-
-const deprecated_useClear = (mapKey) => {
-	return (dispatch) => {
-		dispatch(commonActions.useIndexedClear(ActionTypes.SPATIAL_RELATIONS)(`map_${mapKey}`));
-	};
-};
-
-const deprecated_checkWorldWindNavigatorIntegrity = (WorldWindNavigator) => {
-	if (WorldWindNavigator.heading && WorldWindNavigator.heading > 360) {
-		WorldWindNavigator.heading = WorldWindNavigator.heading - 360;
-	}
-
-	if (WorldWindNavigator.heading && WorldWindNavigator.heading < -360) {
-		WorldWindNavigator.heading = WorldWindNavigator.heading + 360;
-	}
-
-	if (WorldWindNavigator.tilt && WorldWindNavigator.tilt < 0) {
-		WorldWindNavigator.tilt = 0;
-	}
-
-	if (WorldWindNavigator.tilt && WorldWindNavigator.tilt > 90) {
-		WorldWindNavigator.tilt = 90;
-	}
-	return WorldWindNavigator;
-};
-
-const deprecated_setMapWorldWindNavigator = (mapKey, worldWindNavigator) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const mapByKey = Select.maps.getMapByKey(state, mapKey);
-		if(!mapByKey) {
-			return dispatch(actionGeneralError(`No map found for mapKey ${mapKey}.`));
-		} else {
-			return dispatch(deprecated_actionSetMapWorldWindNavigator(mapKey, worldWindNavigator));
-		}
-	};
-};
-
-const deprecated_setSetWorldWindNavigator = (setKey, worldWindNavigator) => {
-	return (dispatch, getState) => {
-		const state = getState();
-		const setByKey = Select.maps.getMapSetByKey(state, setKey);
-		if(!setByKey) {
-			return dispatch(actionGeneralError(`No set found for setKey ${setKey}.`));
-		} else {
-			return dispatch(deprecated_actionSetSetWorldWindNavigator(setKey, worldWindNavigator));
-		}
-	}
-};
-
-const deprecated_updateWorldWindNavigator = (mapKey, updates) => {
-	return (dispatch, getState) => {
-		let set = Select.maps.getMapSetByMapKey(getState(), mapKey);
-		let forSet = {};
-		let forMap = {};
-
-		if (set && set.sync) {
-			forSet = _.pickBy(updates, (updateVal, updateKey) => {
-				if (updateKey === 'lookAtLocation') {
-					return set.sync['location'];
-				} else {
-					return set.sync[updateKey];
-				}
-			});
-
-			forMap = _.omitBy(updates, (updateVal, updateKey) => {
-				if (updateKey === 'lookAtLocation') {
-					return set.sync['location'];
-				} else {
-					return set.sync[updateKey];
-				}
-			});
-		} else {
-			forMap = updates;
-		}
-
-		if (forSet && !_.isEmpty(forSet)) {
-			//check data integrity
-			forSet = deprecated_checkWorldWindNavigatorIntegrity(forSet); //TODO test
-			dispatch(deprecated_actionUpdateSetWorldWindNavigator(set.key, forSet));
-		}
-
-		if (forMap && !_.isEmpty(forMap)) {
-			//check data integrity
-			forMap = deprecated_checkWorldWindNavigatorIntegrity(forMap); //TODO test
-			dispatch(deprecated_actionUpdateMapWorldWindNavigator(mapKey, forMap));
-		}
-	}
-};
-
-const deprecated_resetWorldWindNavigatorHeading = (mapKey, defaultIncrement) => {
-	return (dispatch, getState) => {
-		const mapNavigator = Select.maps.getNavigator_deprecated(getState(), mapKey);
-
-		let headingIncrement = 1.0;
-		if (Math.abs(mapNavigator.heading) > 60) {
-			headingIncrement = 2.0;
-		} else if (Math.abs(mapNavigator.heading) > 120) {
-			headingIncrement = 3.0;
-		}
-		//set shortest direction based on angle
-		if (mapNavigator.heading > 0 && mapNavigator.heading < 180 || mapNavigator.heading < 0 && mapNavigator.heading < -180) {
-			headingIncrement = -headingIncrement;
-		}
-		headingIncrement = defaultIncrement || headingIncrement;
-
-		setTimeout(() => {
-			let finalHeading;
-			if (Math.abs(mapNavigator.heading) > Math.abs(headingIncrement)) {
-				finalHeading = mapNavigator.heading + headingIncrement;
-				dispatch(deprecated_updateWorldWindNavigator(mapKey, {heading: finalHeading}))
-				dispatch(deprecated_resetWorldWindNavigatorHeading(mapKey, headingIncrement));
-			} else {
-				finalHeading = 0;
-				dispatch(deprecated_updateWorldWindNavigator(mapKey, {heading: finalHeading}))
-			}
-		}, 20)
-
-	}
-};
-
-
-
-
-/* ==================================================
  * ACTIONS
  * ================================================== */
 
-const actionSetActiveMapKey = (mapKey) => {
+const actionAddMap = map => {
+	return {
+		type: ActionTypes.MAPS.MAP.ADD,
+		map,
+	};
+};
+
+const actionAddMapSet = mapSet => {
+	return {
+		type: ActionTypes.MAPS.SET.ADD,
+		mapSet,
+	};
+};
+
+const actionAddMapToSet = (mapKey, mapSetKey) => {
+	return {
+		type: ActionTypes.MAPS.SET.ADD_MAP,
+		mapKey,
+		mapSetKey,
+	};
+};
+
+const actionAddMapLayers = (mapKey, layerStates) => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.ADD,
+		mapKey,
+		layerStates,
+	};
+};
+
+const actionAddMapLayerToIndex = (mapKey, layerState, index) => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.ADD_TO_INDEX,
+		mapKey,
+		layerState,
+		index,
+	};
+};
+
+const actionRemoveMap = mapKey => {
+	return {
+		type: ActionTypes.MAPS.MAP.REMOVE,
+		mapKey,
+	};
+};
+
+const actionRemoveMapSet = mapSetKey => {
+	return {
+		type: ActionTypes.MAPS.SET.REMOVE,
+		mapSetKey,
+	};
+};
+
+const actionRemoveMapLayer = (mapKey, layerKey) => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.REMOVE_LAYER,
+		mapKey,
+		layerKey,
+	};
+};
+
+const actionRemoveMapLayers = (mapKey, layerKeys) => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.REMOVE_LAYERS,
+		mapKey,
+		layerKeys,
+	};
+};
+const actionRemoveMapLayersByFilter = (mapKey, filter) => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.REMOVE_LAYERS_BY_FILTER,
+		mapKey,
+		filter,
+	};
+};
+
+const actionRemoveAllMapLayers = mapKey => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.REMOVE_ALL,
+		mapKey,
+	};
+};
+
+const actionRemoveMapFromSet = (setKey, mapKey) => {
+	return {
+		type: ActionTypes.MAPS.SET.REMOVE_MAP,
+		setKey,
+		mapKey,
+	};
+};
+
+const actionSetActiveMapKey = mapKey => {
 	return {
 		type: ActionTypes.MAPS.SET_ACTIVE_MAP_KEY,
-		mapKey
-	}
+		mapKey,
+	};
+};
+
+const actionSetMapLayerOpacity = (mapKey, layerKey, opacity) => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.SET_OPACITY,
+		mapKey,
+		layerKey,
+		opacity,
+	};
+};
+
+const actionSetMapLayerOption = (mapKey, layerKey, optionKey, optionValue) => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.SET_OPTION,
+		mapKey,
+		layerKey,
+		optionKey,
+		optionValue,
+	};
+};
+
+const actionSetMapLayerStyleKey = (mapKey, layerKey, styleKey) => {
+	return {
+		type: ActionTypes.MAPS.MAP.LAYERS.SET_STYLE_KEY,
+		mapKey,
+		layerKey,
+		styleKey,
+	};
 };
 
 const actionSetMapSetActiveMapKey = (setKey, mapKey) => {
 	return {
 		type: ActionTypes.MAPS.SET.SET_ACTIVE_MAP_KEY,
 		mapKey,
-		setKey
-	}
-};
-
-const actionSetActiveSetKey = (setKey) => {
-	return {
-		type: ActionTypes.MAPS.SET_ACTIVE_SET_KEY,
-		setKey
-	}
-};
-
-const actionAddSet = (set) => {
-	return {
-		type: ActionTypes.MAPS.SET.ADD,
-		set
-	}
-};
-
-const actionRemoveSet = (setKey) => {
-	return {
-		type: ActionTypes.MAPS.SET.REMOVE,
-		setKey
-	}
-};
-
-const actionAddMapToSet = (setKey, mapKey) => {
-	return {
-		type: ActionTypes.MAPS.SET.ADD_MAP,
 		setKey,
-		mapKey,
-	}
+	};
 };
 
-const actionRemoveMapKeyFromSet = (setKey, mapKey) => {
-	return {
-		type: ActionTypes.MAPS.SET.REMOVE_MAP,
-		setKey,
-		mapKey,
-	}
-};
-
-const actionSetSetView = (setKey, view) => {
-	return {
-		type: ActionTypes.MAPS.SET.VIEW.SET,
-		setKey,
-		view
-	}
-};
-
-const actionUpdateSetView = (setKey, update) => {
-	return {
-		type: ActionTypes.MAPS.SET.VIEW.UPDATE,
-		setKey,
-		update
-	}
-};
-
-const actionSetSetSync = (setKey, sync) => {
-	return {
-		type: ActionTypes.MAPS.SET.SET_SYNC,
-		setKey,
-		sync,
-	}
-};
-
-const actionSetSetMaps = (setKey, maps) => {
-	return {
-		type: ActionTypes.MAPS.SET.SET_MAPS,
-		setKey,
-		maps,
-	}
-};
-
-const actionAddMap = (map) => {
-	return {
-		type: ActionTypes.MAPS.MAP.ADD,
-		map,
-	}
-};
-
-const actionRemoveMap = (mapKey) => {
-	return {
-		type: ActionTypes.MAPS.MAP.REMOVE,
-		mapKey,
-	}
-};
-
-const actionSetMapName = (mapKey, name) => {
-	return {
-		type: ActionTypes.MAPS.MAP.SET_NAME,
-		mapKey,
-		name,
-	}
-};
-
-const actionSetMapData = (mapKey, data) => {
-	return {
-		type: ActionTypes.MAPS.MAP.SET_DATA,
-		mapKey,
-		data,
-	}
-};
-
-const actionSetMapView = (mapKey, view) => {
-	return {
-		type: ActionTypes.MAPS.MAP.VIEW.SET,
-		mapKey,
-		view
-	}
-};
-
-const actionUpdateMapView = (mapKey, update) => {
-	return {
-		type: ActionTypes.MAPS.MAP.VIEW.UPDATE,
-		mapKey,
-		update
-	}
-};
-
-
-const actionAddLayer = (mapKey, layer, index) => {
-	return {
-		type: ActionTypes.MAPS.LAYERS.LAYER.ADD,
-		mapKey,
-		layer,
-		index,
-	}
-};
-
-const actionRemoveLayer = (mapKey, layerKey) => {
-	return {
-		type: ActionTypes.MAPS.LAYERS.LAYER.REMOVE,
-		mapKey,
-		layerKey,
-	}
-};
-
-const actionSetLayerIndex = (mapKey, layerKey, index) => {
-	return {
-		type: ActionTypes.MAPS.LAYERS.LAYER.SET_INDEX,
-		mapKey,
-		layerKey,
-		index,
-	}
-};
-
-const actionUpdateMapLayer = (mapKey, layerKey, layer) => {
-	return {
-		type: ActionTypes.MAPS.LAYERS.LAYER.UPDATE,
-		mapKey,
-		layerKey,
-		layer,
-	}
-};
-
-const actionSetMapLayer = (mapKey, layerKey, layer) => {
-	return {
-		type: ActionTypes.MAPS.LAYERS.LAYER.SET,
-		mapKey,
-		layerKey,
-		layer,
-	}
-};
-
-const actionSetMapLayerStyle = (mapKey, layerKey, style) => {
-    return {
-        type: ActionTypes.MAPS.MAP.LAYERS.SET.STYLE,
-        mapKey,
-        layerKey,
-        style,
-    }
-};
-
-const actionSetMapLayerHoveredFeatureKeys = (mapKey, layerKey, hoveredFeatureKeys) => {
-	return {
-		type: ActionTypes.MAPS.MAP.LAYERS.SET.HOVERED_FEATURE_KEYS,
-		mapKey,
-		layerKey,
-		hoveredFeatureKeys
-	}
-};
-
-const actionSetMapLayerSelection = (mapKey, layerKey, selectionKey) => {
-	return {
-		type: ActionTypes.MAPS.MAP.LAYERS.SET.SELECTION,
-		mapKey,
-		layerKey,
-		selectionKey
-	}
-};
-
-const actionClearSelectionInAllLayers = (mapKey, selectionKey) => {
-	return {
-		type: ActionTypes.MAPS.MAP.LAYERS.CLEAR.SELECTION,
-		mapKey,
-		selectionKey
-	}
-};
-
-const actionSetMapBackgroundLayer = (mapKey, backgroundLayer) => {
-	return {
-		type: ActionTypes.MAPS.SET_BACKGROUND_LAYER,
-		mapKey,
-		backgroundLayer,
-	}
-};
-
-const actionSetSetBackgroundLayer = (setKey, backgroundLayer) => {
+const actionSetMapSetBackgroundLayer = (setKey, backgroundLayer) => {
 	return {
 		type: ActionTypes.MAPS.SET.SET_BACKGROUND_LAYER,
 		setKey,
 		backgroundLayer,
-	}
+	};
 };
 
-const actionSetSetLayers = (setKey, layers) => {
-    return {
-        type: ActionTypes.MAPS.SET.SET_LAYERS,
-        setKey,
-        layers,
-    }
-};
-
-const actionSetMapLayers = (mapKey, layers) => {
+const actionSetMapBackgroundLayer = (mapKey, backgroundLayer) => {
 	return {
-		type: ActionTypes.MAPS.LAYERS.SET,
+		type: ActionTypes.MAPS.MAP.SET_BACKGROUND_LAYER,
 		mapKey,
+		backgroundLayer,
+	};
+};
+
+const actionSetMapSetLayers = (setKey, layers) => {
+	return {
+		type: ActionTypes.MAPS.SET.LAYERS.SET,
+		setKey,
 		layers,
-	}
+	};
 };
 
-const actionSetMapCase = (mapKey, caseKey) => {
+const actionSetMapSetSync = (mapSetKey, sync) => {
 	return {
-		type: ActionTypes.MAPS.SET_CASE,
-		mapKey,
-		case: caseKey,
-	}
-};
-
-const actionSetMapScope = (mapKey, scope) => {
-	return {
-		type: ActionTypes.MAPS.SET_SCOPE,
-		mapKey,
-		scope,
-	}
-};
-
-const actionSetMapScenario = (mapKey, scenario) => {
-	return {
-		type: ActionTypes.MAPS.SET_SCENARIO,
-		mapKey,
-		scenario,
-	}
-};
-
-const actionSetMapPlace = (mapKey, place) => {
-	return {
-		type: ActionTypes.MAPS.SET_PLACE,
-		mapKey,
-		place,
-	}
-};
-
-const actionSetMapPeriod = (mapKey, period) => {
-	return {
-		type: ActionTypes.MAPS.SET_PERIOD,
-		mapKey,
-		period,
-	}
-};
-
-const actionUpdate = (data) => {
-	return {
-		type: ActionTypes.MAPS.UPDATE,
-		data
-	}
+		type: ActionTypes.MAPS.SET.SET_SYNC,
+		mapSetKey,
+		sync,
+	};
 };
 
 const actionSetMapViewport = (mapKey, width, height) => {
@@ -1461,111 +1042,95 @@ const actionSetMapViewport = (mapKey, width, height) => {
 		type: ActionTypes.MAPS.MAP.VIEWPORT.SET,
 		mapKey,
 		width,
-		height
-	}
+		height,
+	};
 };
 
-/* ==================================================
- * DEPRECATED ACTIONS
- * ================================================== */
-
-const deprecated_actionSetSetWorldWindNavigator = (setKey, worldWindNavigator) => {
+const actionUpdate = data => {
 	return {
-		type: ActionTypes.MAPS.SET.WORLD_WIND_NAVIGATOR.SET,
-		setKey,
-		worldWindNavigator,
-	}
+		type: ActionTypes.MAPS.UPDATE,
+		data,
+	};
 };
 
-const deprecated_actionUpdateSetWorldWindNavigator = (setKey, worldWindNavigator) => {
+const actionUpdateMapView = (mapKey, update) => {
 	return {
-		type: ActionTypes.MAPS.SET.WORLD_WIND_NAVIGATOR.UPDATE,
-		setKey,
-		worldWindNavigator,
-	}
-};
-
-const deprecated_actionSetMapWorldWindNavigator = (mapKey, worldWindNavigator) => {
-	return {
-		type: ActionTypes.MAPS.MAP.WORLD_WIND_NAVIGATOR.SET,
+		type: ActionTypes.MAPS.MAP.VIEW.UPDATE,
 		mapKey,
-		worldWindNavigator,
-	}
+		update,
+	};
 };
 
-const deprecated_actionUpdateMapWorldWindNavigator = (mapKey, worldWindNavigator) => {
+const actionUpdateSetView = (setKey, update) => {
 	return {
-		type: ActionTypes.MAPS.MAP.WORLD_WIND_NAVIGATOR.UPDATE,
+		type: ActionTypes.MAPS.SET.VIEW.UPDATE,
+		setKey,
+		update,
+	};
+};
+
+const actionMapSetUseClear = mapSetKey => {
+	return {
+		type: ActionTypes.MAPS.SET.USE.CLEAR,
+		mapSetKey,
+	};
+};
+
+const actionMapSetUseRegister = mapSetKey => {
+	return {
+		type: ActionTypes.MAPS.SET.USE.REGISTER,
+		mapSetKey,
+	};
+};
+
+const actionMapUseClear = mapKey => {
+	return {
+		type: ActionTypes.MAPS.MAP.USE.CLEAR,
 		mapKey,
-		worldWindNavigator,
-	}
+	};
+};
+
+const actionMapUseRegister = mapKey => {
+	return {
+		type: ActionTypes.MAPS.MAP.USE.REGISTER,
+		mapKey,
+	};
 };
 
 // ============ export ===========
-
-// TODO better naming
 export default {
-	addLayer,
-	addLayers,
-	addLayersToMaps, // TODO ???
 	addMap,
-	addMapForPeriod,
+	addMapLayers,
+	addMapLayerToIndex,
+	addMapSet,
 	addMapToSet,
-	addSet,
-
-	goToPlace,
-
-	removeLayer,
-	removeLayers,
+	ensureWithFilterByActive,
+	layerUse,
+	mapSetUseClear,
+	mapSetUseRegister,
+	mapUseClear,
+	mapUseRegister,
+	refreshMapSetUse,
 	removeMap,
-	removeMapForPeriod,
-	removeMapKeyFromSet,
-	removeSet,
-
-	resetViewHeading,
-
-	setActiveMapKey,
-	setActiveSetKey,
-	setLayerHoveredFeatureKeys,
+	removeMapFromSet,
+	removeMapLayer,
+	removeMapLayers,
+	removeMapLayersByFilter,
+	removeAllMapLayers: actionRemoveAllMapLayers,
+	removeMapSet,
+	setActiveMapKey: actionSetActiveMapKey,
 	setLayerSelectedFeatureKeys,
-	setLayerIndex,
-
-	setMapBackgroundLayer,
-	setMapCase,
-	setMapData,
-	setMapLayer,
-    setMapLayerStyle,
-	setMapLayers,
-	setMapName,
-	setMapPeriod,
-	setMapPlace,
-	setMapScenario,
-	setMapScope,
-	setMapView,
-	setMapViewport,
-
+	setMapLayerOpacity,
+	setMapLayerOption,
+	setMapLayerStyleKey,
 	setMapSetActiveMapKey,
-	setSetBackgroundLayer,
-    setSetLayers,
-	setSetSync,
-	setSetView,
-
-	setInitial,
-
-	updateMapLayer,
-	updateStateFromView,
+	setMapBackgroundLayer,
+	setMapSetBackgroundLayer,
+	setMapSetLayers,
+	setMapSetSync,
+	setMapViewport,
 	updateMapAndSetView,
 	updateSetView,
-
+	updateStateFromView,
 	use,
-	useClear,
-
-
-	// Deprecated
-	deprecated_resetWorldWindNavigatorHeading,
-	deprecated_setMapWorldWindNavigator,
-	deprecated_setSetWorldWindNavigator,
-	deprecated_updateWorldWindNavigator,
-	deprecated_use,
-	deprecated_useClear
-}
+};

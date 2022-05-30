@@ -1,11 +1,11 @@
 import ActionTypes from '../../constants/ActionTypes';
 import common from '../_common/reducers';
 
-import {DEFAULT_INITIAL_STATE} from "../_common/reducers";
+import {DEFAULT_INITIAL_STATE} from '../_common/reducers';
 
-const INITIAL_STATE = {
+export const INITIAL_STATE = {
 	...DEFAULT_INITIAL_STATE,
-	activeKeys: null
+	activeKeys: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -18,6 +18,8 @@ export default (state = INITIAL_STATE, action) => {
 			return common.remove(state, action);
 		case ActionTypes.PLACES.EDITED.REMOVE:
 			return common.removeEdited(state, action);
+		case ActionTypes.PLACES.EDITED.REMOVE_ACTIVE:
+			return common.removeEditedActive(state, action);
 		case ActionTypes.PLACES.EDITED.REMOVE_PROPERTY:
 			return common.removeEditedProperty(state, action);
 		case ActionTypes.PLACES.EDITED.UPDATE:
@@ -34,8 +36,12 @@ export default (state = INITIAL_STATE, action) => {
 			return common.setActive(state, action);
 		case ActionTypes.PLACES.SET_ACTIVE_KEYS:
 			return common.setActiveMultiple(state, action);
+		case ActionTypes.PLACES.UPDATE_STORE:
+			return common.updateStore(state, action);
 		case ActionTypes.PLACES.USE.INDEXED.CLEAR:
 			return common.useIndexedClear(state, action);
+		case ActionTypes.PLACES.USE.INDEXED.CLEAR_ALL:
+			return common.useIndexedClearAll(state, action);
 		case ActionTypes.PLACES.USE.INDEXED.REGISTER:
 			return common.registerUseIndexed(state, action);
 		case ActionTypes.PLACES.USE.KEYS.REGISTER:
@@ -50,4 +56,4 @@ export default (state = INITIAL_STATE, action) => {
 		default:
 			return state;
 	}
-}
+};

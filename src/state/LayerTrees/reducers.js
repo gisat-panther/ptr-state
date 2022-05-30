@@ -1,9 +1,7 @@
 import ActionTypes from '../../constants/ActionTypes';
-import common from '../_common/reducers';
+import common, {DEFAULT_INITIAL_STATE} from '../_common/reducers';
 
-import {DEFAULT_INITIAL_STATE} from "../_common/reducers";
-
-const INITIAL_STATE = {
+export const INITIAL_STATE = {
 	...DEFAULT_INITIAL_STATE,
 };
 
@@ -29,14 +27,18 @@ export default (state = INITIAL_STATE, action) => {
 			return common.clearIndex(state, action);
 		case ActionTypes.LAYER_TREES.MARK_DELETED:
 			return common.markDeleted(state, action);
-		case ActionTypes.LAYER_TREES.USE.INDEXED.CLEAR:
-			return common.useIndexedClear(state, action);
-		case ActionTypes.LAYER_TREES.USE.INDEXED.REGISTER:
-			return common.registerUseIndexed(state, action);
-		case ActionTypes.LAYER_TREES.USE.KEYS.REGISTER:
-			return common.useKeysRegister(state, action);
+		case ActionTypes.LAYER_TREES.UPDATE_STORE:
+			return common.updateStore(state, action);
 		case ActionTypes.LAYER_TREES.USE.KEYS.CLEAR:
 			return common.useKeysClear(state, action);
+		case ActionTypes.LAYER_TREES.USE.KEYS.REGISTER:
+			return common.useKeysRegister(state, action);
+		case ActionTypes.LAYER_TREES.USE.INDEXED.REGISTER:
+			return common.registerUseIndexed(state, action);
+		case ActionTypes.LAYER_TREES.USE.INDEXED.CLEAR:
+			return common.useIndexedClear(state, action);
+		case ActionTypes.LAYER_TREES.USE.INDEXED.CLEAR_ALL:
+			return common.useIndexedClearAll(state, action);
 
 		case ActionTypes.COMMON.DATA.SET_OUTDATED:
 			return common.dataSetOutdated(state, action);
@@ -45,4 +47,4 @@ export default (state = INITIAL_STATE, action) => {
 		default:
 			return state;
 	}
-}
+};

@@ -1,16 +1,13 @@
 import createCachedSelector from 're-reselect';
-import _ from 'lodash';
-import moment from "moment";
+import {isEmpty as _isEmpty, pickBy as _pickBy} from 'lodash';
+import moment from 'moment';
 
-import common from "../_common/selectors";
-import attributeRelationsSelectors from "../AttributeRelations/selectors";
-import SpatialRelations from "../SpatialRelations/selectors";
+import common from '../_common/selectors';
 
 const getSubstate = state => state.periods;
 
 const getAll = common.getAll(getSubstate);
 const getAllAsObject = common.getAllAsObject(getSubstate);
-const getAllForActiveScope = common.getAllForActiveScope(getSubstate);
 const getActive = common.getActive(getSubstate);
 const getActiveKey = common.getActiveKey(getSubstate);
 const getActiveKeys = common.getActiveKeys(getSubstate);
@@ -18,104 +15,73 @@ const getActiveModels = common.getActiveModels(getSubstate);
 
 const getByKey = common.getByKey(getSubstate);
 const getByKeys = common.getByKeys(getSubstate);
+const getByKeysAsObject = common.getByKeysAsObject(getSubstate);
 
 const getDataByKey = common.getDataByKey(getSubstate);
 const getDeletePermissionByKey = common.getDeletePermissionByKey(getSubstate);
 
+const getEditedActive = common.getEditedActive(getSubstate);
+const getEditedAll = common.getEditedAll(getSubstate);
+const getEditedAllAsObject = common.getEditedAllAsObject(getSubstate);
+const getEditedByKey = common.getEditedByKey(getSubstate);
 const getEditedDataByKey = common.getEditedDataByKey(getSubstate);
-const getIndexed = common.getIndexed(getSubstate);
-const getUpdatePermissionByKey = common.getUpdatePermissionByKey(getSubstate);
+const getEditedKeys = common.getEditedKeys(getSubstate);
 
-const getKeysByAttributeRelations = createCachedSelector(
-	[attributeRelationsSelectors.getFilteredRelations],
-	(filteredRelations) => {
-		if (filteredRelations) {
-			return _.map(filteredRelations, relation => relation.periodKey);
-		} else {
-			return null;
-		}
-	}
-)((state, filter, cacheKey) => {
-	return JSON.stringify(filter) + ':' + JSON.stringify(cacheKey)
-});
+const getIndexed = common.getIndexed(getSubstate);
+const getStateToSave = common.getStateToSave(getSubstate);
+const getUpdatePermissionByKey = common.getUpdatePermissionByKey(getSubstate);
+const getUsedKeysForComponent = common.getUsedKeysForComponent(getSubstate);
+
+const haveAllKeysRegisteredUse = common.haveAllKeysRegisteredUse(getSubstate);
 
 /**
  * Both start and end time must be defined, otherwise all available periods are returned.
  */
-const getByFullPeriodAsObject = createCachedSelector(
+
+/**
+ * Get periods which are between defined bounds
+ * @param state {Object}
+ * @param limitStart {string} moment-like time string
+ * @param limitEnd {string} moment-like time string
+ * @param {Object} Models
+ */
+const getAsObjectByFullPeriod = createCachedSelector(
 	[
 		getAllAsObject,
-		(state, start) => start,
-		(state, start, end) => end
+		(state, limitStart) => limitStart,
+		(state, limitStart, limitEnd) => limitEnd,
 	],
-	(periods, start, end) => {
-		if (periods && start && end) {
-			return _.pickBy(periods, (period) => {
-				const periodStart = period?.data?.start;
-				if (periodStart && !moment(periodStart).isBetween(start, end, null, '[]')) {
+	(periods, limitStart, limitEnd) => {
+		if (periods && limitStart && limitEnd) {
+			const selectedPeriods = _pickBy(periods, period => {
+				const periodStart = period.data?.start;
+				const periodEnd = period.data?.end;
+
+				if (periodStart && periodEnd) {
+					return (
+						moment(periodStart).isBetween(limitStart, limitEnd, null, '[]') &&
+						moment(periodEnd).isBetween(limitStart, limitEnd, null, '[]')
+					);
+				} else if (periodStart) {
+					return moment(periodStart).isBetween(
+						limitStart,
+						limitEnd,
+						null,
+						'[]'
+					);
+				} else if (periodEnd) {
+					return moment(periodEnd).isBetween(limitStart, limitEnd, null, '[]');
+				} else {
 					return false;
 				}
+			});
 
-				const periodEnd = period?.data?.end;
-				if (periodEnd && !moment(periodEnd).isBetween(start, end, null, '[]')) {
-					return false;
-				}
-
-				return true;
-			})
-		} else {
-			return periods;
-		}
-	}
-)((state, start, end) => `${start}_${end}`);
-
-const getFilteredGroupedByLayerTemplateKey = createCachedSelector(
-	[
-		getAllAsObject,
-		SpatialRelations.getFilteredDataGroupedByLayerTemplateKey,
-		(state, layersState) => layersState
-	],
-	(periods, spatialRelationsDataGroupedByLayerTemplateKey, layersState) => {
-		if (periods && !_.isEmpty(periods) && spatialRelationsDataGroupedByLayerTemplateKey && !_.isEmpty(spatialRelationsDataGroupedByLayerTemplateKey) && layersState) {
-			const periodsByLayerKey = {};
-			for (const [layerTemplateKey, spatialRelations] of Object.entries(spatialRelationsDataGroupedByLayerTemplateKey)) {
-				periodsByLayerKey[layerTemplateKey] = spatialRelations.map(spatialRelation => {
-					if(periods[spatialRelation.data.periodKey]) {
-						return periods[spatialRelation.data.periodKey];
-					}
-				})
-				periodsByLayerKey[layerTemplateKey].filter(i => i); //filter empty
-			}
-			return periodsByLayerKey;
+			return _isEmpty(selectedPeriods) ? null : selectedPeriods;
 		} else {
 			return null;
 		}
 	}
-)((state, layersState) => layersState.map(l => l.filter && l.filter.layerTemplateKey).join(','));
-
-const getFilteredGroupedByLayerKey = createCachedSelector(
-	[
-		getAllAsObject,
-		SpatialRelations.getFilteredDataGroupedByLayerKey,
-		(state, layersState) => layersState
-	],
-	(periods, spatialRelationsDataGroupedByLayerKey, layersState) => {
-		if (periods && !_.isEmpty(periods) && spatialRelationsDataGroupedByLayerKey && !_.isEmpty(spatialRelationsDataGroupedByLayerKey) && layersState) {
-			const periodsByLayerKey = {};
-			for (const [layerKey, spatialRelations] of Object.entries(spatialRelationsDataGroupedByLayerKey)) {
-				periodsByLayerKey[layerKey] = spatialRelations.map(spatialRelation => {
-					if(spatialRelation && periods[spatialRelation.periodKey]) {
-						return periods[spatialRelation.periodKey];
-					}
-				})
-				periodsByLayerKey[layerKey].filter(i => i); //filter empty
-			}
-			return periodsByLayerKey;
-		} else {
-			return null;
-		}
-	}
-)((state, layersState) => layersState.map(l => l.key).join(','));
+)((state, limitStart, limitEnd) => `${limitStart}_${limitEnd}`);
 
 export default {
 	getActive,
@@ -124,25 +90,29 @@ export default {
 	getActiveModels,
 	getAll,
 	getAllAsObject,
-	getAllForActiveScope,
 
 	getByKey,
 	getByKeys,
-	getByFullPeriodAsObject,
+	getByKeysAsObject,
+	getAsObjectByFullPeriod,
 
 	getDataByKey,
 	getDeletePermissionByKey,
 
+	getEditedActive,
+	getEditedAll,
+	getEditedAllAsObject,
+	getEditedByKey,
 	getEditedDataByKey,
-	getFilteredGroupedByLayerTemplateKey,
-	getFilteredGroupedByLayerKey,
-	getIndexed,
-	getKeysByAttributeRelations,
-	getUpdatePermissionByKey,
+	getEditedKeys,
 
+	getIndexed,
+
+	getStateToSave,
 	getSubstate,
 
-	// TODO handle old selectors export
-	getActivePeriod: getActive,
-	getPeriods: getAll,
+	getUpdatePermissionByKey,
+	getUsedKeysForComponent,
+
+	haveAllKeysRegisteredUse,
 };

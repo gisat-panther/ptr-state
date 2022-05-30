@@ -1,21 +1,25 @@
-import AppContainer from "./AppContainer";
-import ChartSet from "./charts/ChartSet";
-import GoToPlace from "./maps/GoToPlace";
-import Map from "./maps/Map";
-import MapControls from "./maps/MapControls";
-import MapSet from "./maps/MapSet";
-import Screens from "./Screens";
-import User from "./User";
-import WindowsContainer from "./WindowsContainer";
+import AppContainer from './AppContainer';
+import CartesianChart from './dataComponents/CartesianChart';
+import Map from './maps/Map';
+import MapSet from './maps/MapSet';
+import Screens from './Screens';
+import LayerRow from './timeline/maptimeline/LayerRow';
+import LayerRowItem from './timeline/maptimeline/LayerRowItem';
+import LayerRowPeriodItem from './timeline/maptimeline/LayerRowPeriodItem';
+import User from './User';
+import WindowsContainer from './WindowsContainer';
 
 export default {
-    AppContainer,
-    ChartSet,
-    GoToPlace,
-    Map,
-    MapControls,
-    MapSet,
-    Screens,
-    User,
-    WindowsContainer
-}
+	AppContainer,
+	CartesianChart,
+	Map,
+	MapSet,
+	Screens,
+	timeline: {
+		LayerRow,
+		LayerRowItem,
+		LayerRowPeriodItem,
+	},
+	User,
+	WindowsContainer,
+};

@@ -1,9 +1,8 @@
 import ActionTypes from '../../constants/ActionTypes';
-import _ from 'lodash';
 import common, {DEFAULT_INITIAL_STATE} from '../_common/reducers';
 
-const INITIAL_STATE = {
-	...DEFAULT_INITIAL_STATE
+export const INITIAL_STATE = {
+	...DEFAULT_INITIAL_STATE,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -16,6 +15,8 @@ export default (state = INITIAL_STATE, action) => {
 			return common.remove(state, action);
 		case ActionTypes.VIEWS.EDITED.REMOVE:
 			return common.removeEdited(state, action);
+		case ActionTypes.VIEWS.EDITED.REMOVE_ACTIVE:
+			return common.removeEditedActive(state, action);
 		case ActionTypes.VIEWS.EDITED.REMOVE_PROPERTY:
 			return common.removeEditedProperty(state, action);
 		case ActionTypes.VIEWS.EDITED.UPDATE:
@@ -24,8 +25,8 @@ export default (state = INITIAL_STATE, action) => {
 			return common.addIndex(state, action);
 		case ActionTypes.VIEWS.SET_ACTIVE_KEY:
 			return common.setActive(state, action);
-		case ActionTypes.VIEWS.SET_ACTIVE_KEYS:
-			return common.setActiveMultiple(state, action);
+		case ActionTypes.VIEWS.UPDATE_STORE:
+			return common.updateStore(state, action);
 		case ActionTypes.VIEWS.USE.KEYS.REGISTER:
 			return common.useKeysRegister(state, action);
 		case ActionTypes.VIEWS.USE.KEYS.CLEAR:
@@ -34,6 +35,8 @@ export default (state = INITIAL_STATE, action) => {
 			return common.registerUseIndexed(state, action);
 		case ActionTypes.VIEWS.USE.INDEXED.CLEAR:
 			return common.useIndexedClear(state, action);
+		case ActionTypes.VIEWS.USE.INDEXED.CLEAR_ALL:
+			return common.useIndexedClearAll(state, action);
 		case ActionTypes.VIEWS.INDEX.CLEAR_ALL:
 			return common.clearIndexes(state, action);
 		case ActionTypes.VIEWS.INDEX.CLEAR_INDEX:
@@ -47,4 +50,4 @@ export default (state = INITIAL_STATE, action) => {
 		default:
 			return state;
 	}
-}
+};

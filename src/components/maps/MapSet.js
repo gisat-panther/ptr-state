@@ -1,23 +1,33 @@
 import {connect} from 'react-redux';
 import Action from '../../state/Action';
 import Select from '../../state/Select';
-import {utils} from '@gisatcz/ptr-utils'
+import {utils} from '@gisatcz/ptr-utils';
 
 const mapStateToProps = (state, ownProps) => {
 	if (ownProps.stateMapSetKey) {
+		const activeMapKey = Select.maps.getMapSetActiveMapKey(
+			state,
+			ownProps.stateMapSetKey
+		);
 		return {
-			activeMapKey: Select.maps.getMapSetActiveMapKey(state, ownProps.stateMapSetKey),
-			activeMapView: Select.maps.getMapSetActiveMapView(state, ownProps.stateMapSetKey),
+			activeMapKey,
+			activeMapView: Select.maps.getMapSetActiveMapView(
+				state,
+				ownProps.stateMapSetKey
+			),
 			maps: Select.maps.getMapSetMapKeys(state, ownProps.stateMapSetKey),
 			view: Select.maps.getMapSetView(state, ownProps.stateMapSetKey),
-			viewLimits: Select.maps.getMapSetViewLimits(state, ownProps.stateMapSetKey),
-			activeMapViewport: Select.maps.getViewportByMapKey(state)
-		}
+			activeMapViewport: Select.maps.getViewportByMapKey(state, activeMapKey),
+			viewLimits: Select.maps.getMapSetViewLimits(
+				state,
+				ownProps.stateMapSetKey
+			),
+		};
 	} else {
 		return {
-			backgroundLayer: Select.maps.getBackgroundLayer(state, ownProps.backgroundLayer),
-			layers: Select.maps.getLayers(state, ownProps.layers)
-		}
+			backgroundLayer: null,
+			layers: null,
+		};
 	}
 };
 
@@ -27,33 +37,33 @@ const mapDispatchToPropsFactory = () => {
 	return (dispatch, ownProps) => {
 		if (ownProps.stateMapSetKey) {
 			return {
-				updateView: (update) => {
-					dispatch(Action.maps.updateSetView(ownProps.stateMapSetKey, update));
+				onMount: () => {
+					dispatch(Action.maps.mapSetUseRegister(ownProps.stateMapSetKey));
 				},
-				resetHeading: (mapKey) => {
-					dispatch(Action.maps.resetViewHeading(mapKey));
+				onUnmount: () => {
+					dispatch(Action.maps.mapSetUseClear(ownProps.stateMapSetKey));
 				},
-				onMapRemove: (mapKey) => {
-					dispatch(Action.maps.removeMap(mapKey));
-				}
-			}
+				updateView: (update, mapKey) => {
+					dispatch(Action.maps.updateMapAndSetView(mapKey, update));
+				},
+				resetHeading: mapKey => {},
+				onMapRemove: mapKey => {
+					dispatch(
+						Action.maps.removeMapFromSet(ownProps.stateMapSetKey, mapKey)
+					);
+				},
+			};
 		} else {
 			let setKey = ownProps.setKey || componentId;
 			return {
-				onMount: () => {
-					dispatch(Action.maps.use(setKey, ownProps.backgroundLayer, ownProps.layers));
-				},
+				onMount: () => {},
 
-				onUnmount: () => {
-					dispatch(Action.maps.useClear(setKey));
-				},
+				onUnmount: () => {},
 
-				refreshUse: () => {
-					dispatch(Action.maps.use(setKey, ownProps.backgroundLayer, ownProps.layers));
-				},
-			}
+				refreshUse: () => {},
+			};
 		}
-	}
+	};
 };
 
 export default connect(mapStateToProps, mapDispatchToPropsFactory);

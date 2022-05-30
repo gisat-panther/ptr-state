@@ -1,20 +1,20 @@
 import ActionTypes from '../../constants/ActionTypes';
 import _ from 'lodash';
 
-const INITIAL_STATE = {
-    screens: {},
-    sets: {},
+export const INITIAL_STATE = {
+	screens: {},
+	sets: {},
 };
 
 const INITIAL_SET_STATE = {
-    orderByHistory: [],
-    orderBySpace: [],
+	orderByHistory: [],
+	orderBySpace: [],
 };
 
 const INITIAL_SCREEN_DATA = {
-    width: null,
-    minActiveWidth: null,
-    desiredState: 'open', //open/retracted/closing
+	width: null,
+	minActiveWidth: null,
+	desiredState: 'open', //open/retracted/closing
 };
 
 const add = (state, action) => {
@@ -22,13 +22,19 @@ const add = (state, action) => {
 
 	screens[action.lineage] = {
 		lineage: action.lineage,
-		data: {...INITIAL_SCREEN_DATA, ...action.data}
+		data: {...INITIAL_SCREEN_DATA, ...action.data},
 	};
 
 	let sets = {...state.sets};
 	sets[action.setKey] = {...INITIAL_SET_STATE, ...sets[action.setKey]};
-	sets[action.setKey].orderBySpace = [...sets[action.setKey].orderBySpace, action.lineage];
-	sets[action.setKey].orderByHistory = [...sets[action.setKey].orderByHistory, action.lineage];
+	sets[action.setKey].orderBySpace = [
+		...sets[action.setKey].orderBySpace,
+		action.lineage,
+	];
+	sets[action.setKey].orderByHistory = [
+		...sets[action.setKey].orderByHistory,
+		action.lineage,
+	];
 
 	return {...state, screens, sets};
 };
@@ -44,7 +50,7 @@ const close = (state, action) => {
 
 	screens[action.lineage] = {
 		lineage: action.lineage,
-		data: {...screens[action.lineage].data, desiredState: 'closing'}
+		data: {...screens[action.lineage].data, desiredState: 'closing'},
 	};
 
 	return {...state, screens};
@@ -55,7 +61,7 @@ const open = (state, action) => {
 
 	screens[action.lineage] = {
 		lineage: action.lineage,
-		data: {...screens[action.lineage].data, desiredState: 'open'}
+		data: {...screens[action.lineage].data, desiredState: 'open'},
 	};
 
 	return {...state, screens};
@@ -63,15 +69,27 @@ const open = (state, action) => {
 
 const remove = (state, action) => {
 	let sets = {...state.sets};
-	let orderByHistory = _.without([...sets[action.setKey].orderByHistory], action.lineage);
-	let orderBySpace = _.without([...sets[action.setKey].orderBySpace], action.lineage);
+	let orderByHistory = _.without(
+		[...sets[action.setKey].orderByHistory],
+		action.lineage
+	);
+	let orderBySpace = _.without(
+		[...sets[action.setKey].orderBySpace],
+		action.lineage
+	);
 
-	return {...state, sets: {...sets, [action.setKey]: {orderByHistory, orderBySpace}}};
+	return {
+		...state,
+		sets: {...sets, [action.setKey]: {orderByHistory, orderBySpace}},
+	};
 };
 
 const removeAllScreensFromSet = (state, action) => {
 	let sets = {...state.sets};
-	return {...state, sets: {...sets, [action.setKey]: {orderByHistory: [], orderBySpace: []}}};
+	return {
+		...state,
+		sets: {...sets, [action.setKey]: {orderByHistory: [], orderBySpace: []}},
+	};
 };
 
 const retract = (state, action) => {
@@ -79,7 +97,7 @@ const retract = (state, action) => {
 
 	screens[action.lineage] = {
 		lineage: action.lineage,
-		data: {...screens[action.lineage].data, desiredState: 'retracted'}
+		data: {...screens[action.lineage].data, desiredState: 'retracted'},
 	};
 
 	return {...state, screens};
@@ -87,7 +105,10 @@ const retract = (state, action) => {
 
 const topHistory = (state, action) => {
 	let sets = {...state.sets};
-	let orderByHistory = _.without([...sets[action.setKey].orderByHistory], action.lineage);
+	let orderByHistory = _.without(
+		[...sets[action.setKey].orderByHistory],
+		action.lineage
+	);
 	orderByHistory.push(action.lineage);
 
 	return {
@@ -96,9 +117,9 @@ const topHistory = (state, action) => {
 			...sets,
 			[action.setKey]: {
 				...sets[action.setKey],
-				orderByHistory
-			}
-		}
+				orderByHistory,
+			},
+		},
 	};
 };
 
@@ -108,26 +129,34 @@ const update = (state, action) => {
 
 	screens[action.lineage] = {
 		...screens[action.lineage],
-		data: {...screens[action.lineage].data, ...action.data}
+		data: {...screens[action.lineage].data, ...action.data},
 	};
 
 	let sets = {...state.sets};
 	sets[action.setKey] = {...INITIAL_SET_STATE, ...sets[action.setKey]};
 
-	let orderByHistory = _.without(sets[action.setKey].orderByHistory, action.lineage);
+	let orderByHistory = _.without(
+		sets[action.setKey].orderByHistory,
+		action.lineage
+	);
 	orderByHistory.push(action.lineage);
 	sets[action.setKey].orderByHistory = orderByHistory;
 
-	let alreadyInOrder = _.find(sets[action.setKey].orderBySpace, (lineage) => lineage === action.lineage);
+	let alreadyInOrder = _.find(
+		sets[action.setKey].orderBySpace,
+		lineage => lineage === action.lineage
+	);
 	if (!alreadyInOrder) {
-		let orderBySpace = _.without(sets[action.setKey].orderBySpace, action.lineage);
+		let orderBySpace = _.without(
+			sets[action.setKey].orderBySpace,
+			action.lineage
+		);
 		orderBySpace.push(action.lineage);
 		sets[action.setKey].orderBySpace = orderBySpace;
 	}
 
 	return {...state, screens, sets};
 };
-
 
 export default (state = INITIAL_STATE, action) => {
 	switch (action.type) {

@@ -1,86 +1,121 @@
 import {connect} from 'react-redux';
+import {setState} from '@jvitela/recompute';
 import Action from '../../state/Action';
 import Select from '../../state/Select';
 import {utils} from '@gisatcz/ptr-utils';
 
 const mapStateToProps = (state, ownProps) => {
-    if (ownProps.stateMapKey) {
-        return {
-            backgroundLayer: Select.maps.getMapBackgroundLayer(state, ownProps.stateMapKey),
-            layers: Select.maps.getMapLayers(state, ownProps.stateMapKey),
-            view: Select.maps.getView(state, ownProps.stateMapKey),
-            viewLimits: Select.maps.getViewLimits(state, ownProps.stateMapKey),
+	setState(state);
+
+	if (ownProps.stateMapKey) {
+		return {
+			backgroundLayer: Select.maps.getMapBackgroundLayer(ownProps.stateMapKey),
+			layers: Select.maps.getMapLayers(ownProps.stateMapKey),
 			viewport: Select.maps.getViewportByMapKey(state, ownProps.stateMapKey),
-            mapKey: ownProps.stateMapKey
-        }
-    } else {
-        return {
-            backgroundLayer: Select.maps.getBackgroundLayer(state, ownProps.backgroundLayer),
-            layers: Select.maps.getLayers(state, ownProps.layers)
-        }
-    }
+			view: Select.maps.getViewByMapKey(state, ownProps.stateMapKey),
+			viewLimits: Select.maps.getViewLimitsByMapKey(
+				state,
+				ownProps.stateMapKey
+			),
+			mapKey: ownProps.stateMapKey,
+		};
+	} else {
+		return {
+			backgroundLayer: Select.maps.getMapBackgroundLayer(
+				ownProps.mapKey,
+				ownProps.backgroundLayer
+			),
+			layers: Select.maps.getMapLayers(ownProps.mapKey, ownProps.layers),
+		};
+	}
 };
 
 const mapDispatchToPropsFactory = () => {
-    const componentId = 'Map_' + utils.randomString(6);
+	const componentId = 'Map_' + utils.randomString(6);
 
-    return (dispatch, ownProps) => {
-        if (ownProps.stateMapKey) {
-            return {
-                onMount: (mapWidth, mapHeight) => {
-                    dispatch(Action.maps.use(ownProps.stateMapKey));
-					dispatch(Action.maps.setMapViewport(ownProps.stateMapKey, mapWidth, mapHeight));
-                },
-
-                onUnmount: () => {
-                    dispatch(Action.maps.useClear(ownProps.stateMapKey));
-                },
-
-                refreshUse: () => {
-                    dispatch(Action.maps.use(ownProps.stateMapKey));
-                },
-
-                onViewChange: (update) => {
-                    dispatch(Action.maps.updateMapAndSetView(ownProps.stateMapKey, update));
-                },
-
-				onPropViewChange: (update, mapWidth, mapHeight) => {
-					dispatch(Action.maps.setMapViewport(ownProps.stateMapKey, mapWidth, mapHeight));
+	return (dispatch, ownProps) => {
+		if (ownProps.stateMapKey) {
+			return {
+				onMount: (mapWidth, mapHeight) => {
+					dispatch(
+						Action.maps.setMapViewport(
+							ownProps.stateMapKey,
+							mapWidth,
+							mapHeight
+						)
+					);
+					dispatch(Action.maps.use(ownProps.stateMapKey, null, null));
 				},
 
-                resetHeading: () => {
-                    dispatch(Action.maps.resetViewHeading(ownProps.stateMapKey));
-                },
+				onResize: (mapWidth, mapHeight) => {
+					dispatch(
+						Action.maps.setMapViewport(
+							ownProps.stateMapKey,
+							mapWidth,
+							mapHeight
+						)
+					);
+					dispatch(Action.maps.use(ownProps.stateMapKey, null, null));
+				},
 
-                onClick: (view) => {
-                    dispatch(Action.maps.setMapSetActiveMapKey(ownProps.stateMapKey));
-                },
-                onLayerClick: (mapKey, layerKey, selectedFeatureKeys) => {
-                    dispatch(Action.maps.setLayerSelectedFeatureKeys(ownProps.stateMapKey, layerKey, selectedFeatureKeys))
-                }
-            }
-        } else {
-            let mapKey = ownProps.mapKey || componentId;
+				onUnmount: () => {
+					dispatch(Action.maps.mapUseClear(ownProps.stateMapKey));
+				},
 
-            return {
-                onMount: () => {
-                    dispatch(Action.maps.use(mapKey, ownProps.backgroundLayer, ownProps.layers));
-                },
+				refreshUse: () => {},
 
-                onUnmount: () => {
-                    dispatch(Action.maps.useClear(mapKey));
-                },
+				onViewChange: update => {
+					dispatch(
+						Action.maps.updateMapAndSetView(ownProps.stateMapKey, update)
+					);
+				},
 
-                refreshUse: () => {
-                    dispatch(Action.maps.use(mapKey, ownProps.backgroundLayer, ownProps.layers));
-                },
+				onPropViewChange: (update, mapWidth, mapHeight) => {
+					dispatch(
+						Action.maps.setMapViewport(
+							ownProps.stateMapKey,
+							mapWidth,
+							mapHeight
+						)
+					);
+					dispatch(Action.maps.use(ownProps.stateMapKey, undefined, undefined));
+				},
 
-                onViewChange: ownProps.onViewChange || ((update) => {}),
+				resetHeading: () => {},
 
-                onClick: ownProps.onClick || ((view) => {})
-            }
-        }
-    }
+				onClick: view => {
+					dispatch(Action.maps.setMapSetActiveMapKey(ownProps.stateMapKey));
+				},
+				onLayerClick: (mapKey, layerKey, selectedFeatureKeys) => {
+					dispatch(
+						Action.maps.setLayerSelectedFeatureKeys(
+							ownProps.stateMapKey,
+							layerKey,
+							selectedFeatureKeys
+						)
+					);
+				},
+			};
+		} else {
+			let mapKey = ownProps.mapKey || componentId;
+
+			return {
+				onMount: () => {
+					dispatch(
+						Action.maps.use(mapKey, ownProps.backgroundLayer, ownProps.layers)
+					);
+				},
+
+				onUnmount: () => {},
+
+				refreshUse: () => {},
+
+				onViewChange: ownProps.onViewChange || (update => {}),
+
+				onClick: ownProps.onClick || (view => {}),
+			};
+		}
+	};
 };
 
 export default connect(mapStateToProps, mapDispatchToPropsFactory);

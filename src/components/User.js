@@ -4,19 +4,21 @@ import Select from '../state/Select';
 
 const mapStateToProps = (state, props) => {
 	return {
-		user: Select.users.getActiveUser(state)
-	}
+		user: Select.users.getActiveUser(state),
+	};
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
 	return {
 		login: () => {
-			dispatch(Action.components.set('App_Container', 'loginOverlayOpen', true));
+			dispatch(
+				Action.components.set('App_Container', 'loginOverlayOpen', true)
+			);
 		},
 		logout: () => {
 			dispatch(Action.users.apiLogoutUser());
-		}
-	}
+		},
+	};
 };
 
 export default connect(mapStateToProps, mapDispatchToProps);

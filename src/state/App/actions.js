@@ -1,29 +1,44 @@
 import ActionTypes from '../../constants/ActionTypes';
-import request from "../_common/request";
+import request from '../_common/request';
 import selectors from './selectors';
 import commonActions from '../_common/actions';
-import Select from "../Select";
+import Select from '../Select';
 
 // ============ creators ===========
 
 const loadConfiguration = () => {
 	return (dispatch, getState) => {
 		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
-		const apiPath = 'rest/applications/filtered/configurations';
+		const apiPath = 'rest/application/filtered/configurations';
 		let applicationKey = selectors.getKey(getState());
 		const payload = {
 			filter: {
-				applicationKey
-			}
+				applicationKey,
+			},
 		};
 		return request(localConfig, apiPath, 'POST', null, payload)
 			.then(result => {
-				if (result.errors && result.errors.configurations || result.data && !result.data.configurations) {
-					dispatch(commonActions.actionGeneralError(result.errors.configurations || new Error('no data')));
-				} else if (result.data.configurations.length && result.data.configurations[0].data && result.data.configurations[0].data.data) {
-					dispatch(actionReceiveConfiguration(result.data.configurations[0].data.data));
+				if (
+					(result.errors && result.errors.configurations) ||
+					(result.data && !result.data.configurations)
+				) {
+					dispatch(
+						commonActions.actionGeneralError(
+							result.errors.configurations || new Error('no data')
+						)
+					);
+				} else if (
+					result.data.configurations.length &&
+					result.data.configurations[0].data &&
+					result.data.configurations[0].data.data
+				) {
+					dispatch(
+						actionReceiveConfiguration(result.data.configurations[0].data.data)
+					);
 				} else {
-					dispatch(commonActions.actionGeneralError(new Error('empty configuration')));
+					dispatch(
+						commonActions.actionGeneralError(new Error('empty configuration'))
+					);
 				}
 			})
 			.catch(error => {
@@ -33,36 +48,36 @@ const loadConfiguration = () => {
 };
 
 // ============ actions ===========
-const actionSetKey = (key) => {
+const actionSetKey = key => {
 	return {
 		type: ActionTypes.APP.SET_KEY,
-		key
-	}
+		key,
+	};
 };
-const actionSetBaseUrl = (url) => {
+const actionSetBaseUrl = url => {
 	return {
 		type: ActionTypes.APP.SET_BASE_URL,
-		url
-	}
+		url,
+	};
 };
 const actionSetLocalConfiguration = (path, value) => {
 	return {
 		type: ActionTypes.APP.SET_LOCAL_CONFIGURATION,
 		path,
-		value
-	}
+		value,
+	};
 };
-const actionUpdateLocalConfiguration = (update) => {
+const actionUpdateLocalConfiguration = update => {
 	return {
 		type: ActionTypes.APP.UPDATE_LOCAL_CONFIGURATION,
-		update
-	}
+		update,
+	};
 };
-const actionReceiveConfiguration = (configuration) => {
+const actionReceiveConfiguration = configuration => {
 	return {
 		type: ActionTypes.APP.RECEIVE_CONFIGURATION,
-		configuration
-	}
+		configuration,
+	};
 };
 
 // ============ export ===========
@@ -73,5 +88,5 @@ export default {
 	updateLocalConfiguration: actionUpdateLocalConfiguration,
 	setBaseUrl: actionSetBaseUrl,
 	setLocalConfiguration: actionSetLocalConfiguration,
-	loadConfiguration
-}
+	loadConfiguration,
+};

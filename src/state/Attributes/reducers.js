@@ -1,38 +1,24 @@
 import ActionTypes from '../../constants/ActionTypes';
 import common from '../_common/reducers';
 
-import {DEFAULT_INITIAL_STATE} from "../_common/reducers";
+import {DEFAULT_INITIAL_STATE} from '../_common/reducers';
 
-const INITIAL_STATE = {
-	...DEFAULT_INITIAL_STATE
+export const INITIAL_STATE = {
+	...DEFAULT_INITIAL_STATE,
 };
-
-const DEFAULT_ATTRIBUTE_COLLOR = '#008000';
-
-const addAttribute = (state, action) => {
-	if (action && action.data && action.data.length) {
-		action.data.forEach(model => {
-			//check attribute color
-			//if no color, then use default
-			if(!model.data.color) {
-				model.data.color = DEFAULT_ATTRIBUTE_COLLOR;
-			}
-		});
-	}
-
-	return common.add(state, action);
-}
 
 export default (state = INITIAL_STATE, action) => {
 	switch (action.type) {
 		case ActionTypes.ATTRIBUTES.ADD:
-			return addAttribute(state, action);
+			return common.add(state, action);
 		case ActionTypes.ATTRIBUTES.ADD_UNRECEIVED:
 			return common.addUnreceivedKeys(state, action);
 		case ActionTypes.ATTRIBUTES.DELETE:
 			return common.remove(state, action);
 		case ActionTypes.ATTRIBUTES.EDITED.REMOVE:
 			return common.removeEdited(state, action);
+		case ActionTypes.ATTRIBUTES.EDITED.REMOVE_ACTIVE:
+			return common.removeEditedActive(state, action);
 		case ActionTypes.ATTRIBUTES.EDITED.REMOVE_PROPERTY:
 			return common.removeEditedProperty(state, action);
 		case ActionTypes.ATTRIBUTES.EDITED.UPDATE:
@@ -47,8 +33,14 @@ export default (state = INITIAL_STATE, action) => {
 			return common.markDeleted(state, action);
 		case ActionTypes.ATTRIBUTES.SET_ACTIVE_KEY:
 			return common.setActive(state, action);
+		case ActionTypes.ATTRIBUTES.SET_ACTIVE_KEYS:
+			return common.setActiveMultiple(state, action);
+		case ActionTypes.ATTRIBUTES.UPDATE_STORE:
+			return common.updateStore(state, action);
 		case ActionTypes.ATTRIBUTES.USE.INDEXED.CLEAR:
 			return common.useIndexedClear(state, action);
+		case ActionTypes.ATTRIBUTES.USE.INDEXED.CLEAR_ALL:
+			return common.useIndexedClearAll(state, action);
 		case ActionTypes.ATTRIBUTES.USE.INDEXED.REGISTER:
 			return common.registerUseIndexed(state, action);
 		case ActionTypes.ATTRIBUTES.USE.KEYS.REGISTER:
@@ -60,9 +52,7 @@ export default (state = INITIAL_STATE, action) => {
 			return common.dataSetOutdated(state, action);
 		case ActionTypes.COMMON.DATA.CLEANUP_ON_LOGOUT:
 			return common.cleanupOnLogout(state, action);
-		case ActionTypes.COMMON.EDITED.REMOVE_PROPERTY_VALUES:
-			return common.removeEditedPropertyValues(state, action);
 		default:
 			return state;
 	}
-}
+};

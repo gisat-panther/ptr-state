@@ -1,30 +1,60 @@
-import common from "../_common/selectors";
+import common from '../_common/selectors';
 const getSubstate = state => state.layerTrees;
+
+const getActive = common.getActive(getSubstate);
+const getActiveKey = common.getActiveKey(getSubstate);
 
 const getAll = common.getAll(getSubstate);
 const getAllAsObject = common.getAllAsObject(getSubstate);
-const getAllForActiveScope = common.getAllForActiveScope(getSubstate);
 
-const getByFilterOrder = common.getByFilterOrder(getSubstate);
+const getByKey = common.getByKey(getSubstate);
+const getByKeys = common.getByKeys(getSubstate);
+const getByKeysAsObject = common.getByKeysAsObject(getSubstate);
 
 const getDataByKey = common.getDataByKey(getSubstate);
-const getDeletePermissionByKey = common.getDeletePermissionByKey(getSubstate);
-
+const getEditedActive = common.getEditedActive(getSubstate);
+const getEditedAll = common.getEditedAll(getSubstate);
+const getEditedAllAsObject = common.getEditedAllAsObject(getSubstate);
+const getEditedByKey = common.getEditedByKey(getSubstate);
 const getEditedDataByKey = common.getEditedDataByKey(getSubstate);
-const getUpdatePermissionByKey = common.getUpdatePermissionByKey(getSubstate);
+const getEditedKeys = common.getEditedKeys(getSubstate);
 
+const getIndexed = common.getIndexed(getSubstate);
+
+const getDeletePermissionByKey = common.getDeletePermissionByKey(getSubstate);
+const getUpdatePermissionByKey = common.getUpdatePermissionByKey(getSubstate);
+const getUsedKeysForComponent = common.getUsedKeysForComponent(getSubstate);
+const haveAllKeysRegisteredUse = common.haveAllKeysRegisteredUse(getSubstate);
+
+const getStateToSave = common.getStateToSave(getSubstate);
 
 export default {
+	getActive,
+	getActiveKey,
 	getAll,
 	getAllAsObject,
-	getAllForActiveScope,
-	
-	getByFilterOrder,
+
+	getByKey,
+	getByKeys,
+	getByKeysAsObject,
 
 	getDataByKey,
 	getDeletePermissionByKey,
 
+	getEditedActive,
+	getEditedAll,
+	getEditedAllAsObject,
+	getEditedByKey,
 	getEditedDataByKey,
+	getEditedKeys,
+
+	getIndexed,
+
+	getSubstate,
+	getStateToSave,
+
 	getUpdatePermissionByKey,
-	getSubstate
+	getUsedKeysForComponent,
+
+	haveAllKeysRegisteredUse,
 };
