@@ -105,7 +105,7 @@ const getAttributesByDataSourceKeysForFeatureKey = createRecomputeSelector(
 			if (dataByDataSourceKey) {
 				let attributes = {};
 				_forIn(dataByDataSourceKey, (dataSourceData, dataSourceKey) => {
-					if (dataSourceData.hasOwnProperty(featureKey)) {
+					if (Object.hasOwn(dataSourceData, featureKey)) {
 						const value = dataSourceData[featureKey];
 						const attributeKey =
 							attributeDataSourceKeyAttributeKeyPairs[dataSourceKey];

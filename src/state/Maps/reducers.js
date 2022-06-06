@@ -141,6 +141,7 @@ const removeMapFromSet = (state, setKey, mapKey) => {
  */
 const removeMap = (state, mapKey) => {
 	if (mapKey && state.maps[mapKey]) {
+		// eslint-disable-next-line no-unused-vars
 		const {[mapKey]: map, ...restMaps} = state.maps;
 		return {
 			...state,
@@ -159,6 +160,7 @@ const removeMap = (state, mapKey) => {
  */
 const removeMapSet = (state, mapSetKey) => {
 	if (mapSetKey && state.sets[mapSetKey]) {
+		// eslint-disable-next-line no-unused-vars
 		const {[mapSetKey]: set, ...restSets} = state.sets;
 		return {
 			...state,
@@ -215,7 +217,11 @@ const removeMapLayer = (state, mapKey, layerKey) => {
  */
 const removeMapLayers = (state, mapKey, layerKeys) => {
 	if (layerKeys?.length && mapKey) {
-		let updatedLayers = [...state.maps[mapKey]?.data?.layers];
+		let updatedLayers = [
+			...(state.maps[mapKey]?.data?.layers
+				? state.maps[mapKey].data.layers
+				: []),
+		];
 		layerKeys.forEach(layerKey => {
 			const index = _findIndex(updatedLayers, {
 				key: layerKey,
@@ -260,7 +266,7 @@ const removeMapLayersByFilter = (state, mapKey, filter) => {
 		const originalMapLayersLength = mapLayers.length;
 
 		// remove layers satisfying filter
-		_remove(mapLayers, (l, i) => _isMatch(l, filter));
+		_remove(mapLayers, l => _isMatch(l, filter));
 
 		if (
 			originalMapLayersLength > 0 &&

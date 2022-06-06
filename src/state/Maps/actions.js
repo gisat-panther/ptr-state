@@ -34,7 +34,7 @@ import SelectionsAction from '../Selections/actions';
  * @param mapState {Object}
  */
 const addMap = mapState => {
-	return (dispatch, getState) => {
+	return dispatch => {
 		if (!mapState) {
 			dispatch(commonActions.actionGeneralError(`No map state given`));
 		} else if (!mapState.key) {
@@ -81,7 +81,7 @@ const addMapToSet = (mapKey, mapSetKey) => {
  * @param mapSetState {Object}
  */
 const addMapSet = mapSetState => {
-	return (dispatch, getState) => {
+	return dispatch => {
 		if (!mapSetState) {
 			dispatch(commonActions.actionGeneralError(`No map state given`));
 		} else if (!mapSetState.key) {
@@ -559,7 +559,8 @@ function setLayerSelectedFeatureKeys(mapKey, layerKey, selectedFeatureKeys) {
 			const activeSelectionKey = Select.selections.getActiveKey(state);
 			if (
 				activeSelectionKey &&
-				layer.options.selected?.hasOwnProperty(activeSelectionKey)
+				layer?.options?.selected &&
+				Object.hasOwn(layer.options.selected, activeSelectionKey)
 			) {
 				// TODO possible conflicts if features with same key from different layers are selected
 				dispatch(

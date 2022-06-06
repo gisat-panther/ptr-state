@@ -205,9 +205,7 @@ function getTiledIndexDataBySpatialData(spatialData, attributeData) {
 
 	//Attribute data indexes are stored in related spatial index
 	//for all spatial data keys in spatialData
-	for (const [spatialDataSourceKey, datasource] of Object.entries(
-		spatialData
-	)) {
+	for (const [, datasource] of Object.entries(spatialData)) {
 		//for all levels in spatial data source
 		for (const [level, tiles] of Object.entries(datasource.spatialIndex)) {
 			if (!indexByLevelByTileByDataSourceKey[level]) {

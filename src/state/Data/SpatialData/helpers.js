@@ -5,8 +5,8 @@
  */
 const isSpatialDataTiled = spatialData => {
 	const spatialDSTiled = [];
-	for (const [dsKey, datasource] of Object.entries(spatialData)) {
-		if (datasource.hasOwnProperty('spatialIndex')) {
+	for (const [, datasource] of Object.entries(spatialData)) {
+		if (Object.hasOwn(datasource, 'spatialIndex')) {
 			spatialDSTiled.push(true);
 		} else {
 			spatialDSTiled.push(false);

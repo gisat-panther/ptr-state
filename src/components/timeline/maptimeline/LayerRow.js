@@ -2,11 +2,11 @@ import {connect} from 'react-redux';
 
 import mapTimelineActions from '../../../state/Timeline/MapTimeline/actions';
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = () => {
 	return {};
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = dispatch => {
 	return {
 		onMount: () => {},
 		toggleLayer: (

@@ -1,4 +1,5 @@
 import {assert} from 'chai';
+import {describe} from 'mocha';
 import commonActions from '../../../../src/state/_common/actions';
 import testBatchRunner from '../../helpers';
 import {commonActionTypesObj as actionTypes} from '../../../constants';
@@ -6,7 +7,7 @@ import {commonActionTypesObj as actionTypes} from '../../../constants';
 const tests = [
 	{
 		name: 'It fail on unexisting action in actionTypes.',
-		action: (actions, actionTypes, options) => {
+		action: (actions, actionTypes) => {
 			const type = 'ACTION.TEST';
 			const payload = {};
 			try {
@@ -22,7 +23,7 @@ const tests = [
 	},
 	{
 		name: 'It return action.',
-		action: (actions, actionTypes, options) => {
+		action: (actions, actionTypes) => {
 			const type = 'INDEX.ADD';
 			const payload = {
 				data: {

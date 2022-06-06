@@ -220,7 +220,6 @@ const getTiles = createRecomputeSelector(
 	) => {
 		if (tiles?.length) {
 			let populatedTiles = [];
-			let previousTiles = [];
 			let previousPopulatedTiles = [];
 			const missingTiles = [];
 
@@ -274,7 +273,7 @@ const getTiles = createRecomputeSelector(
 						preferedLevelsDirection
 					);
 
-					for (const [tileKey, tileData] of Object.entries(uniqueByLevels)) {
+					for (const [, tileData] of Object.entries(uniqueByLevels)) {
 						for (const tile of [...tileData.tiles]) {
 							if (
 								!previousPopulatedTiles.some(

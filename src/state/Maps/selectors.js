@@ -773,13 +773,15 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 		attributeDataFilter
 	) => {
 		let {
+			// eslint-disable-next-line no-unused-vars
 			attribution,
+			// eslint-disable-next-line no-unused-vars
 			nameInternal,
 			type,
 			fidColumnName,
 			geometryColumnName,
 			...dataSourceOptions
-		} = spatialDataSource?.data;
+		} = {...(spatialDataSource?.data ? spatialDataSource?.data : {})};
 		let {
 			key,
 			name,
@@ -810,11 +812,11 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 			validType = true;
 			let {url, params, configuration, ...rest} = dataSourceOptions;
 			const singleTile =
-				configuration && configuration.hasOwnProperty('singleTile')
+				configuration && Object.hasOwn(configuration, 'singleTile')
 					? configuration.singleTile
 					: false;
 			const fetchedTile =
-				configuration && configuration.hasOwnProperty('fetchedTile')
+				configuration && Object.hasOwn(configuration, 'fetchedTile')
 					? configuration.fetchedTile
 					: false;
 

@@ -1,6 +1,5 @@
 import {
 	isEmpty as _isEmpty,
-	some as _some,
 	reduce as _reduce,
 	flattenDeep as _flattenDeep,
 	difference as _difference,
@@ -92,59 +91,6 @@ const transformSDStoTypes = spatialDataSources => {
 				data: {type: sds.data.type, key: sds.key},
 		  }))
 		: [];
-};
-
-/**
- * Find spatialDataSources by spatialRelationsFilter and order. If All DS are by type vector, then return if theyr indexex are fully loaded.
- * @param {Object} state
- * @param {Object} spatialRelationsFilter
- * @param {Array?} order
- * @returns {Boolean}
- */
-const getVectorSpatialDataSourcesLoadedStatus = (
-	state,
-	spatialRelationsFilter,
-	order
-) => {
-	const spatialDataSources = Select.data.spatialDataSources.getIndexed(
-		state,
-		spatialRelationsFilter,
-		order
-	);
-	const spatialDataSourcesIndex = Select.data.spatialDataSources.getIndex(
-		state,
-		spatialRelationsFilter,
-		order
-	);
-
-	let spatialDataSourcesLoaded = false;
-	if (spatialDataSourcesIndex) {
-		spatialDataSourcesLoaded =
-			spatialDataSourcesIndex.count === spatialDataSources?.length;
-	}
-	let allDSAreVector = false;
-	if (spatialDataSourcesLoaded) {
-		allDSAreVector = spatialDataSources.every(
-			spatialDataSource => spatialDataSource?.data?.type === 'vector'
-		);
-	}
-
-	let spatialDataIndexForDataSource = null;
-	let spatialDataIndexForDataSourceisEmpty = true;
-	if (allDSAreVector) {
-		// check if some features are loaded
-		// Get all data for given key. It caused performance issues when the data was passed as a parameter
-		spatialDataIndexForDataSource = Select.data.spatialData.getIndex(
-			state,
-			spatialRelationsFilter,
-			order
-		);
-
-		spatialDataIndexForDataSourceisEmpty =
-			spatialDataIndexForDataSource.index.hasOwnProperty();
-	}
-
-	return !spatialDataIndexForDataSourceisEmpty;
 };
 
 /**
@@ -398,7 +344,6 @@ function loadMissingAttributeData(
 			).then(response => {
 				if (response instanceof Error) {
 					return;
-					throw response;
 				}
 
 				const spatialDataSources =
@@ -579,7 +524,8 @@ function ensureDataAndRelations(
 		const loadAttributeRelations = true;
 		const loadSpatialRelations = true;
 		const loadAreaRelations =
-			spatialRelationsFilter.hasOwnProperty('areaTreeLevelKey');
+			// spatialRelationsFilter.hasOwnProperty('areaTreeLevelKey');
+			Object.hasOwn(spatialRelationsFilter, 'areaTreeLevelKey');
 		if (spatialFilter && !_isEmpty(spatialFilter)) {
 			// Only if spatialIndex is null then is set whole spatialFilter.tiles as loading true in one step
 			const spatialIndex = null;
@@ -602,7 +548,6 @@ function ensureDataAndRelations(
 				.then(response => {
 					if (response instanceof Error) {
 						return;
-						throw response;
 					}
 
 					const attributeRelationsCount =
@@ -666,16 +611,16 @@ function ensureDataAndRelations(
 				})
 				.catch(err => {
 					if (err?.message === 'Index outdated') {
-						dispatch(
-							refreshIndex(
-								getSubstate,
-								dataType,
-								filter,
-								order,
-								actionTypes,
-								categoryPath
-							)
-						);
+						// dispatch(
+						// 	refreshIndex(
+						// 		getSubstate,
+						// 		dataType,
+						// 		filter,
+						// 		order,
+						// 		actionTypes,
+						// 		categoryPath
+						// 	)
+						// );
 					} else {
 						throw new Error(`data/actions#ensure: ${err}`);
 					}
@@ -860,7 +805,6 @@ function ensure(
 			// 		- we are missing spatial data
 			// 		- we are missing attribute data
 			// 		- we are missing spatial and attribute data
-			const missingSpatialData = !spatialDataIndex?.index;
 			const missingAttributesData = _isEmpty(attributeDataIndex);
 
 			//use only firts tile from spatial filter
@@ -968,7 +912,7 @@ function processResult(
 	attributeDataFilter,
 	start
 ) {
-	return (dispatch, getState) => {
+	return dispatch => {
 		////
 		// Attributes
 		////
@@ -1073,7 +1017,7 @@ function processResult(
 			);
 		}
 
-		if (!!loadGeometry) {
+		if (loadGeometry) {
 			// Add data even if data are empty.
 			// Override loading indicator in state index
 			const changes = null;
@@ -1349,7 +1293,7 @@ function loadIndexedPage(
 		return request(localConfig, apiPath, 'POST', null, payload, undefined, null)
 			.then(result => {
 				if (result.errors) {
-					const error = new Error(result.errors[dataType] || 'no data');
+					const error = new Error('no data');
 					dispatch(commonActions.actionGeneralError(error));
 				} else {
 					if (

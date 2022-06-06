@@ -141,7 +141,7 @@ export function getLoadedPages(
 			return optStart + pageSize * pageIndex + i;
 		});
 		const hasPage = requestedDataIndexes.every(index =>
-			dataIndex.hasOwnProperty(index)
+			Object.hasOwn(dataIndex, index)
 		);
 		if (hasPage) {
 			loadedPages.push(pageIndex);

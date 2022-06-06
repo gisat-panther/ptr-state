@@ -50,7 +50,7 @@ function ensureSet(setKey) {
 }
 
 function open(setKey, screenLineage) {
-	return (dispatch, getState) => {
+	return dispatch => {
 		if (screenLineage !== 'base') {
 			dispatch(actionOpen(setKey, screenLineage));
 		}
@@ -59,7 +59,7 @@ function open(setKey, screenLineage) {
 }
 
 function close(setKey, screenLineage) {
-	return (dispatch, getState) => {
+	return dispatch => {
 		dispatch(actionClose(setKey, screenLineage));
 		dispatch(actionTopHistory(setKey, screenLineage));
 
@@ -76,7 +76,7 @@ function removeAllScreensFromSet(setKey) {
 }
 
 function retract(setKey, screenLineage) {
-	return (dispatch, getState) => {
+	return dispatch => {
 		dispatch(actionRetract(setKey, screenLineage));
 		dispatch(actionTopHistory(setKey, screenLineage));
 	};

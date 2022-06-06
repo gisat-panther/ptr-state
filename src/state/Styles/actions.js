@@ -50,7 +50,7 @@ const refreshUses = common.refreshUses(
 
 // TODO - common?
 const updateStateFromViewWithData = view => {
-	return (dispatch, getState) => {
+	return dispatch => {
 		dispatch(updateStateFromView(view));
 		if (view.data) {
 			dispatch(add(view.data));

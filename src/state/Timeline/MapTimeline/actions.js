@@ -20,11 +20,7 @@ const removeLayerRow = (mapKey, layerRow) => {
 		const state = getState();
 		const mapLayers = mapsSelectors.getLayersStateByMapKey(state, mapKey);
 
-		const removeLayerIfInMap = (
-			timelineLayer,
-			timelineMapLayerDefinition,
-			period
-		) => {
+		const removeLayerIfInMap = (timelineLayer, timelineMapLayerDefinition) => {
 			const mapLayer = mapLayers?.find(l =>
 				_isMatch(l, timelineMapLayerDefinition)
 			);
@@ -203,11 +199,7 @@ function getActiveLayersCountInRow(state, mapKey, layerRow) {
 	const mapLayers = mapsSelectors.getLayersStateByMapKey(state, mapKey);
 	let activeLayers = 0;
 
-	const countActiveLayer = (
-		timelineLayer,
-		timelineMapLayerDefinition,
-		period
-	) => {
+	const countActiveLayer = (timelineLayer, timelineMapLayerDefinition) => {
 		const mapLayer = mapLayers?.find(l =>
 			_isMatch(l, timelineMapLayerDefinition)
 		);
@@ -241,11 +233,7 @@ function getMapZIndexForLayer(
 ) {
 	const indexes = new Set();
 
-	const findMapLayerIndexes = (
-		timelineLayer,
-		timelineMapLayerDefinition,
-		timelineLayerPeriodItem
-	) => {
+	const findMapLayerIndexes = (timelineLayer, timelineMapLayerDefinition) => {
 		const mapLayer = mapLayers?.find(l =>
 			_isMatch(l, timelineMapLayerDefinition)
 		);

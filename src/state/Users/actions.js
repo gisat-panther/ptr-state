@@ -308,12 +308,14 @@ function actionApiLogoutRequestError(error) {
 	};
 }
 
+// eslint-disable-next-line no-unused-vars
 function actionApiLoadRequest() {
 	return {
 		type: ActionTypes.USERS_LOAD_REQUEST,
 	};
 }
 
+// eslint-disable-next-line no-unused-vars
 function actionApiLoadRequestError(error) {
 	return {
 		type: ActionTypes.USERS_LOAD_REQUEST_ERROR,
