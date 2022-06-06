@@ -2,6 +2,7 @@
 	"name": "@gisatcz/ptr-state",
 	"version": "1.5.7",
 	"description": "Panther FE state",
+	"sideEffects": false,
 	"keywords": [
 		"panther",
 		"gisat"
@@ -14,7 +15,7 @@
 		}
 	},
 	"main": "dist/index.js",
-	"module": "dist/index.es.js",
+	"module": "lib/index.js",
 	"files": [
 		"dist",
 		"lib"
@@ -25,8 +26,8 @@
 		"url": "https://github.com/gisat-panther/ptr-state"
 	},
 	"peerDependencies": {
-		"react": "^18.1.0",
-		"react-dom": "^18.1.0"
+		"react": "^16.13.1 || ^17.0.2 || ^18.1.0 ",
+		"react-dom": "^16.13.1 || ^17.0.2 || ^18.1.0 "
 	},
 	"dependencies": {
 		"@gisatcz/ptr-core": "^1.6.2-1",

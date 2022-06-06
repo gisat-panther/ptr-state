@@ -70,6 +70,7 @@ export default {
 	input: 'src/index.js',
 	onwarn,
 	external: [
+		'react/jsx-runtime',
 		'react',
 		'prop-types',
 		'redux',
@@ -97,7 +98,7 @@ export default {
 	],
 	output: {
 		file: {
-			es: pkg.module,
+			es: 'dist/index.es.js',
 			cjs: pkg.main,
 		}[env],
 		format: env,
