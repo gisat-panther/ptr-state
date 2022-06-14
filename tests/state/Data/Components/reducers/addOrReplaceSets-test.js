@@ -10,7 +10,7 @@ describe('addOrReplaceSets-test', function () {
 			...INITIAL_STATE.sets,
 			byKey: {
 				setA: {
-					components: ['componentA']
+					components: ['componentA'],
 				},
 			},
 		},
@@ -24,7 +24,7 @@ describe('addOrReplaceSets-test', function () {
 				byKey: {
 					...state.sets.byKey,
 					setA: {
-						components: ['componentA']
+						components: ['componentA'],
 					},
 				},
 			},
@@ -34,7 +34,7 @@ describe('addOrReplaceSets-test', function () {
 			type: 'DATA.COMPONENTS.ADD_SETS',
 			sets: {
 				setA: {
-					components: ['componentA']
+					components: ['componentA'],
 				},
 			},
 		};

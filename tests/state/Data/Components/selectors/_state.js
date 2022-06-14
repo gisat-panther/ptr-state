@@ -249,10 +249,10 @@ export const ComponentsSelectorsState = {
 			sets: {
 				byKey: {
 					setA: {
-						components: ['componentA']
-					}
-				}
-			}
+						components: ['componentA'],
+					},
+				},
+			},
 		},
 	},
 	periods: {

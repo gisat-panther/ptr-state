@@ -93,9 +93,7 @@ const apply = (key, actions) => {
 
 					if (actions.data.components && data.state.data?.sets) {
 						actionCreators.push(
-							actions.data.components.addSetsFromView(
-								data.state.data.sets
-							)
+							actions.data.components.addSetsFromView(data.state.data.sets)
 						);
 					}
 
