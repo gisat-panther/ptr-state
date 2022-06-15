@@ -10,7 +10,7 @@ describe('getSetStateByKeyObserver-test', function () {
 
 	it('Should select set for given key', function () {
 		const expectedResult = {
-			components: ['componentA']
+			components: ['componentA'],
 		};
 
 		assert.deepStrictEqual(

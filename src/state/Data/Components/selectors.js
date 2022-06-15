@@ -26,9 +26,7 @@ const getSetStateByKey = (state, key) =>
 const getComponentStateByKeyObserver = createRecomputeObserver(
 	getComponentStateByKey
 );
-const getSetStateByKeyObserver = createRecomputeObserver(
-	getSetStateByKey
-);
+const getSetStateByKeyObserver = createRecomputeObserver(getSetStateByKey);
 
 /**
  * Check if component is in use

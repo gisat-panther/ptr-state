@@ -8,7 +8,7 @@ export const INITIAL_STATE = {
 		inUse: [],
 	},
 	sets: {
-		byKey: {}
+		byKey: {},
 	},
 };
 
