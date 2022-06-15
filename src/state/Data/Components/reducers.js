@@ -7,7 +7,9 @@ export const INITIAL_STATE = {
 		byKey: {},
 		inUse: [],
 	},
-	sets: {},
+	sets: {
+		byKey: {},
+	},
 };
 
 /**
@@ -114,6 +116,29 @@ const addOrReplaceComponents = (state, componentsByKey) => {
 	}
 };
 
+/**
+ * Add or replace sets
+ * @param state {Object}
+ * @param setsByKey {Object}
+ * @return {Object}
+ */
+const addOrReplaceSets = (state, setsByKey) => {
+	if (setsByKey) {
+		return {
+			...state,
+			sets: {
+				...state.sets,
+				byKey: {
+					...state.sets.byKey,
+					...setsByKey,
+				},
+			},
+		};
+	} else {
+		return state;
+	}
+};
+
 export default (state = INITIAL_STATE, action) => {
 	switch (action.type) {
 		case ActionTypes.DATA.COMPONENTS.COMPONENT.SET.ATTRIBUTE_KEYS:
@@ -128,6 +153,8 @@ export default (state = INITIAL_STATE, action) => {
 			return componentUseRegister(state, action.componentKey);
 		case ActionTypes.DATA.COMPONENTS.ADD_COMPONENTS:
 			return addOrReplaceComponents(state, action.components);
+		case ActionTypes.DATA.COMPONENTS.ADD_SETS:
+			return addOrReplaceSets(state, action.sets);
 		default:
 			return state;
 	}
