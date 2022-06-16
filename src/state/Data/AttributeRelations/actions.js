@@ -1,6 +1,6 @@
 import ActionTypes from '../../../constants/ActionTypes';
 import common from '../../_common/actions';
-import Select from "../../Select";
+import Select from '../../Select';
 
 const actionTypes = ActionTypes.DATA.ATTRIBUTE_RELATIONS;
 
