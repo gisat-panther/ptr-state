@@ -84,6 +84,7 @@ const getFilteredAttributeDataSourceKeyAttributeKeyPairs =
 	}, recomputeSelectorOptions);
 
 export default {
+	getSubstate,
 	getByKeyObserver,
 	getByKeys,
 	getFilteredAttributeDataSourceKeyAttributeKeyPairs,

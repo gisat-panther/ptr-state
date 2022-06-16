@@ -1,10 +1,22 @@
 import ActionTypes from '../../../constants/ActionTypes';
 import common from '../../_common/actions';
+import Select from "../../Select";
 
 const actionTypes = ActionTypes.DATA.ATTRIBUTE_RELATIONS;
 
 const add = common.add(actionTypes);
 const addIndex = common.addIndex(actionTypes);
+const ensureIndexed = (filter, order, start, length) =>
+	common.ensureIndexed(
+		Select.data.attributeRelations.getSubstate,
+		'attribute',
+		filter,
+		order,
+		start,
+		length,
+		ActionTypes.DATA.ATTRIBUTE_RELATIONS,
+		'relations'
+	);
 // ============ creators ===========
 /**
  * It ensure adding index and adding or updating received data from BE.
@@ -95,6 +107,7 @@ function actionAddIndex(filter, order, data, start, count, changedOn) {
 // ============ export ===========
 
 export default {
+	ensureIndexed,
 	receiveIndexed,
 	addLoadingIndex,
 	updateStore: actionUpdateStore,
