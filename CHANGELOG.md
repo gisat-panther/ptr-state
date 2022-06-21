@@ -1,3 +1,15 @@
+# v2.0.3 (Tue Jun 21 2022)
+
+#### 🐾 Patch
+
+- Fix request page size data type [#124](https://github.com/gisat-panther/ptr-state/pull/124) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v2.0.2 (Thu Jun 16 2022)
 
 #### 🐾 Patch
