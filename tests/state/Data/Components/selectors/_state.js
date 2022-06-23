@@ -246,6 +246,13 @@ export const ComponentsSelectorsState = {
 					'componentE',
 				],
 			},
+			sets: {
+				byKey: {
+					setA: {
+						components: ['componentA'],
+					},
+				},
+			},
 		},
 	},
 	periods: {

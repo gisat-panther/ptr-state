@@ -29,6 +29,18 @@ function addComponentsFromView(components) {
 }
 
 /**
+ * Update whole data.components.sets object with given sets
+ * @param sets {Object}
+ */
+function addSetsFromView(sets) {
+	return dispatch => {
+		if (sets) {
+			dispatch(actionAddOrReplaceSets(sets));
+		}
+	};
+}
+
+/**
  * Update component deeply with new data
  * @param componentKey {string}
  * @param update {Object}
@@ -724,6 +736,13 @@ const actionAddOrReplaceComponents = components => {
 	};
 };
 
+const actionAddOrReplaceSets = sets => {
+	return {
+		type: ActionTypes.DATA.COMPONENTS.ADD_SETS,
+		sets,
+	};
+};
+
 const actionComponentUseClear = componentKey => {
 	return {
 		type: ActionTypes.DATA.COMPONENTS.COMPONENT.USE.CLEAR,
@@ -740,6 +759,7 @@ const actionComponentUseRegister = componentKey => {
 
 export default {
 	addComponentsFromView,
+	addSetsFromView,
 	componentUseClear,
 	componentUseRegister,
 	ensure,

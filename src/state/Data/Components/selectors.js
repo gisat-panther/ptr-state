@@ -20,10 +20,13 @@ import componentsSelectors from '../../Components/selectors';
 const getAllComponentsInUse = state => state.data.components.components.inUse;
 const getComponentStateByKey = (state, key) =>
 	state.data.components.components.byKey[key] || null;
+const getSetStateByKey = (state, key) =>
+	state.data.components.sets.byKey[key] || null;
 
 const getComponentStateByKeyObserver = createRecomputeObserver(
 	getComponentStateByKey
 );
+const getSetStateByKeyObserver = createRecomputeObserver(getSetStateByKey);
 
 /**
  * Check if component is in use
@@ -348,7 +351,9 @@ export default {
 	getAttributeDataFilterExtensionByComponentKey,
 	getCommonFilterByComponentKey,
 	getComponentStateByKey,
+	getSetStateByKey,
 	getComponentStateByKeyObserver,
+	getSetStateByKeyObserver,
 	getIndexForAttributeDataByComponentKey,
 
 	isComponentInUse,

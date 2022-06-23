@@ -258,6 +258,7 @@ export default utils.deepKeyMirror({
 				},
 			},
 			ADD_COMPONENTS: null,
+			ADD_SETS: null,
 		},
 		SPATIAL_DATA: {
 			ADD: null,
