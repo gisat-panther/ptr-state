@@ -2,7 +2,7 @@ import {connect} from 'react-redux';
 import Action from '../state/Action';
 import Select from '../state/Select';
 
-const mapStateToProps = (state, props) => {
+const mapStateToProps = state => {
 	return {
 		activeUser: Select.users.getActive(state),
 		loginOverlayOpen: Select.components.get(

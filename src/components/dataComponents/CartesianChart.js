@@ -1,4 +1,3 @@
-import React from 'react';
 import {connect} from 'react-redux';
 import {setState} from '@jvitela/recompute';
 import Select from '../../state/Select';

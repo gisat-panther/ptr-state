@@ -1,17 +1,25 @@
-import React from 'react';
+import PropTypes from 'prop-types';
+import {useEffect} from 'react';
 
-export default function mountWrapper(Component) {
-	return class extends React.PureComponent {
-		componentDidMount() {
-			this.props.onMount();
+const MountWrapper = ({Component, onMount, onUnmount, ...restProps}) => {
+	useEffect(() => {
+		if (typeof onMount === 'function') {
+			onMount();
 		}
 
-		componentWillUnmount() {
-			this.props.onUnmount();
-		}
+		return () => {
+			if (typeof onUnmount === 'function') {
+				onUnmount();
+			}
+		};
+	}, []);
+	return <Component {...restProps} />;
+};
 
-		render() {
-			return <Component {...this.props} />;
-		}
-	};
-}
+MountWrapper.propTypes = {
+	Component: PropTypes.element,
+	onMount: PropTypes.func,
+	onUnmount: PropTypes.func,
+};
+
+export default MountWrapper;

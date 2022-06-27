@@ -83,7 +83,7 @@ const mapDispatchToPropsFactory = () => {
 
 				resetHeading: () => {},
 
-				onClick: view => {
+				onClick: () => {
 					dispatch(Action.maps.setMapSetActiveMapKey(ownProps.stateMapKey));
 				},
 				onLayerClick: (mapKey, layerKey, selectedFeatureKeys) => {
@@ -110,9 +110,9 @@ const mapDispatchToPropsFactory = () => {
 
 				refreshUse: () => {},
 
-				onViewChange: ownProps.onViewChange || (update => {}),
+				onViewChange: ownProps.onViewChange || (() => {}),
 
-				onClick: ownProps.onClick || (view => {}),
+				onClick: ownProps.onClick || (() => {}),
 			};
 		}
 	};

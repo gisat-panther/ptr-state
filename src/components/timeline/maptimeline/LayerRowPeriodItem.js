@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import {setState} from '@jvitela/recompute';
-import {utils, period as periodParser} from '@gisatcz/ptr-utils';
+import {period as periodParser} from '@gisatcz/ptr-utils';
 import mapTimelineSelectors from '../../../state/Timeline/MapTimeline/selectors';
 import periodsSelectors from '../../../state/Periods/selectors';
 
@@ -47,7 +47,7 @@ const mapStateToProps = (state, ownProps) => {
 	};
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = () => {
 	return {
 		onMount: () => {},
 	};

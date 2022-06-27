@@ -74,7 +74,7 @@ const apply = (key, actions) => {
 					let actionCreators = [];
 					_.each(actions, (storeActions, key) => {
 						if (
-							storeActions.hasOwnProperty('updateStateFromView') &&
+							Object.hasOwn(storeActions, 'updateStateFromView') &&
 							data.state[key]
 						) {
 							actionCreators.push(
@@ -100,7 +100,7 @@ const apply = (key, actions) => {
 					if (actions.specific) {
 						_.each(actions.specific, (storeActions, key) => {
 							if (
-								storeActions.hasOwnProperty('updateStateFromView') &&
+								Object.hasOwn(storeActions, 'updateStateFromView') &&
 								data.state[key]
 							) {
 								actionCreators.push(

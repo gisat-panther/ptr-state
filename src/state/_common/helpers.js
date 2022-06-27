@@ -138,7 +138,7 @@ function getUpdatedIndexes(
 				// in case of untiled data level is same like spatialDataSourceKey and dataByTiles is same like dataBySpatialDataSource
 				//FIXME - add tests for untiled data
 				for (const [level, dataByTiles] of Object.entries(model)) {
-					if (index.hasOwnProperty(level) && index[level]) {
+					if (Object.hasOwn(index, level) && index[level]) {
 						//update data on level
 						index[level] = {...index[level], ...dataByTiles};
 					} else {
@@ -169,7 +169,7 @@ function getUpdatedIndexes(
 function getUpdatedByDataSourceKey(currentByDataSourceKey, update = {}) {
 	let updated = {...currentByDataSourceKey};
 	for (const [key, values] of Object.entries(update)) {
-		if (updated.hasOwnProperty(key)) {
+		if (Object.hasOwn(updated, key)) {
 			updated = {
 				...updated,
 				[key]: {
@@ -222,9 +222,9 @@ function itemFitFilter(filter, item) {
 	const entries = Object.entries(filter);
 
 	return entries.every(([key, value]) => {
-		const itemHasFilterKey = item.data && item.data.hasOwnProperty(key);
+		const itemHasFilterKey = item?.data && Object.hasOwn(item.data, key);
 		const itemHasFilterLinkKey =
-			item.data && item.data.hasOwnProperty(`${key}Key`);
+			item.data && Object.hasOwn(item.data, `${key}Key`);
 		if (itemHasFilterKey) {
 			//apply condition
 			//"column0": "hleda se rovnost",

@@ -1,5 +1,4 @@
 import ActionTypes from '../../constants/ActionTypes';
-import _ from 'lodash';
 
 import common from '../_common/reducers';
 
@@ -11,16 +10,17 @@ export const INITIAL_STATE = {
 };
 
 function update(state, action) {
+	// eslint-disable-next-line no-unused-vars
 	let {userId, ...data} = action.data;
 	data.activeKey = action.data.userId;
 
 	return {...state, ...data};
 }
 
-function loadRequest(state, action) {
+function loadRequest(state) {
 	return {...state, loading: true};
 }
-function loadRequestError(state, action) {
+function loadRequestError(state) {
 	return {...state, loading: false};
 }
 

@@ -66,7 +66,7 @@ const getIndexesByPath = getSubstate => {
 const getAllNotRemovedAsObject = getSubstate => {
 	return createSelector([getAllByKey(getSubstate)], byKey => {
 		if (byKey) {
-			return _pickBy(byKey, item => !item.hasOwnProperty('removed'));
+			return _pickBy(byKey, item => !Object.hasOwn(item, 'removed'));
 		} else {
 			return null;
 		}

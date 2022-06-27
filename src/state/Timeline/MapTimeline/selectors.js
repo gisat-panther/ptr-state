@@ -1,9 +1,6 @@
 import {createSelector} from 'reselect';
-import {
-	createSelector as createRecomputeSelector,
-	createObserver as createRecomputeObserver,
-} from '@jvitela/recompute';
-import {isMatch as _isMatch, isEmpty as _isEmpty, isEmpty} from 'lodash';
+import {createSelector as createRecomputeSelector} from '@jvitela/recompute';
+import {isMatch as _isMatch, isEmpty as _isEmpty} from 'lodash';
 
 import common from '../../_common/selectors';
 import commonHelpers from '../../_common/helpers';
@@ -115,19 +112,12 @@ const getTimelineLayerPeriodActive = createRecomputeSelector(
 	}
 );
 
-const getActiveKeysByFilterByActiveObserver = createRecomputeObserver(
-	(state, filterByActive) =>
-		getActiveKeysByFilterByActive(state, filterByActive)
-);
-
 const getPeriodKeysForFilteredSpatialRelations = createSelector(
 	[
 		dataSpatialRelationsSelectors.getIndex,
 		dataSpatialRelationsSelectors.getAll,
-		filter => filter,
-		(filter, order) => order,
 	],
-	(spatialRelationsIndex, allSpatialRelations = [], filter, order) => {
+	(spatialRelationsIndex, allSpatialRelations = []) => {
 		if (!_isEmpty(spatialRelationsIndex) && !_isEmpty(allSpatialRelations)) {
 			const spatialRelationsKeysForLayer = Object.values(
 				spatialRelationsIndex?.index

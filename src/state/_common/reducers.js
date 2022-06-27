@@ -1,10 +1,7 @@
 import {
-	difference as _difference,
 	each as _each,
 	find as _find,
 	findIndex as _findIndex,
-	forIn as _forIn,
-	includes as _includes,
 	isEmpty as _isEmpty,
 	isEqual as _isEqual,
 	map as _map,
@@ -207,7 +204,8 @@ export default {
 	useIndexedClear: (state, action) => {
 		if (
 			action.componentId &&
-			state.inUse?.indexes?.hasOwnProperty(action.componentId)
+			state.inUse?.indexes &&
+			Object.hasOwn(state.inUse.indexes, action.componentId)
 		) {
 			let indexes = {...state.inUse.indexes};
 			delete indexes[action.componentId];
@@ -226,7 +224,7 @@ export default {
 	 * @param action {Object}
 	 * @return {Object} updated state
 	 */
-	useIndexedClearAll: (state, action) => {
+	useIndexedClearAll: state => {
 		if (state.inUse && state.inUse?.indexes) {
 			return {...state, inUse: {...state.inUse, indexes: null}};
 		} else {
@@ -355,7 +353,7 @@ export default {
 	 * @param action {Object}
 	 * @return {Object} updated state
 	 */
-	removeEditedActive: (state, action) => {
+	removeEditedActive: state => {
 		if (state.activeKey && state.editedByKey) {
 			const updatedEditedByKey = _omit(state.editedByKey, state.activeKey);
 
@@ -380,7 +378,8 @@ export default {
 		if (action.key && state.editedByKey) {
 			const editedModel = state.editedByKey[action.key];
 			const editedModelData = editedModel?.data;
-			if (editedModelData?.hasOwnProperty(action.property)) {
+			if (editedModelData && Object.hasOwn(editedModelData, action.property)) {
+				// eslint-disable-next-line no-unused-vars
 				const {[action.property]: propertyToRemove, ...restProps} =
 					editedModelData;
 
@@ -468,7 +467,7 @@ export default {
 	 * @param action {Object}
 	 * @return {Object} updated state
 	 */
-	clearIndexes: (state, action) => {
+	clearIndexes: state => {
 		if (state.indexes?.length) {
 			let indexes = _map(state.indexes, index => {
 				return {
@@ -535,7 +534,7 @@ export default {
 	 * @param action {Object}
 	 * @return {Object}
 	 */
-	dataSetOutdated: (state, action) => {
+	dataSetOutdated: state => {
 		if (state.byKey) {
 			let byKey = {};
 			_each(state.byKey, (model, key) => {
@@ -559,7 +558,7 @@ export default {
 	 * @param action {Object}
 	 * @return {Object}
 	 */
-	cleanupOnLogout: (state, action) => {
+	cleanupOnLogout: state => {
 		if (state.byKey) {
 			let byKey = {};
 			_each(state.byKey, (model, key) => {
@@ -586,6 +585,7 @@ export default {
 	 */
 	updateStore: (state, action) => {
 		if (action) {
+			// eslint-disable-next-line no-unused-vars
 			const {type, ...data} = action;
 			return {...state, ...data};
 		} else {

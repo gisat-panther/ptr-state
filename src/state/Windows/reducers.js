@@ -131,7 +131,8 @@ export default (state = INITIAL_STATE, action) => {
 		case ActionTypes.WINDOWS.REMOVE:
 			return remove(state, action);
 		case ActionTypes.WINDOWS.SETS.ADD:
-		// return addSet(state, action);
+			// return addSet(state, action);
+			return top(state, action);
 		case ActionTypes.WINDOWS.TOP:
 			return top(state, action);
 		case ActionTypes.WINDOWS.UPDATE:

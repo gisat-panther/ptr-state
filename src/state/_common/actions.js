@@ -15,6 +15,7 @@ const DEFAULT_CATEGORY_PATH = 'metadata';
 
 // ============ factories ===========
 
+// eslint-disable-next-line no-unused-vars
 const add = action => {
 	return data => {
 		return dispatch => {
@@ -1013,7 +1014,7 @@ const creator = action => {
 function action(actionTypes, type, payload) {
 	type = type.split('.');
 	_.each(type, pathSegment => {
-		if (!actionTypes.hasOwnProperty(pathSegment)) {
+		if (!Object.hasOwn(actionTypes, pathSegment)) {
 			console.error(
 				'common/actions#action: Action not in namespace',
 				type,
@@ -1085,6 +1086,7 @@ function actionClearIndexes(actionTypes) {
 	return action(actionTypes, 'INDEX.CLEAR_ALL');
 }
 
+// eslint-disable-next-line no-unused-vars
 function actionDelete(actionTypes, keys) {
 	return action(actionTypes, 'DELETE', {keys});
 }
@@ -1097,6 +1099,7 @@ function actionSetActiveKeys(actionTypes, keys) {
 	return action(actionTypes, 'SET_ACTIVE_KEYS', {keys});
 }
 
+// eslint-disable-next-line no-unused-vars
 function actionRemoveEdited(actionTypes, keys) {
 	return action(actionTypes, 'EDITED.REMOVE', {keys});
 }

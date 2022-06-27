@@ -139,7 +139,7 @@ function getUpdatedDataForDataSourceKey(
 		: {};
 
 	dataFeaturesKeys.forEach(featureKey => {
-		if (updatedData.hasOwnProperty(featureKey)) {
+		if (Object.hasOwn(updatedData, featureKey)) {
 			//add just level geometry to existing feature
 			updatedData[featureKey].geometries[level] = featuresAsObject[featureKey];
 		} else {
@@ -153,11 +153,11 @@ function getUpdatedDataForDataSourceKey(
 	return updatedData;
 }
 
-function getUpdatedByDataSourceKey(state, dataByDataSourceKey, level) {
+function getUpdatedByDataSourceKey(state, dataByDataSourceKey) {
 	let updatedData = {...state.byDataSourceKey};
 
 	_forIn(dataByDataSourceKey, (data, dataSourceKey) => {
-		if (!updatedData.hasOwnProperty(dataSourceKey)) {
+		if (!Object.hasOwn(updatedData, dataSourceKey)) {
 			updatedData[dataSourceKey] = {};
 		}
 
@@ -182,14 +182,16 @@ function getUpdatedByDataSourceKeyTiled(state, dataByDataSourceKey, level) {
 	let updatedData = {...state.byDataSourceKey};
 
 	_forIn(dataByDataSourceKey, (data, dataSourceKey) => {
-		if (!updatedData.hasOwnProperty(dataSourceKey)) {
+		if (!Object.hasOwn(updatedData, dataSourceKey)) {
 			updatedData[dataSourceKey] = {};
 		}
 
 		const newFeatures = {};
 		_forIn(data, (geometry, featureKey) => {
-			const existingFeature =
-				updatedData[dataSourceKey].hasOwnProperty(featureKey);
+			const existingFeature = Object.hasOwn(
+				updatedData[dataSourceKey],
+				featureKey
+			);
 			if (existingFeature) {
 				//add just level geometry to existing feature
 				updatedData[dataSourceKey][featureKey].geometries[level] = geometry;

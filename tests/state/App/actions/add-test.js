@@ -5,7 +5,7 @@ import {commonActionTypesObj as actionTypes} from '../../../constants';
 const tests = [
 	{
 		name: 'add',
-		action: (actions, actionTypes) => {
+		action: actions => {
 			return actions.add({p: 'v'});
 		},
 		dispatchedActions: [

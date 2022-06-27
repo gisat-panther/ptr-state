@@ -110,7 +110,6 @@ function ensureDataAndRelations(
 		).then(response => {
 			if (response instanceof Error) {
 				return;
-				throw response;
 			}
 
 			setState(getState());
@@ -683,7 +682,7 @@ function loadIndexedPage(
 		return request(localConfig, apiPath, 'POST', null, payload, undefined, null)
 			.then(result => {
 				if (result.errors) {
-					throw new Error(result.errors[dataType] || 'no data');
+					throw new Error('no data');
 				} else {
 					if (result.attributeData || result.attributeRelationsDataSources) {
 						const relationsLimit = usedRelationsPagination.limit;

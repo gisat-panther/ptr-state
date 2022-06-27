@@ -1,5 +1,3 @@
-import {createSelector} from 'reselect';
-import {map as mapUtils} from '@gisatcz/ptr-utils';
 import common from '../_common/selectors';
 
 const getSubstate = state => state.places;

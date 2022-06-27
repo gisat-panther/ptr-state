@@ -1,3 +1,4 @@
+import {describe} from 'mocha';
 import commonActions from '../../../../../src/state/_common/actions';
 import testBatchRunner from '../../../helpers';
 import {commonActionTypesObj as actionTypes} from '../../../../constants';
