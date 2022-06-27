@@ -1,3 +1,15 @@
+# v2.1.0 (Mon Jun 27 2022)
+
+#### 🚀 Enhancement
+
+- :sparkles: [#126](https://github.com/gisat-panther/ptr-state/pull/126) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v2.0.3 (Tue Jun 21 2022)
 
 #### 🐾 Patch
