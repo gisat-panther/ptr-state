@@ -30,9 +30,9 @@
 		"react-dom": "^16.13.1 || ^17.0.2 || ^18.1.0 "
 	},
 	"dependencies": {
-		"@gisatcz/ptr-core": "^1.6.2-1",
-		"@gisatcz/ptr-tile-grid": "^0.1.2-1",
-		"@gisatcz/ptr-utils": "^1.5.6-2",
+		"@gisatcz/ptr-core": "^1.7.0",
+		"@gisatcz/ptr-tile-grid": "^0.2.0",
+		"@gisatcz/ptr-utils": "^1.6.0",
 		"@jvitela/recompute": "^0.3.4",
 		"@manaflair/redux-batch": "^1.0.0",
 		"fast-stringify": "^2.0.0",
