@@ -178,7 +178,7 @@ describe('state/Data/actions/loadMissingAttributeData', function () {
 							offset: 0,
 							limit: 1,
 							attribute: true,
-							spatial: false,
+							spatial: true,
 							area: false,
 						},
 						data: {
@@ -204,7 +204,29 @@ describe('state/Data/actions/loadMissingAttributeData', function () {
 					ok: true,
 					json: function () {
 						return Promise.resolve(
-							responseWithRelationsSpatialAndAttributeData_1
+							// add spatial relation
+							{
+								...responseWithRelationsSpatialAndAttributeData_1,
+								spatialAttributeRelationsDataSources: {
+									...responseWithRelationsSpatialAndAttributeData_1.spatialAttributeRelationsDataSources,
+									spatialRelations: [],
+									spatialDataSources: [
+										{
+											key: '9375d96e-ba66-4291-9251-e1cd7586e32e',
+											data: {
+												nameInternal:
+													'spatial_surface_dynamics_berlin_showcase_c',
+												attribution: null,
+												type: 'tiledVector',
+												layerName: 'Berlin',
+												tableName: 'Berlin',
+												fidColumnName: 'ogc_fid',
+												geometryColumnName: 'geom',
+											},
+										},
+									],
+								},
+							}
 						);
 					},
 					headers: {
@@ -518,6 +540,72 @@ describe('state/Data/actions/loadMissingAttributeData', function () {
 					order: null,
 					indexData: [{}],
 					changedOn: null,
+				},
+				{
+					data: [
+						{
+							key: '9375d96e-ba66-4291-9251-e1cd7586e32e',
+							data: {
+								nameInternal: 'spatial_surface_dynamics_berlin_showcase_c',
+								attribution: null,
+								type: 'tiledVector',
+								layerName: 'Berlin',
+								tableName: 'Berlin',
+								fidColumnName: 'ogc_fid',
+								geometryColumnName: 'geom',
+							},
+						},
+					],
+					filter: {
+						layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
+						modifiers: {
+							scopeKey: 'c81d59c8-0b4c-4df3-9c20-375f977660d3',
+							placeKey: {
+								in: [
+									'8b65f2c9-bd6a-4d92-bc09-af604761f2f1',
+									'9e28f519-dc30-4ebb-bcc8-97f696d9cf2a',
+								],
+							},
+							caseKey: '4c2afea6-0964-458e-88a7-a65318554487',
+							periodKey: '439af632-5804-4fc0-b641-a9c34cc6a853',
+						},
+					},
+					type: 'DATA.SPATIAL_DATA_SOURCES.ADD',
+				},
+				{
+					filter: {
+						layerTemplateKey: '11c7cc1b-9834-4e85-aba6-eab5571705e4',
+						modifiers: {
+							scopeKey: 'c81d59c8-0b4c-4df3-9c20-375f977660d3',
+							placeKey: {
+								in: [
+									'8b65f2c9-bd6a-4d92-bc09-af604761f2f1',
+									'9e28f519-dc30-4ebb-bcc8-97f696d9cf2a',
+								],
+							},
+							caseKey: '4c2afea6-0964-458e-88a7-a65318554487',
+							periodKey: '439af632-5804-4fc0-b641-a9c34cc6a853',
+						},
+					},
+					order: null,
+					count: 2,
+					start: 1,
+					data: [
+						{
+							key: '9375d96e-ba66-4291-9251-e1cd7586e32e',
+							data: {
+								nameInternal: 'spatial_surface_dynamics_berlin_showcase_c',
+								attribution: null,
+								type: 'tiledVector',
+								layerName: 'Berlin',
+								tableName: 'Berlin',
+								fidColumnName: 'ogc_fid',
+								geometryColumnName: 'geom',
+							},
+						},
+					],
+					changedOn: null,
+					type: 'DATA.SPATIAL_DATA_SOURCES.INDEX.ADD',
 				},
 				{
 					type: 'DATA.ATTRIBUTE_DATA.ADD_WITH_SPATIAL_INDEX',
