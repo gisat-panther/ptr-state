@@ -1,3 +1,15 @@
+# v2.1.1 (Thu Jul 21 2022)
+
+#### 🐾 Patch
+
+- Fix loading attributes for non tiled datasources [#128](https://github.com/gisat-panther/ptr-state/pull/128) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v2.1.0 (Mon Jun 27 2022)
 
 #### 🚀 Enhancement
