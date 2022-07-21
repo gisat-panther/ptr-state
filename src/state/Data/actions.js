@@ -323,7 +323,11 @@ function loadMissingAttributeData(
 			// Only if spatialIndex is null then is set whole spatialFilter.tiles as loading true in one step
 			const spatialIndex = null;
 			const loadAttributeRelations = true;
-			const loadSpatialRelations = false;
+
+			// If asked spatialDataSource is type vector, so we get all attributes in first response,
+			// then its unnecessary to ask on tiles. Its reason why we ask on SpatialRelations (it includes SpatialDataSources).
+			const loadSpatialRelations = true;
+
 			const loadAreaRelations = false;
 			// Load relations
 			return dispatch(
@@ -360,21 +364,29 @@ function loadMissingAttributeData(
 				const areaRelationsCount = loadAreaRelations
 					? response.spatialAttributeRelationsDataSources.total.areaRelations
 					: 0;
-				return dispatch(
-					loadMissingRelationsAndData(
-						loadGeometry,
-						spatialFilterWithMissingTiles,
-						styleKey,
-						order,
-						spatialRelationsFilter,
-						attributeRelationsFilter,
-						attributeRelationsCount,
-						spatialRelationsCount,
-						areaRelationsCount,
-						preloadedSpatialDataSourcesTypes,
-						attributeDataFilter
-					)
-				);
+
+				const allDataSourcesTiled = checkAllDSAreTiled(spatialDataSources);
+
+				// If all spatialDatasources are not type of tiledVector, then we dont need to ask for more tiles
+				if (!allDataSourcesTiled) {
+					return Promise.resolve();
+				} else {
+					return dispatch(
+						loadMissingRelationsAndData(
+							loadGeometry,
+							spatialFilterWithMissingTiles,
+							styleKey,
+							order,
+							spatialRelationsFilter,
+							attributeRelationsFilter,
+							attributeRelationsCount,
+							spatialRelationsCount,
+							areaRelationsCount,
+							preloadedSpatialDataSourcesTypes,
+							attributeDataFilter
+						)
+					);
+				}
 			});
 		} else {
 			const promises = [];
