@@ -185,6 +185,7 @@ describe('getFinalLayerByDataSourceAndLayerState', function () {
 				url: 'https://wm.s',
 				singleTile: false,
 				fetchedTile: false,
+				pickable: false,
 				params: {
 					layers: 'layer1',
 					a: 1,
@@ -231,6 +232,7 @@ describe('getFinalLayerByDataSourceAndLayerState', function () {
 				url: 'http://localhost:3000/wms.png',
 				singleTile: false,
 				fetchedTile: false,
+				pickable: false,
 				params: {
 					layers: 'layer1',
 					a: 1,
@@ -280,6 +282,7 @@ describe('getFinalLayerByDataSourceAndLayerState', function () {
 				url: 'https://wm.s',
 				fetchedTile: false,
 				singleTile: true,
+				pickable: false,
 				params: {
 					layers: 'layer1',
 					a: 1,
@@ -327,6 +330,55 @@ describe('getFinalLayerByDataSourceAndLayerState', function () {
 				url: 'https://wm.s',
 				fetchedTile: true,
 				singleTile: false,
+				pickable: false,
+				params: {
+					layers: 'layer1',
+					a: 1,
+				},
+			},
+		};
+
+		const output = Select.maps.getFinalLayerByDataSourceAndLayerState(
+			spatialDataSource,
+			layerState,
+			layerKey
+		);
+		assert.deepStrictEqual(output, expectedOutput);
+		setState(null);
+	});
+
+	it('should select wms layer with pickable', () => {
+		setState(state);
+		const spatialDataSource = {
+			key: 'dataSource2',
+			data: {
+				type: 'wms',
+				url: 'https://wm.s',
+				params: {
+					a: 1,
+				},
+				layers: 'layer1',
+				configuration: {
+					pickable: true,
+				},
+			},
+		};
+		const layerKey = 'wmsLayer';
+		const layerState = {
+			name: 'WMS',
+		};
+
+		const expectedOutput = {
+			key: `${layerKey}_${spatialDataSource.key}`,
+			layerKey,
+			opacity: 1,
+			name: 'WMS',
+			type: 'wms',
+			options: {
+				url: 'https://wm.s',
+				fetchedTile: false,
+				singleTile: false,
+				pickable: true,
 				params: {
 					layers: 'layer1',
 					a: 1,
