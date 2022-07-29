@@ -1,3 +1,15 @@
+# v2.1.2 (Fri Jul 29 2022)
+
+#### 🐾 Patch
+
+- Add setting for pickable WMS layers. [#130](https://github.com/gisat-panther/ptr-state/pull/130) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v2.1.1 (Thu Jul 21 2022)
 
 #### 🐾 Patch
