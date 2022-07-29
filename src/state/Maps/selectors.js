@@ -815,6 +815,10 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 				configuration && Object.hasOwn(configuration, 'singleTile')
 					? configuration.singleTile
 					: false;
+			const pickable =
+				configuration && Object.hasOwn(configuration, 'pickable')
+					? configuration.pickable
+					: false;
 			const fetchedTile =
 				configuration && Object.hasOwn(configuration, 'fetchedTile')
 					? configuration.fetchedTile
@@ -839,6 +843,7 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 					layers: rest.layers,
 				},
 				singleTile,
+				pickable,
 				fetchedTile,
 				url,
 			};

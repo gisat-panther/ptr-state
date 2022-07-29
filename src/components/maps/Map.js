@@ -86,14 +86,30 @@ const mapDispatchToPropsFactory = () => {
 				onClick: () => {
 					dispatch(Action.maps.setMapSetActiveMapKey(ownProps.stateMapKey));
 				},
-				onLayerClick: (mapKey, layerKey, selectedFeatureKeys) => {
-					dispatch(
-						Action.maps.setLayerSelectedFeatureKeys(
-							ownProps.stateMapKey,
+				onLayerClick: (
+					mapKey,
+					layerKey,
+					selectedFeatureKeys,
+					position,
+					options
+				) => {
+					if (typeof ownProps.onLayerClick === 'function') {
+						ownProps.onLayerClick(
+							mapKey,
 							layerKey,
-							selectedFeatureKeys
-						)
-					);
+							selectedFeatureKeys,
+							position,
+							options
+						);
+					} else {
+						dispatch(
+							Action.maps.setLayerSelectedFeatureKeys(
+								ownProps.stateMapKey,
+								layerKey,
+								selectedFeatureKeys
+							)
+						);
+					}
 				},
 			};
 		} else {
