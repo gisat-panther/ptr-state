@@ -1,7 +1,5 @@
 import ActionTypes from '../../constants/ActionTypes';
-import _ from 'lodash';
-import path from 'path';
-import fetch from 'isomorphic-fetch';
+import {map as _map} from 'lodash';
 
 import request from '../_common/request';
 
@@ -11,6 +9,8 @@ import Select from '../Select';
 import ScopesAction from '../Scopes/actions';
 import PlacesAction from '../Places/actions';
 import PeriodsAction from '../Periods/actions';
+import TagsAction from '../Tags/actions';
+import CasesAction from '../Cases/actions';
 
 const TTL = 5;
 
@@ -95,14 +95,23 @@ function onLogout() {
 		dispatch(actionLogout());
 		dispatch(setActiveKey(null));
 
+		dispatch(CasesAction.refreshUses());
 		dispatch(ScopesAction.refreshUses());
 		dispatch(PlacesAction.refreshUses());
 		dispatch(PeriodsAction.refreshUses());
+		dispatch(TagsAction.refreshUses());
 		dispatch(refreshUses());
 	};
 }
 
-function apiLoginUser(email, password) {
+/**
+ *
+ * @param {string} email
+ * @param {string} password
+ * @param {Boolean} cookies If true, BE will set cookies
+ * @returns
+ */
+function apiLoginUser(email, password, cookies = false) {
 	return (dispatch, getState) => {
 		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
 		dispatch(actionApiLoginRequest());
@@ -110,12 +119,15 @@ function apiLoginUser(email, password) {
 		let payload = {
 			username: email,
 			password: password,
+			cookies,
+			development: process.env.NODE_ENV === 'development', //if true, BE will set proper cookies even for development localhost
 		};
 
 		return request(localConfig, 'api/login/login', 'POST', null, payload)
 			.then(result => {
-				if (result.data.status === 'ok') {
+				if (result.status === 200) {
 					dispatch(onLogin());
+					return result;
 				}
 			})
 			.catch(error => {
@@ -202,35 +214,28 @@ function apiLoadCurrentUser() {
 	};
 }
 
-function apiLogoutUser(ttl) {
-	if (_.isUndefined(ttl)) ttl = TTL;
+function apiLogoutUser(ttl = TTL) {
 	return (dispatch, getState) => {
-		const apiBackendProtocol = Select.app.getLocalConfiguration(
-			getState(),
-			'apiBackendProtocol'
-		);
-		const apiBackendHost = Select.app.getLocalConfiguration(
-			getState(),
-			'apiBackendHost'
-		);
 		dispatch(actionApiLogoutRequest());
 
-		let url =
-			apiBackendProtocol +
-			'://' +
-			path.join(apiBackendHost, 'api/login/logout');
+		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
 
-		return fetch(url, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-			},
-		}).then(
+		let payload = {
+			development: process.env.NODE_ENV === 'development',
+		};
+
+		return request(
+			localConfig,
+			'api/login/logout',
+			'POST',
+			null,
+			payload,
+			null,
+			null
+		).then(
 			response => {
 				console.log('#### logout user response', response);
-				if (response.ok) {
+				if (response.status === 200) {
 					// window.location.reload();
 					dispatch(onLogout());
 				} else {
@@ -264,7 +269,7 @@ function transformUser(user) {
 		...user,
 		//TODO remove -> workaround with permissions.guest.get
 		permissions: {...user.permissions, guest: {get: false}},
-		groups: _.map(user.groups, 'key'),
+		groups: _map(user.groups, 'key'),
 	};
 }
 //TODO remove -> workaround with permissions.guest.get
@@ -297,13 +302,13 @@ function actionAddGroups(groups) {
 
 function actionApiLogoutRequest() {
 	return {
-		type: ActionTypes.USERS_LOGOUT_REQUEST,
+		type: ActionTypes.USERS.LOGOUT_REQUEST,
 	};
 }
 
 function actionApiLogoutRequestError(error) {
 	return {
-		type: ActionTypes.USERS_LOGOUT_REQUEST_ERROR,
+		type: ActionTypes.USERS.LOGOUT_REQUEST_ERROR,
 		error: error,
 	};
 }
@@ -311,14 +316,14 @@ function actionApiLogoutRequestError(error) {
 // eslint-disable-next-line no-unused-vars
 function actionApiLoadRequest() {
 	return {
-		type: ActionTypes.USERS_LOAD_REQUEST,
+		type: ActionTypes.USERS.LOAD_REQUEST,
 	};
 }
 
 // eslint-disable-next-line no-unused-vars
 function actionApiLoadRequestError(error) {
 	return {
-		type: ActionTypes.USERS_LOAD_REQUEST_ERROR,
+		type: ActionTypes.USERS.LOAD_REQUEST_ERROR,
 		error: error,
 	};
 }

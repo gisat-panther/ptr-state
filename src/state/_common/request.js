@@ -44,11 +44,9 @@ export default function request(
 	method,
 	query,
 	payload,
-	ttl,
-	dataPath
+	ttl = TTL,
+	dataPath = DATAPATH
 ) {
-	if (_.isUndefined(ttl)) ttl = TTL;
-	if (_.isUndefined(dataPath)) dataPath = DATAPATH;
 	let url =
 		localConfig.apiBackendProtocol +
 		'://' +
@@ -75,7 +73,10 @@ export default function request(
 			) {
 				return response.json().then(body => {
 					if (dataPath === null || (dataPath && _.get(body, dataPath))) {
-						return body;
+						return {
+							...body,
+							status: response.status,
+						};
 					} else {
 						throw new Error('no data returned');
 					}
