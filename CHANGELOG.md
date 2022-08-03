@@ -1,3 +1,15 @@
+# v2.1.3 (Wed Aug 03 2022)
+
+#### 🐾 Patch
+
+- Fix user ActionTypes, fix user login/logout requests for newer BE [#131](https://github.com/gisat-panther/ptr-state/pull/131) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v2.1.2 (Fri Jul 29 2022)
 
 #### 🐾 Patch
