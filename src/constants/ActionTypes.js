@@ -693,6 +693,10 @@ export default utils.deepKeyMirror({
 	},
 
 	USERS: {
+		LOGOUT_REQUEST: null,
+		LOGOUT_REQUEST_ERROR: null,
+		LOAD_REQUEST: null,
+		LOAD_REQUEST_ERROR: null,
 		ADD: null,
 		ADD_UNRECEIVED: null,
 		DELETE: null,
