@@ -1,3 +1,15 @@
+# v2.1.4 (Fri Aug 05 2022)
+
+#### 🐾 Patch
+
+- Extent requestWrapper for missing parameters [#132](https://github.com/gisat-panther/ptr-state/pull/132) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v2.1.3 (Wed Aug 03 2022)
 
 #### 🐾 Patch
