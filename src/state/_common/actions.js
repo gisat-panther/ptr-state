@@ -442,12 +442,14 @@ function requestWrapper(
 	query,
 	payload,
 	successAction,
-	errorAction
+	errorAction,
+	ttl,
+	dataPath
 ) {
 	return (dispatch, getState) => {
 		const localConfig = Select.app.getCompleteLocalConfiguration(getState());
 
-		request(localConfig, apiPath, method, query, payload)
+		request(localConfig, apiPath, method, query, payload, ttl, dataPath)
 			.then(result => {
 				dispatch(successAction(result.data));
 			})
