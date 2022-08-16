@@ -113,19 +113,10 @@ const getTimelineLayerPeriodActive = createRecomputeSelector(
 );
 
 const getPeriodKeysForFilteredSpatialRelations = createSelector(
-	[
-		dataSpatialRelationsSelectors.getIndex,
-		dataSpatialRelationsSelectors.getAll,
-	],
-	(spatialRelationsIndex, allSpatialRelations = []) => {
-		if (!_isEmpty(spatialRelationsIndex) && !_isEmpty(allSpatialRelations)) {
-			const spatialRelationsKeysForLayer = Object.values(
-				spatialRelationsIndex?.index
-			);
-			const spatialRelationsForLayer = allSpatialRelations.filter(r =>
-				spatialRelationsKeysForLayer.includes(r?.key)
-			);
-			const periodKeysFromRelations = spatialRelationsForLayer
+	[dataSpatialRelationsSelectors.getIndexed],
+	spatialRelationsIndex => {
+		if (!_isEmpty(spatialRelationsIndex)) {
+			const periodKeysFromRelations = spatialRelationsIndex
 				?.map(r => r?.data?.periodKey)
 				.filter(a => a);
 			return periodKeysFromRelations;

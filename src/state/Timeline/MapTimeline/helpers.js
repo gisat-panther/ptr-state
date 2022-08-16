@@ -34,11 +34,16 @@ export const forEachPeriodAndLayerInLayerRow = (state, layerRow, callback) => {
 			// fixme
 			// should be shared variable also for selector
 			const order = null;
+			const start = 0;
+			const length = 1000;
 			const periodKeys =
 				timelineSelectors.getPeriodKeysForFilteredSpatialRelations(
 					state,
+					periodsConfig.filterByActive,
 					periodsConfig.filter,
-					order
+					order,
+					start,
+					length
 				) || [];
 
 			periodKeys.forEach(periodKey => {

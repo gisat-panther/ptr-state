@@ -16,11 +16,16 @@ const mapStateToProps = (state, ownProps) => {
 	const periodsConfig = _isPlainObject(ownProps?.layer?.periods)
 		? ownProps.layer.periods
 		: null;
+	const start = 0;
+	const length = 1000;
 	const periodKeys = periodsConfig
 		? mapTimelineSelectors.getPeriodKeysForFilteredSpatialRelations(
 				state,
+				periodsConfig.filterByActive,
 				periodsConfig.filter,
-				order
+				order,
+				start,
+				length
 		  )
 		: null;
 	const periodsByConfig = periodsConfig
@@ -47,8 +52,7 @@ const mapDispatchToProps = dispatch => {
 					filter,
 					order,
 					start,
-					length,
-					componentId
+					length
 				)
 			);
 		},

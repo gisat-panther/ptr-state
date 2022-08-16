@@ -17,6 +17,21 @@ const ensureIndexed = (filter, order, start, length) =>
 		ActionTypes.DATA.SPATIAL_RELATIONS,
 		'relations'
 	);
+
+const useIndexed = common.useIndexed(
+	Select.data.spatialRelations.getSubstate,
+	'spatial',
+	ActionTypes.DATA.SPATIAL_RELATIONS,
+	'relations'
+);
+
+const refreshUses = common.refreshUses(
+	Select.data.spatialRelations.getSubstate,
+	'spatial',
+	ActionTypes.DATA.SPATIAL_RELATIONS,
+	'relations'
+);
+
 // ============ creators ===========
 /**
  * It ensure adding index and adding received spatialRelations from BE.
@@ -58,7 +73,9 @@ const updateStore = common.updateStore(
 // ============ export ===========
 
 export default {
+	refreshUses,
 	receiveIndexed,
 	updateStore,
 	ensureIndexed,
+	useIndexed,
 };
