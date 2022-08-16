@@ -8,6 +8,8 @@ import updateStore from '../../../_common/reducers/updateStore-test';
 const actionTypes = [
 	'DATA.SPATIAL_RELATIONS.ADD',
 	'DATA.SPATIAL_RELATIONS.INDEX.ADD',
+	'DATA.SPATIAL_RELATIONS.USE.INDEXED.REGISTER',
+	'DATA.SPATIAL_RELATIONS.INDEX.CLEAR_ALL',
 ];
 
 describe('updateStore', () => {

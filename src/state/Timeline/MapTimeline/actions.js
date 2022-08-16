@@ -1,6 +1,7 @@
 import {utils} from '@gisatcz/ptr-utils';
 import {isMatch as _isMatch} from 'lodash';
 import {forEachPeriodAndLayerInLayerRow} from './helpers';
+import commonHelpers from '../../_common/helpers';
 import mapTimelineSelectors from './selectors';
 import mapsSelectors from '../../Maps/selectors';
 import commonSelectors from '../../_common/selectors';
@@ -168,18 +169,32 @@ const useRelationsForLayerRowItem = (
 	length
 ) => {
 	return (dispatch, getState) => {
-		// TODO
-		// compose filter by merging filterByActive and filter
-		dispatch(
-			dataSpatialRelationsActions.ensureIndexed(filter, order, start, length)
+		const activeKeys = commonSelectors.getAllActiveKeys(getState());
+
+		const fullFilter = commonHelpers.mergeFilters(
+			activeKeys,
+			filterByActive,
+			filter
+		);
+
+		return dispatch(
+			dataSpatialRelationsActions.ensureIndexed(
+				fullFilter,
+				order,
+				start,
+				length
+			)
 		).then(() => {
 			const periodKeysFromRelations =
 				mapTimelineSelectors.getPeriodKeysForFilteredSpatialRelations(
 					getState(),
+					filterByActive,
 					filter,
-					order
+					order,
+					start,
+					length
 				);
-			dispatch(periodsActions.useKeys(periodKeysFromRelations));
+			return dispatch(periodsActions.useKeys(periodKeysFromRelations));
 		});
 	};
 };

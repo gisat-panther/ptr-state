@@ -13,6 +13,10 @@ export default (state = INITIAL_STATE, action) => {
 			return common.addIndex(state, action);
 		case ActionTypes.DATA.SPATIAL_RELATIONS.UPDATE_STORE:
 			return common.updateStore(state, action);
+		case ActionTypes.DATA.SPATIAL_RELATIONS.USE.INDEXED.REGISTER:
+			return common.registerUseIndexed(state, action);
+		case ActionTypes.DATA.SPATIAL_RELATIONS.INDEX.CLEAR_ALL:
+			return common.clearIndexes(state, action);
 		default:
 			return state;
 	}

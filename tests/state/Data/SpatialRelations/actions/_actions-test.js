@@ -5,7 +5,12 @@ import testBatchRunner, {
 	getTestsByActionName,
 } from '../../../helpers';
 
-const actionNames = ['updateStore', 'ensureIndexed'];
+const actionNames = [
+	'updateStore',
+	'ensureIndexed',
+	'useIndexed',
+	'refreshUses',
+];
 
 const store = 'DATA.SPATIAL_RELATIONS';
 const storePath = 'data.spatialRelations';

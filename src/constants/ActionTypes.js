@@ -292,6 +292,18 @@ export default utils.deepKeyMirror({
 			UPDATE_STORE: null,
 			INDEX: {
 				ADD: null,
+				CLEAR_INDEX: null,
+				CLEAR_ALL: null,
+			},
+			USE: {
+				INDEXED: {
+					CLEAR: null,
+					REGISTER: null,
+				},
+				KEYS: {
+					CLEAR: null,
+					REGISTER: null,
+				},
 			},
 		},
 		UPDATE: null,
