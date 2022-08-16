@@ -1,3 +1,15 @@
+# v2.1.5 (Tue Aug 16 2022)
+
+#### 🐾 Patch
+
+- Add selectors/reducers/actions for better manage timeline state [#133](https://github.com/gisat-panther/ptr-state/pull/133) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v2.1.4 (Fri Aug 05 2022)
 
 #### 🐾 Patch
