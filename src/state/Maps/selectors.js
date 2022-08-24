@@ -815,9 +815,10 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 				configuration && Object.hasOwn(configuration, 'singleTile')
 					? configuration.singleTile
 					: false;
+			// TODO pickable is hoverable now, split to selectable/hoverable once it is implemented in ptr-maps
 			const pickable =
 				configuration && Object.hasOwn(configuration, 'pickable')
-					? configuration.pickable
+					? configuration.pickable && layerStateOptions?.hoverable
 					: false;
 			const fetchedTile =
 				configuration && Object.hasOwn(configuration, 'fetchedTile')

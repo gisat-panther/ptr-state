@@ -366,6 +366,9 @@ describe('getFinalLayerByDataSourceAndLayerState', function () {
 		const layerKey = 'wmsLayer';
 		const layerState = {
 			name: 'WMS',
+			options: {
+				hoverable: true,
+			},
 		};
 
 		const expectedOutput = {
