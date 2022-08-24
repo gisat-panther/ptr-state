@@ -1,3 +1,15 @@
+# v2.1.6 (Wed Aug 24 2022)
+
+#### 🐾 Patch
+
+- Maps: enable wms layer picking only if defined in layer options [#134](https://github.com/gisat-panther/ptr-state/pull/134) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v2.1.5 (Tue Aug 16 2022)
 
 #### 🐾 Patch
