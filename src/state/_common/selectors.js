@@ -17,6 +17,7 @@ import {
 	reduce as _reduce,
 } from 'lodash';
 import commonHelpers from './helpers';
+import {recomputeSelectorOptions} from "./recomputeHelpers";
 
 const getActiveKey = getSubstate => {
 	return state => getSubstate(state).activeKey;
@@ -869,61 +870,7 @@ const getAllActiveKeys = createSelector(
 const getActiveKeysByFilterByActive = createCachedSelector(
 	[getAllActiveKeys, (state, filterByActive) => filterByActive],
 	(activeKeys, filterByActive) => {
-		if (filterByActive && !_isEmpty(filterByActive)) {
-			let keys = {};
-
-			if (filterByActive.scope && activeKeys.activeScopeKey) {
-				keys.scopeKey = activeKeys.activeScopeKey;
-			}
-			if (filterByActive.place) {
-				if (activeKeys.activePlaceKey) {
-					keys.placeKey = activeKeys.activePlaceKey;
-				} else if (activeKeys.activePlaceKeys) {
-					keys.placeKeys = activeKeys.activePlaceKeys;
-				}
-			}
-			if (filterByActive.scenario) {
-				if (activeKeys.activeScenarioKey) {
-					keys.scenarioKey = activeKeys.activeScenarioKey;
-				} else if (activeKeys.activeScenarioKeys) {
-					keys.scenarioKeys = activeKeys.activeScenarioKeys;
-				}
-			}
-			if (filterByActive.case) {
-				if (activeKeys.activeCaseKey) {
-					keys.caseKey = activeKeys.activeCaseKey;
-				} else if (activeKeys.activeCaseKeys) {
-					keys.caseKeys = activeKeys.activeCaseKeys;
-				}
-			}
-			if (filterByActive.period) {
-				if (activeKeys.activePeriodKey) {
-					keys.periodKey = activeKeys.activePeriodKey;
-				} else if (activeKeys.activePeriodKeys) {
-					keys.periodKeys = activeKeys.activePeriodKeys;
-				}
-			}
-			if (filterByActive.attribute) {
-				if (activeKeys.activeAttributeKey) {
-					keys.attributeKey = activeKeys.activeAttributeKey;
-				} else if (activeKeys.activeAttributeKeys) {
-					keys.attributeKeys = activeKeys.activeAttributeKeys;
-				}
-			}
-			if (filterByActive.layerTemplate && activeKeys.activeLayerTemplateKey) {
-				keys.layerTemplateKey = activeKeys.activeLayerTemplateKey;
-			}
-			if (filterByActive.areaTreeLevel && activeKeys.activeAreaTreeLevelKey) {
-				keys.areaTreeLevelKey = activeKeys.activeAreaTreeLevelKey;
-			}
-			if (filterByActive.application && activeKeys.activeApplicationKey) {
-				keys.applicationKey = activeKeys.activeApplicationKey;
-			}
-
-			return !_isEmpty(keys) ? keys : null;
-		} else {
-			return null;
-		}
+		return commonHelpers.getActiveKeysByFilterByActiveHelper(filterByActive, activeKeys);
 	}
 )((state, filterByActive) => JSON.stringify(filterByActive));
 
@@ -941,8 +888,7 @@ const getAllActiveKeysObserver = createRecomputeObserver(getAllActiveKeys);
  * @return {Object}
  */
 const getActiveKeysByFilterByActiveObserver = createRecomputeObserver(
-	(state, filterByActive) =>
-		getActiveKeysByFilterByActive(state, filterByActive)
+	getActiveKeysByFilterByActive
 );
 
 /**
@@ -954,6 +900,14 @@ const getIndexesObserver = createRecomputeObserver((state, getSubstate) =>
 );
 
 /* --- Recompute selectors -------------------------------------------------- */
+
+
+const getActiveKeysByFilterByActive_recompute = createRecomputeSelector(
+	(filterByActive) => {
+		const activeKeys = getAllActiveKeysObserver();
+		return commonHelpers.getActiveKeysByFilterByActiveHelper(filterByActive, activeKeys);
+	}, recomputeSelectorOptions
+)
 
 /**
  * Get whole index by given filter and order. Call with:
@@ -1116,6 +1070,7 @@ export default {
 
 	// recompute selectors
 	getIndex_recompute,
+	getActiveKeysByFilterByActive_recompute,
 	getCommmonDataRelationsFilterFromComponentState_recompute,
 	getMergedModifiers_recompute,
 	getMergedModifiersInRequestFormat_recompute,

@@ -16,12 +16,25 @@ import commonSelectors from '../../_common/selectors';
 import attributeDataSelectors from '../AttributeData/selectors';
 import attributeRelationsSelectors from '../AttributeRelations/selectors';
 import componentsSelectors from '../../Components/selectors';
+import {recomputeSelectorOptions} from "../../_common/recomputeHelpers";
 
+const getAllComponentsAsObject = state =>
+	state.data.components.components.byKey
 const getAllComponentsInUse = state => state.data.components.components.inUse;
-const getComponentStateByKey = (state, key) =>
-	state.data.components.components.byKey[key] || null;
 const getSetStateByKey = (state, key) =>
 	state.data.components.sets.byKey[key] || null;
+
+
+const getComponentStateByKey = createCachedSelector(
+	[getAllComponentsAsObject, (state, componentKey) => componentKey],
+	(components, componentKey) => {
+		if (componentKey) {
+			return components?.[componentKey] || null;
+		} else {
+			return null;
+		}
+	}
+)((state, componentKey) => componentKey);
 
 const getComponentStateByKeyObserver = createRecomputeObserver(
 	getComponentStateByKey
@@ -91,9 +104,8 @@ const getAttributeDataFilterExtensionByComponentKey = createRecomputeSelector(
 		} else {
 			return {};
 		}
-	}
+	}, recomputeSelectorOptions
 );
-
 /**
  * Get filter params which are common to both attributeRelations and attributeData
  * @param componentKey {string}
@@ -124,7 +136,7 @@ const getCommonFilterByComponentKey = createRecomputeSelector(componentKey => {
 
 		// Get actual metadata keys defined by filterByActive
 		const activeMetadataKeys = filterByActive
-			? commonSelectors.getActiveKeysByFilterByActiveObserver(filterByActive)
+			? commonSelectors.getActiveKeysByFilterByActive_recompute(filterByActive, componentKey)
 			: null;
 
 		// Merge metadata, metadata defined by key have priority
@@ -166,7 +178,7 @@ const getCommonFilterByComponentKey = createRecomputeSelector(componentKey => {
 	} else {
 		return {};
 	}
-});
+}, recomputeSelectorOptions);
 
 /**
  * Select attribute data indexes by component key
@@ -199,7 +211,7 @@ const getIndexForAttributeDataByComponentKey = createRecomputeSelector(
 		} else {
 			return null;
 		}
-	}
+	}, recomputeSelectorOptions
 );
 
 // Data selectors ------------------------------------------------------------------------------------------------------
@@ -323,7 +335,7 @@ const getData = createRecomputeSelector(componentKey => {
 	} else {
 		return null;
 	}
-});
+}, recomputeSelectorOptions);
 
 /**
  * Specific selector to assembling the attribute data & settings of the cartesian chart
@@ -342,7 +354,7 @@ const getDataForCartesianChart = createRecomputeSelector(props => {
 		data: data || [],
 		...chartSettings,
 	};
-});
+}, recomputeSelectorOptions);
 
 export default {
 	componentMatchesFilterByActive,

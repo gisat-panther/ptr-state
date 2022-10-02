@@ -22,6 +22,7 @@ import commonActions from './state/_common/actions';
 import commonHelpers from './state/_common/helpers';
 import commonReducers, {DEFAULT_INITIAL_STATE} from './state/_common/reducers';
 import commonSelectors from './state/_common/selectors';
+import {recomputeSelectorOptions} from './state/_common/recomputeHelpers';
 
 import activeMetadataActions from './state/_activeMetadata/actions';
 import {STORES_TO_ENSURE_WITH_FILTER_BY_ACTIVE} from './state/_activeMetadata/constants';
@@ -208,6 +209,7 @@ export {
 	reduxBatch,
 	createRecomputeObserver,
 	createRecomputeSelector,
+	recomputeSelectorOptions,
 	setRecomputeState,
 	setFetch,
 };
