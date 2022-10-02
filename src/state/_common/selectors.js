@@ -17,7 +17,7 @@ import {
 	reduce as _reduce,
 } from 'lodash';
 import commonHelpers from './helpers';
-import {recomputeSelectorOptions} from "./recomputeHelpers";
+import {recomputeSelectorOptions} from './recomputeHelpers';
 
 const getActiveKey = getSubstate => {
 	return state => getSubstate(state).activeKey;
@@ -870,7 +870,10 @@ const getAllActiveKeys = createSelector(
 const getActiveKeysByFilterByActive = createCachedSelector(
 	[getAllActiveKeys, (state, filterByActive) => filterByActive],
 	(activeKeys, filterByActive) => {
-		return commonHelpers.getActiveKeysByFilterByActiveHelper(filterByActive, activeKeys);
+		return commonHelpers.getActiveKeysByFilterByActiveHelper(
+			filterByActive,
+			activeKeys
+		);
 	}
 )((state, filterByActive) => JSON.stringify(filterByActive));
 
@@ -901,13 +904,16 @@ const getIndexesObserver = createRecomputeObserver((state, getSubstate) =>
 
 /* --- Recompute selectors -------------------------------------------------- */
 
-
 const getActiveKeysByFilterByActive_recompute = createRecomputeSelector(
-	(filterByActive) => {
+	filterByActive => {
 		const activeKeys = getAllActiveKeysObserver();
-		return commonHelpers.getActiveKeysByFilterByActiveHelper(filterByActive, activeKeys);
-	}, recomputeSelectorOptions
-)
+		return commonHelpers.getActiveKeysByFilterByActiveHelper(
+			filterByActive,
+			activeKeys
+		);
+	},
+	recomputeSelectorOptions
+);
 
 /**
  * Get whole index by given filter and order. Call with:

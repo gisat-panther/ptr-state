@@ -16,14 +16,13 @@ import commonSelectors from '../../_common/selectors';
 import attributeDataSelectors from '../AttributeData/selectors';
 import attributeRelationsSelectors from '../AttributeRelations/selectors';
 import componentsSelectors from '../../Components/selectors';
-import {recomputeSelectorOptions} from "../../_common/recomputeHelpers";
+import {recomputeSelectorOptions} from '../../_common/recomputeHelpers';
 
 const getAllComponentsAsObject = state =>
-	state.data.components.components.byKey
+	state.data.components.components.byKey;
 const getAllComponentsInUse = state => state.data.components.components.inUse;
 const getSetStateByKey = (state, key) =>
 	state.data.components.sets.byKey[key] || null;
-
 
 const getComponentStateByKey = createCachedSelector(
 	[getAllComponentsAsObject, (state, componentKey) => componentKey],
@@ -104,7 +103,8 @@ const getAttributeDataFilterExtensionByComponentKey = createRecomputeSelector(
 		} else {
 			return {};
 		}
-	}, recomputeSelectorOptions
+	},
+	recomputeSelectorOptions
 );
 /**
  * Get filter params which are common to both attributeRelations and attributeData
@@ -136,7 +136,10 @@ const getCommonFilterByComponentKey = createRecomputeSelector(componentKey => {
 
 		// Get actual metadata keys defined by filterByActive
 		const activeMetadataKeys = filterByActive
-			? commonSelectors.getActiveKeysByFilterByActive_recompute(filterByActive, componentKey)
+			? commonSelectors.getActiveKeysByFilterByActive_recompute(
+					filterByActive,
+					componentKey
+			  )
 			: null;
 
 		// Merge metadata, metadata defined by key have priority
@@ -211,7 +214,8 @@ const getIndexForAttributeDataByComponentKey = createRecomputeSelector(
 		} else {
 			return null;
 		}
-	}, recomputeSelectorOptions
+	},
+	recomputeSelectorOptions
 );
 
 // Data selectors ------------------------------------------------------------------------------------------------------
