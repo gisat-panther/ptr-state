@@ -1,3 +1,15 @@
+# v2.2.0 (Mon Oct 03 2022)
+
+#### 🚀 Enhancement
+
+- fix caching & export recompute selectors options [#136](https://github.com/gisat-panther/ptr-state/pull/136) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v2.1.6 (Wed Aug 24 2022)
 
 #### 🐾 Patch
