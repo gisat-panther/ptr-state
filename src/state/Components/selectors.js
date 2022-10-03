@@ -24,6 +24,8 @@ const getByComponentKey = createSelector(
 	}
 );
 
+const getByComponentKeyObserver = createRecomputeObserver(getByComponentKey);
+
 /**
  * @param componentKey {string}
  * @return {Object} component data
@@ -57,6 +59,7 @@ export default {
 	get,
 	getAllByKeyObserver,
 	getByComponentKey,
+	getByComponentKeyObserver,
 	getByComponentKey_recompute,
 
 	getStateToSave: getAllByKey,
