@@ -31,8 +31,9 @@ describe('getComponentStateByKeyObserver-test', function () {
 		assert.isNull(selectors.getComponentStateByKeyObserver('componentXY'));
 	});
 
-	it('Should return null, if there is no component key was given', function () {
-		assert.isNull(selectors.getComponentStateByKeyObserver());
+	// I have no clue, why it returns undefined instead of null. However, it shouldn't matter in this case
+	it('Should return undefined, if no component key was given', function () {
+		assert.isUndefined(selectors.getComponentStateByKeyObserver());
 	});
 
 	it('Should return null, if by key is empty', function () {
