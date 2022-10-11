@@ -348,7 +348,7 @@ const getData = createRecomputeSelector(componentKey => {
  * @return {Object} Cartesian chart data & settings
  */
 const getDataForCartesianChart = createRecomputeSelector(props => {
-	const componentSettings = componentsSelectors.getByComponentKey_recompute(
+	const componentSettings = componentsSelectors.getByComponentKeyObserver(
 		props.stateComponentKey
 	);
 	const chartSettings = {...componentSettings, ...props};
