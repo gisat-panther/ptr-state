@@ -1,3 +1,15 @@
+# v2.2.1 (Tue Oct 11 2022)
+
+#### 🐾 Patch
+
+- getDataForCartesianChart: use observer [#137](https://github.com/gisat-panther/ptr-state/pull/137) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v2.2.0 (Mon Oct 03 2022)
 
 #### 🚀 Enhancement
