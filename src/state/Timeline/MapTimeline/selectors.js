@@ -24,6 +24,9 @@ const getTimelineMapLayerPeriodDefinition = createSelector(
 	(timelineLayerState, timelineLayerOriginPeriodKey, activeKeys = {}) => {
 		const timelineMapLayerDefinition = {
 			...(timelineLayerState?.key ? {key: timelineLayerState.key} : {}),
+			...(timelineLayerState?.layerKey
+				? {layerKey: timelineLayerState.layerKey}
+				: {}),
 			...(timelineLayerOriginPeriodKey || timelineLayerState?.metadataModifiers
 				? {
 						metadataModifiers: commonHelpers.mergeFilters(
