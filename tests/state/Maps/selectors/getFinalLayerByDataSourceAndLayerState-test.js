@@ -184,6 +184,7 @@ describe('getFinalLayerByDataSourceAndLayerState', function () {
 			options: {
 				url: 'https://wm.s',
 				singleTile: false,
+				hoverable: false,
 				fetchedTile: false,
 				pickable: false,
 				params: {
@@ -231,6 +232,7 @@ describe('getFinalLayerByDataSourceAndLayerState', function () {
 			options: {
 				url: 'http://localhost:3000/wms.png',
 				singleTile: false,
+				hoverable: false,
 				fetchedTile: false,
 				pickable: false,
 				params: {
@@ -280,6 +282,7 @@ describe('getFinalLayerByDataSourceAndLayerState', function () {
 			type: 'wms',
 			options: {
 				url: 'https://wm.s',
+				hoverable: false,
 				fetchedTile: false,
 				singleTile: true,
 				pickable: false,
@@ -329,6 +332,7 @@ describe('getFinalLayerByDataSourceAndLayerState', function () {
 			options: {
 				url: 'https://wm.s',
 				fetchedTile: true,
+				hoverable: false,
 				singleTile: false,
 				pickable: false,
 				params: {
@@ -380,6 +384,7 @@ describe('getFinalLayerByDataSourceAndLayerState', function () {
 			options: {
 				url: 'https://wm.s',
 				fetchedTile: false,
+				hoverable: true,
 				singleTile: false,
 				pickable: true,
 				params: {
