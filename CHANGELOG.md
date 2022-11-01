@@ -1,3 +1,15 @@
+# v2.2.3 (Tue Nov 01 2022)
+
+#### 🐾 Patch
+
+- Add merging pickable and hoverable values from state and map. [#140](https://github.com/gisat-panther/ptr-state/pull/140) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v2.2.2 (Wed Oct 12 2022)
 
 #### 🐾 Patch
