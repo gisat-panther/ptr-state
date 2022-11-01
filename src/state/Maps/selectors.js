@@ -751,6 +751,28 @@ const getAttributeRelationsFilterFromLayerState = createRecomputeSelector(
 	recomputeSelectorOptions
 );
 
+const getMergedBoolLayerOptionValue = (
+	layerStateOptions,
+	configuration,
+	value
+) => {
+	const defaultValue = false;
+	const layerStateValueValid =
+		layerStateOptions &&
+		Object.hasOwn(layerStateOptions, value) &&
+		(layerStateOptions[value] === true || layerStateOptions[value] === false);
+	const configurationValueValid =
+		configuration &&
+		Object.hasOwn(configuration, value) &&
+		(configuration[value] === true || configuration[value] === false);
+
+	return layerStateValueValid
+		? layerStateOptions[value]
+		: configurationValueValid
+		? configuration[value]
+		: defaultValue;
+};
+
 /**
  * @param spatialDataSource {Object}
  * @param layerState {Object} layer definition from state or passed to the Map component
@@ -815,11 +837,20 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 				configuration && Object.hasOwn(configuration, 'singleTile')
 					? configuration.singleTile
 					: false;
+			const hoverable = getMergedBoolLayerOptionValue(
+				layerStateOptions,
+				configuration,
+				'hoverable'
+			);
 			// TODO pickable is hoverable now, split to selectable/hoverable once it is implemented in ptr-maps
 			const pickable =
-				configuration && Object.hasOwn(configuration, 'pickable')
-					? configuration.pickable && layerStateOptions?.hoverable
-					: false;
+				hoverable &&
+				getMergedBoolLayerOptionValue(
+					layerStateOptions,
+					configuration,
+					'pickable'
+				);
+
 			const fetchedTile =
 				configuration && Object.hasOwn(configuration, 'fetchedTile')
 					? configuration.fetchedTile
@@ -845,6 +876,7 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 				},
 				singleTile,
 				pickable,
+				hoverable,
 				fetchedTile,
 				url,
 			};
@@ -993,7 +1025,6 @@ const getMapLayers = createRecomputeSelector((mapKey, layersState) => {
 	if (!layersState) {
 		layersState = getLayersStateByMapKeyObserver(mapKey);
 	}
-
 	if (layersState) {
 		let finalLayers = [];
 
