@@ -94,6 +94,37 @@ const setComponentAttributeKeys = (state, componentKey, attributeKeys) => {
 };
 
 /**
+ * Set feature keys for given component
+ * @param state {Object}
+ * @param componentKey {string}
+ * @param featureKeys {Array}
+ * @return {Object} updated state
+ */
+const setComponentFeatureKeys = (state, componentKey, featureKeys) => {
+	if (componentKey && featureKeys?.length) {
+		return {
+			...state,
+			components: {
+				...state.components,
+				byKey: {
+					...state.components.byKey,
+					[componentKey]: state.components.byKey[componentKey]
+						? {
+							...state.components.byKey[componentKey],
+							featureKeys,
+						}
+						: {
+							featureKeys,
+						},
+				},
+			},
+		};
+	} else {
+		return state;
+	}
+};
+
+/**
  * Add or replace components
  * @param state {Object}
  * @param componentsByKey {Object}
@@ -146,6 +177,12 @@ export default (state = INITIAL_STATE, action) => {
 				state,
 				action.componentKey,
 				action.attributeKeys
+			);
+		case ActionTypes.DATA.COMPONENTS.COMPONENT.SET.FEATURE_KEYS:
+			return setComponentFeatureKeys(
+				state,
+				action.componentKey,
+				action.featureKeys
 			);
 		case ActionTypes.DATA.COMPONENTS.COMPONENT.USE.CLEAR:
 			return componentUseClear(state, action.componentKey);

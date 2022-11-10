@@ -729,6 +729,20 @@ const actionSetAttributeKeys = (componentKey, attributeKeys) => {
 	};
 };
 
+/**
+ *
+ * @param componentKey {string}
+ * @param featureKeys {Array}
+ * @returns
+ */
+const actionSetFeatureKeys = (componentKey, featureKeys) => {
+	return {
+		type: ActionTypes.DATA.COMPONENTS.COMPONENT.SET.FEATURE_KEYS,
+		componentKey,
+		featureKeys,
+	};
+};
+
 const actionAddOrReplaceComponents = components => {
 	return {
 		type: ActionTypes.DATA.COMPONENTS.ADD_COMPONENTS,
@@ -770,6 +784,7 @@ export default {
 	loadMissingRelationsAndData,
 	processResult,
 	setAttributeKeys: actionSetAttributeKeys,
+	setFeatureKeys: actionSetFeatureKeys,
 	updateComponent,
 	use,
 };
