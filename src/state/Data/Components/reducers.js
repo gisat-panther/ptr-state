@@ -110,12 +110,12 @@ const setComponentFeatureKeys = (state, componentKey, featureKeys) => {
 					...state.components.byKey,
 					[componentKey]: state.components.byKey[componentKey]
 						? {
-							...state.components.byKey[componentKey],
-							featureKeys,
-						}
+								...state.components.byKey[componentKey],
+								featureKeys,
+						  }
 						: {
-							featureKeys,
-						},
+								featureKeys,
+						  },
 				},
 			},
 		};
