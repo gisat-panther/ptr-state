@@ -1,3 +1,15 @@
+# v2.3.0 (Thu Nov 10 2022)
+
+#### 🚀 Enhancement
+
+- Data: Components: setFeatureKeys action & reducer & tests [#142](https://github.com/gisat-panther/ptr-state/pull/142) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v2.2.3 (Tue Nov 01 2022)
 
 #### 🐾 Patch
