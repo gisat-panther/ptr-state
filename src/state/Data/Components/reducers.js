@@ -94,6 +94,37 @@ const setComponentAttributeKeys = (state, componentKey, attributeKeys) => {
 };
 
 /**
+ * Set attribute order for given component
+ * @param state {Object}
+ * @param componentKey {string}
+ * @param attributeOrder {Array}
+ * @return {Object} updated state
+ */
+const setComponentAttributeOrder = (state, componentKey, attributeOrder) => {
+	if (componentKey && attributeOrder?.length) {
+		return {
+			...state,
+			components: {
+				...state.components,
+				byKey: {
+					...state.components.byKey,
+					[componentKey]: state.components.byKey[componentKey]
+						? {
+							...state.components.byKey[componentKey],
+							attributeOrder,
+						}
+						: {
+							attributeOrder,
+						},
+				},
+			},
+		};
+	} else {
+		return state;
+	}
+};
+
+/**
  * Set feature keys for given component
  * @param state {Object}
  * @param componentKey {string}
@@ -177,6 +208,12 @@ export default (state = INITIAL_STATE, action) => {
 				state,
 				action.componentKey,
 				action.attributeKeys
+			);
+		case ActionTypes.DATA.COMPONENTS.COMPONENT.SET.ATTRIBUTE_ORDER:
+			return setComponentAttributeOrder(
+				state,
+				action.componentKey,
+				action.attributeOrder
 			);
 		case ActionTypes.DATA.COMPONENTS.COMPONENT.SET.FEATURE_KEYS:
 			return setComponentFeatureKeys(

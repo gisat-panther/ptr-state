@@ -363,6 +363,7 @@ const getDataForCartesianChart = createRecomputeSelector(props => {
 export default {
 	componentMatchesFilterByActive,
 
+	getAllComponentsAsObject,
 	getAllComponentsInUse,
 	getAttributeDataFilterExtensionByComponentKey,
 	getCommonFilterByComponentKey,
