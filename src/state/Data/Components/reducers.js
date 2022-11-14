@@ -110,12 +110,12 @@ const setComponentAttributeOrder = (state, componentKey, attributeOrder) => {
 					...state.components.byKey,
 					[componentKey]: state.components.byKey[componentKey]
 						? {
-							...state.components.byKey[componentKey],
-							attributeOrder,
-						}
+								...state.components.byKey[componentKey],
+								attributeOrder,
+						  }
 						: {
-							attributeOrder,
-						},
+								attributeOrder,
+						  },
 				},
 			},
 		};
