@@ -289,7 +289,7 @@ const ensure = componentKey => {
 
 			if (componentState) {
 				// TODO temporary solution for units name attribute
-				const nameComponentKey = componentState.options?.nameComponentKey
+				const nameComponentKey = componentState.options?.nameComponentKey;
 				if (nameComponentKey) {
 					dispatch(ensure(nameComponentKey));
 				}

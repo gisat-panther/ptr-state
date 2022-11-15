@@ -279,13 +279,14 @@ const getData = createRecomputeSelector(componentKey => {
 					let {start, length, options} = componentState;
 					const nameComponentKey = options?.nameComponentKey;
 					const names = {};
-					const nameComponentState = getComponentStateByKeyObserver(nameComponentKey);
+					const nameComponentState =
+						getComponentStateByKeyObserver(nameComponentKey);
 					const nameData = nameComponentKey ? getData(nameComponentKey) : null;
 					if (nameData?.length) {
 						const nameAttribute = nameComponentState?.attributeKeys[0];
-						nameData.forEach((name) => {
+						nameData.forEach(name => {
 							const {key, data} = name;
-							if (data){
+							if (data) {
 								names[key] = data[nameAttribute];
 							}
 						});
