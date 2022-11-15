@@ -276,7 +276,21 @@ const getData = createRecomputeSelector(componentKey => {
 					indexedFeatureKeysAsObject &&
 					!_isEmpty(indexedFeatureKeysAsObject)
 				) {
-					let {start, length} = componentState;
+					let {start, length, options} = componentState;
+					const nameComponentKey = options?.nameComponentKey;
+					const names = {};
+					const nameComponentState = getComponentStateByKeyObserver(nameComponentKey);
+					const nameData = nameComponentKey ? getData(nameComponentKey) : null;
+					if (nameData?.length) {
+						const nameAttribute = nameComponentState?.attributeKeys[0];
+						nameData.forEach((name) => {
+							const {key, data} = name;
+							if (data){
+								names[key] = data[nameAttribute];
+							}
+						});
+					}
+
 					start = start || 1;
 					length = length || attributeDataIndex.count;
 					let end = Math.min(start + length - 1, attributeDataIndex.count);
@@ -313,6 +327,7 @@ const getData = createRecomputeSelector(componentKey => {
 											// TODO format?
 											finalFeaturesAsObject[i - start] = {
 												key: featureKey,
+												name: names?.[featureKey] || featureKey,
 												data: {
 													[attributeKey]: value,
 												},
