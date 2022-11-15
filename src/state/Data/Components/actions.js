@@ -732,6 +732,20 @@ const actionSetAttributeKeys = (componentKey, attributeKeys) => {
 /**
  *
  * @param componentKey {string}
+ * @param attributeOrder {Array}
+ * @returns
+ */
+const actionSetAttributeOrder = (componentKey, attributeOrder) => {
+	return {
+		type: ActionTypes.DATA.COMPONENTS.COMPONENT.SET.ATTRIBUTE_ORDER,
+		componentKey,
+		attributeOrder,
+	};
+};
+
+/**
+ *
+ * @param componentKey {string}
  * @param featureKeys {Array}
  * @returns
  */
@@ -784,6 +798,7 @@ export default {
 	loadMissingRelationsAndData,
 	processResult,
 	setAttributeKeys: actionSetAttributeKeys,
+	setAttributeOrder: actionSetAttributeOrder,
 	setFeatureKeys: actionSetFeatureKeys,
 	updateComponent,
 	use,
