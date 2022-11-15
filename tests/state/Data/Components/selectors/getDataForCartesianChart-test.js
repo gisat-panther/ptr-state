@@ -13,6 +13,7 @@ describe('getDataForCartesianChart-test', function () {
 			data: [
 				{
 					key: 'featureKey5',
+					name: 'featureKey5',
 					data: {
 						attribute1: 6,
 						attribute2: null,
@@ -20,6 +21,7 @@ describe('getDataForCartesianChart-test', function () {
 				},
 				{
 					key: 'featureKey1',
+					name: 'featureKey1',
 					data: {
 						attribute1: 8,
 						attribute2: 'A',
@@ -27,6 +29,7 @@ describe('getDataForCartesianChart-test', function () {
 				},
 				{
 					key: 'featureKey3',
+					name: 'featureKey3',
 					data: {
 						attribute1: 10,
 						attribute2: 'C',
@@ -50,18 +53,21 @@ describe('getDataForCartesianChart-test', function () {
 			data: [
 				{
 					key: 'featureKey2',
+					name: 'featureKey2',
 					data: {
 						attribute1: 2,
 					},
 				},
 				{
 					key: 'featureKey4',
+					name: 'featureKey4',
 					data: {
 						attribute1: 4,
 					},
 				},
 				{
 					key: 'featureKey5',
+					name: 'featureKey5',
 					data: {
 						attribute1: 6,
 					},
