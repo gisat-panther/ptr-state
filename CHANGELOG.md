@@ -1,3 +1,15 @@
+# v2.4.0 (Tue Nov 15 2022)
+
+#### 🚀 Enhancement
+
+- Data: Components: setAttributeOrder action & reducer & tests [#143](https://github.com/gisat-panther/ptr-state/pull/143) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v2.3.0 (Thu Nov 10 2022)
 
 #### 🚀 Enhancement
