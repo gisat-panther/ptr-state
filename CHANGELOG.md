@@ -1,3 +1,15 @@
+# v2.5.1 (Tue Jan 31 2023)
+
+#### 🐾 Patch
+
+- Set Layer option by path [#148](https://github.com/gisat-panther/ptr-state/pull/148) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v2.5.0 (Tue Nov 15 2022)
 
 #### 🚀 Enhancement
