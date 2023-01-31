@@ -1,5 +1,6 @@
 import ActionTypes from '../../constants/ActionTypes';
 import {stateManagement} from '@gisatcz/ptr-utils';
+import helpers from '../Components/helpers';
 import {
 	isMatch as _isMatch,
 	findIndex as _findIndex,
@@ -486,7 +487,7 @@ const setMapLayerOpacity = (state, mapKey, layerKey, opacity) => {
  * @param state {Object}
  * @param mapKey {string}
  * @param layerKey {string}
- * @param optionKey {string}
+ * @param optionKey {string} Name of the property or path to property
  * @param optionValue {*}
  * @return {Object} state
  */
@@ -498,10 +499,11 @@ const setMapLayerOption = (state, mapKey, layerKey, optionKey, optionValue) => {
 			if (item.key === layerKey) {
 				return {
 					...item,
-					options: {
-						...item.options,
-						[optionKey]: optionValue,
-					},
+					options: helpers.setHelper(
+						item.options || {},
+						optionKey.split('.'),
+						optionValue
+					),
 				};
 			} else {
 				return item;
