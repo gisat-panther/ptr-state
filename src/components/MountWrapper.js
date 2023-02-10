@@ -22,4 +22,18 @@ MountWrapper.propTypes = {
 	onUnmount: PropTypes.func,
 };
 
-export default MountWrapper;
+const wrapComponent = Component => {
+	const ComponentRendered = ({onMount, onUnmount, ...restProps}) => {
+		return <MountWrapper {...{onMount, onUnmount, Component, ...restProps}} />;
+	};
+
+	ComponentRendered.propTypes = {
+		onMount: PropTypes.func,
+		onUnmount: PropTypes.func,
+	};
+
+	return ComponentRendered;
+};
+wrapComponent.displayName = 'MountWrapper';
+export default wrapComponent;
+export {MountWrapper};
