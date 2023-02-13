@@ -72,6 +72,7 @@ export default {
 	external: [
 		'react/jsx-runtime',
 		'react',
+		'react-dom',
 		'prop-types',
 		'redux',
 		'redux-thunk',
