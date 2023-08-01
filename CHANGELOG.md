@@ -1,3 +1,15 @@
+# v2.5.3 (Tue Aug 01 2023)
+
+#### 🐾 Patch
+
+- AttributeSets selectors: correct export [#154](https://github.com/gisat-panther/ptr-state/pull/154) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v2.5.2 (Mon Feb 13 2023)
 
 #### 🐾 Patch
