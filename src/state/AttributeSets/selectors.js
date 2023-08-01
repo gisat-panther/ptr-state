@@ -4,7 +4,7 @@ const getSubstate = state => state.attributeSets;
 
 const getAll = common.getAll(getSubstate);
 const getAllAsObject = common.getAllAsObject(getSubstate);
-const getActiveKey = common.getActiveKeys(getSubstate);
+const getActiveKey = common.getActiveKey(getSubstate);
 const getActiveKeys = common.getActiveKeys(getSubstate);
 const getActiveModels = common.getActiveModels(getSubstate);
 const getActive = common.getActive(getSubstate);
