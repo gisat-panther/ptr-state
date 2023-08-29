@@ -1,6 +1,6 @@
 {
 	"name": "@gisatcz/ptr-state",
-	"version": "2.5.3",
+	"version": "3.0.0-dev.0",
 	"description": "Panther FE state package",
 	"sideEffects": false,
 	"keywords": [
