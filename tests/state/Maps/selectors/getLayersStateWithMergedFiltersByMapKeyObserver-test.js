@@ -70,7 +70,6 @@ describe('getLayersStateWithMergedFiltersByMapKeyObserver', function () {
 		setState(state);
 		const output =
 			Select.maps.getLayersStateWithMergedFiltersByMapKeyObserver('map1');
-		debugger;
 		assert.deepStrictEqual(output, expectedResult);
 		setState(null);
 	});

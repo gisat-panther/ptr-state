@@ -4,7 +4,10 @@ import commonActionsTests, {
 	SETTING_ACTIVE_KEYS_ACTIONS,
 	RESTORE_STATE_ACTIONS,
 } from '../../_common/actions/';
-import actions from '../../../../src/state/Cases/actions';
+import actions, {
+	dataType,
+	beCategoryPath,
+} from '../../../../src/state/Cases/actions';
 import testBatchRunner, {
 	getDispatchedActionsModificator,
 	getTestsByActionName,
@@ -18,18 +21,19 @@ const actionNames = [
 ];
 
 const store = 'CASES';
-const dataType = 'cases';
-const categoryPath = 'metadata';
+const storePath = 'cases';
+
 const tests = getTestsByActionName(actionNames, commonActionsTests);
 describe(
 	'common CASES actions',
 	testBatchRunner(
 		dataType,
-		categoryPath,
+		beCategoryPath,
 		tests,
 		actions,
 		null,
 		getDispatchedActionsModificator(store),
-		store
+		store,
+		storePath
 	)
 );

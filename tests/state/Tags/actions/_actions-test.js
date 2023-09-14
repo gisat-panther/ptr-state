@@ -3,7 +3,10 @@ import commonActionsTests, {
 	EDIT_ACTIONS,
 	RESTORE_STATE_ACTIONS,
 } from '../../_common/actions/';
-import actions from '../../../../src/state/Tags/actions';
+import actions, {
+	dataType,
+	beCategoryPath,
+} from '../../../../src/state/Tags/actions';
 import testBatchRunner, {
 	getDispatchedActionsModificator,
 	getTestsByActionName,
@@ -16,14 +19,12 @@ const actionNames = [
 ];
 
 const store = 'TAGS';
-const dataType = 'tags';
-const categoryPath = 'metadata';
 const tests = getTestsByActionName(actionNames, commonActionsTests);
 describe(
 	'common TAGS actions',
 	testBatchRunner(
 		dataType,
-		categoryPath,
+		beCategoryPath,
 		tests,
 		actions,
 		null,

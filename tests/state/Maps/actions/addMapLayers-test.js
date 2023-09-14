@@ -134,10 +134,7 @@ describe('state/Maps/actions/addMapLayers', function () {
 					method: 'POST',
 				})
 			) {
-				assert.strictEqual(
-					'http://localhost/backend/rest/data/filtered',
-					slash(url)
-				);
+				assert.strictEqual('http://localhost/rest/data/filtered', slash(url));
 				return Promise.resolve({
 					ok: true,
 					json: function () {

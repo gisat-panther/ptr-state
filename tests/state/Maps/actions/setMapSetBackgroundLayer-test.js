@@ -151,60 +151,36 @@ describe('state/Maps/actions/setMapSetBackgroundLayer', function () {
 
 		setFetch(function (url, options) {
 			if (
-				_isEqual(options, {
-					body: JSON.stringify({
-						filter: {
-							key: {
-								in: ['style1'],
-							},
-						},
-						limit: 1,
-					}),
-					credentials: 'include',
-					headers: {
-						Accept: 'application/json',
-						'Content-Type': 'application/json',
-					},
-					method: 'POST',
-				})
+				url === 'http://localhost/be-metadata/nodes/style1' &&
+				options.method === 'GET'
 			) {
-				assert.strictEqual(
-					'http://localhost/backend/rest/metadata/filtered/styles',
-					slash(url)
-				);
 				return Promise.resolve({
 					ok: true,
 					json: function () {
-						return Promise.resolve({
-							data: {
-								styles: [
-									{
-										key: 'styleKey1',
-										data: {
-											nameDisplay: null,
-											nameInternal: null,
-											description: null,
-											source: null,
-											nameGeoserver: null,
-											definition: {
-												rules: [
-													{
-														styles: [
-															{
-																attributeKey:
-																	'528ac373-b82f-44cb-a883-4f3ef5b13d07',
-															},
-														],
-													},
-												],
-											},
-											applicationKey: null,
-											tagKeys: null,
+						return Promise.resolve([
+							{
+								key: 'styleKey1',
+								nodeType: 'styles',
+								nameDisplay: null,
+								nameInternal: null,
+								description: null,
+								source: null,
+								nameGeoserver: null,
+								definition: {
+									rules: [
+										{
+											styles: [
+												{
+													attributeKey: '528ac373-b82f-44cb-a883-4f3ef5b13d07',
+												},
+											],
 										},
-									},
-								],
+									],
+								},
+								applicationKey: null,
+								tagKeys: null,
 							},
-						});
+						]);
 					},
 					headers: {
 						get: function (name) {
@@ -215,60 +191,36 @@ describe('state/Maps/actions/setMapSetBackgroundLayer', function () {
 				});
 			}
 			if (
-				_isEqual(options, {
-					body: JSON.stringify({
-						filter: {
-							key: {
-								in: ['style3'],
-							},
-						},
-						limit: 1,
-					}),
-					credentials: 'include',
-					headers: {
-						Accept: 'application/json',
-						'Content-Type': 'application/json',
-					},
-					method: 'POST',
-				})
+				url === 'http://localhost/be-metadata/nodes/style3' &&
+				options.method === 'GET'
 			) {
-				assert.strictEqual(
-					'http://localhost/backend/rest/metadata/filtered/styles',
-					slash(url)
-				);
 				return Promise.resolve({
 					ok: true,
 					json: function () {
-						return Promise.resolve({
-							data: {
-								styles: [
-									{
-										key: 'style2',
-										data: {
-											nameDisplay: null,
-											nameInternal: null,
-											description: null,
-											source: null,
-											nameGeoserver: null,
-											definition: {
-												rules: [
-													{
-														styles: [
-															{
-																attributeKey:
-																	'99bc373-b82f-44cb-a883-4f3ef5b13d07',
-															},
-														],
-													},
-												],
-											},
-											applicationKey: null,
-											tagKeys: null,
+						return Promise.resolve([
+							{
+								key: 'style2',
+								nodeType: 'styles',
+								nameDisplay: null,
+								nameInternal: null,
+								description: null,
+								source: null,
+								nameGeoserver: null,
+								definition: {
+									rules: [
+										{
+											styles: [
+												{
+													attributeKey: '99bc373-b82f-44cb-a883-4f3ef5b13d07',
+												},
+											],
 										},
-									},
-								],
+									],
+								},
+								applicationKey: null,
+								tagKeys: null,
 							},
-						});
+						]);
 					},
 					headers: {
 						get: function (name) {
@@ -305,10 +257,7 @@ describe('state/Maps/actions/setMapSetBackgroundLayer', function () {
 					method: 'POST',
 				})
 			) {
-				assert.strictEqual(
-					'http://localhost/backend/rest/data/filtered',
-					slash(url)
-				);
+				assert.strictEqual('http://localhost/rest/data/filtered', slash(url));
 				return Promise.resolve({
 					ok: true,
 					json: function () {
@@ -355,10 +304,7 @@ describe('state/Maps/actions/setMapSetBackgroundLayer', function () {
 					method: 'POST',
 				})
 			) {
-				assert.strictEqual(
-					'http://localhost/backend/rest/data/filtered',
-					slash(url)
-				);
+				assert.strictEqual('http://localhost/rest/data/filtered', slash(url));
 				return Promise.resolve({
 					ok: true,
 					json: function () {
@@ -409,10 +355,7 @@ describe('state/Maps/actions/setMapSetBackgroundLayer', function () {
 					method: 'POST',
 				})
 			) {
-				assert.strictEqual(
-					'http://localhost/backend/rest/data/filtered',
-					slash(url)
-				);
+				assert.strictEqual('http://localhost/rest/data/filtered', slash(url));
 				return Promise.resolve({
 					ok: true,
 					json: function () {
@@ -461,10 +404,7 @@ describe('state/Maps/actions/setMapSetBackgroundLayer', function () {
 					method: 'POST',
 				})
 			) {
-				assert.strictEqual(
-					'http://localhost/backend/rest/data/filtered',
-					slash(url)
-				);
+				assert.strictEqual('http://localhost/rest/data/filtered', slash(url));
 				return Promise.resolve({
 					ok: true,
 					json: function () {

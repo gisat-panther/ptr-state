@@ -71,7 +71,6 @@ describe('getLayersStateWithMergedFiltersByMapKey', function () {
 			state,
 			'map1'
 		);
-		debugger;
 		assert.deepStrictEqual(output, expectedResult);
 	});
 

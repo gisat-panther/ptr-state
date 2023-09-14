@@ -2,15 +2,18 @@ import ActionTypes from '../../../constants/ActionTypes';
 import common from '../../_common/actions';
 import Select from '../../Select';
 
+export const dataType = 'spatial';
+export const beCategoryPath = 'be-metadata';
+
 const actionTypes = ActionTypes.DATA.SPATIAL_DATA_SOURCES;
 
 const addIndex = common.addIndex(actionTypes);
 const add = common.add(actionTypes);
 const useKeys = common.useKeys(
 	Select.data.spatialDataSources.getSubstate,
-	'spatial',
+	dataType,
 	actionTypes,
-	'dataSources'
+	beCategoryPath
 );
 
 // ============ creators ===========

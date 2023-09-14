@@ -1,5 +1,8 @@
 import commonActionsTests from '../../_common/actions/';
-import actions from '../../../../src/state/AreaRelations/actions';
+import actions, {
+	dataType,
+	beCategoryPath,
+} from '../../../../src/state/AreaRelations/actions';
 import testBatchRunner, {
 	getDispatchedActionsModificator,
 	getTestsByActionName,
@@ -13,15 +16,13 @@ const actionNames = [
 ];
 
 const store = 'AREA_RELATIONS';
-const dataType = 'area';
-const categoryPath = 'relations';
 const storePath = 'areaRelations';
 const tests = getTestsByActionName(actionNames, commonActionsTests);
 describe(
 	'common AREA_RELATIONS actions',
 	testBatchRunner(
 		dataType,
-		categoryPath,
+		beCategoryPath,
 		tests,
 		actions,
 		null,

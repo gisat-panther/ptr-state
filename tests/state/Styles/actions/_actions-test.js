@@ -4,7 +4,10 @@ import commonActionsTests, {
 	SETTING_ACTIVE_KEY_ACTIONS,
 	RESTORE_STATE_ACTIONS,
 } from '../../_common/actions/';
-import actions from '../../../../src/state/Styles/actions';
+import actions, {
+	dataType,
+	beCategoryPath,
+} from '../../../../src/state/Styles/actions';
 import testBatchRunner, {
 	getDispatchedActionsModificator,
 	getTestsByActionName,
@@ -17,14 +20,12 @@ const actionNames = [
 ];
 
 const store = 'STYLES';
-const dataType = 'styles';
-const categoryPath = 'metadata';
 const tests = getTestsByActionName(actionNames, commonActionsTests);
 describe(
 	'common STYLES actions',
 	testBatchRunner(
 		dataType,
-		categoryPath,
+		beCategoryPath,
 		tests,
 		actions,
 		null,

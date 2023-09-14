@@ -4,7 +4,10 @@ import commonActionsTests, {
 	SETTING_ACTIVE_KEYS_ACTIONS,
 	RESTORE_STATE_ACTIONS,
 } from '../../_common/actions/';
-import actions from '../../../../src/state/Attributes/actions';
+import actions, {
+	dataType,
+	beCategoryPath,
+} from '../../../../src/state/Attributes/actions';
 import testBatchRunner, {
 	getDispatchedActionsModificator,
 	getTestsByActionName,
@@ -19,19 +22,19 @@ const actionNames = [
 ];
 
 const store = 'ATTRIBUTES';
-const dataType = 'attributes';
-const categoryPath = 'metadata';
+const storePath = 'attributes';
 const tests = getTestsByActionName(actionNames, commonActionsTests);
 describe(
 	'common ATTRIBUTES actions',
 	testBatchRunner(
 		dataType,
-		categoryPath,
+		beCategoryPath,
 		tests,
 		actions,
 		null,
 		getDispatchedActionsModificator(store),
-		store
+		store,
+		storePath
 	)
 );
 
