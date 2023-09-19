@@ -472,11 +472,10 @@ function processPatchResponse(response, dataType) {
 		.filter(r => r.nodeType === dataType)
 		.map(r => {
 			// eslint-disable-next-line no-unused-vars
-			const {nodeType, ...data} = r;
-			const {key, ...restData} = data;
+			const {key, nodeType, ...rest} = r;
 			return {
 				key,
-				data: restData,
+				data: rest || {},
 			};
 		});
 	return transformedResponse;
@@ -753,12 +752,9 @@ function processResponse(response, dataType) {
 	const transformedResponse = response.data
 		.filter(r => r.nodeType === dataType)
 		.map(r => {
-			// eslint-disable-next-line no-unused-vars
-			const {nodeType, ...data} = r;
-			const {key, ...restData} = data;
 			return {
-				key,
-				data: restData,
+				key: r.key,
+				data: r.data || {},
 			};
 		});
 
@@ -766,8 +762,8 @@ function processResponse(response, dataType) {
 		data: {
 			[dataType]: transformedResponse,
 		},
-		// total: response.totalResults,
-		total: response.totalResults || transformedResponse.length,
+		// total: response.total,
+		total: response.total || transformedResponse.length,
 		changes: response.changes,
 	};
 }

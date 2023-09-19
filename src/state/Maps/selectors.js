@@ -1054,9 +1054,24 @@ const getMapLayers = createRecomputeSelector((mapKey, layersState) => {
 					getAttributeRelationsFilterFromLayerState(layerState);
 				const attributeDataFilter =
 					getAttributeDataFilterFromLayerState(layerState);
+
+				// FIXME -> is it correct?
+				// relationFilter should be without modifiers
+				const relationFilter = {
+					// ...(styleKey ? {styleKey} : {}), ???
+					...spatialRelationsFilter,
+					...(spatialRelationsFilter &&
+					Object.values(spatialRelationsFilter).length > 0
+						? spatialRelationsFilter.modifiers
+						: {}),
+					layerTemplateKey: spatialRelationsFilter.layerTemplateKey,
+				};
+				delete relationFilter.modifiers;
+
 				const spatialDataSources =
 					DataSelectors.spatialDataSources.getIndexed_recompute(
-						spatialRelationsFilter
+						// spatialRelationsFilter
+						relationFilter
 					);
 				const attributeDataSourceKeyAttributeKeyPairs =
 					DataSelectors.attributeRelations.getFilteredAttributeDataSourceKeyAttributeKeyPairs(

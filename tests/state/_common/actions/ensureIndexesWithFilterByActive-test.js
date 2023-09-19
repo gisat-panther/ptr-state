@@ -102,7 +102,7 @@ const tests = [
 						{key: 'k3', nodeType: dataType},
 						{key: 'k4', nodeType: dataType},
 					],
-					totalResults: 5,
+					total: 5,
 					changes: {
 						[dataType]: '2020-01-01',
 					},

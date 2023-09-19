@@ -78,7 +78,7 @@ const tests = [
 					method: 'GET',
 				})
 			) {
-				const body = [{key: 'k1', prop: 'val', nodeType: dataType}];
+				const body = [{key: 'k1', data: {prop: 'val'}, nodeType: dataType}];
 
 				return Promise.resolve({
 					ok: true,

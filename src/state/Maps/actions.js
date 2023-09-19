@@ -15,7 +15,7 @@ import commonActions from '../_common/actions';
 import commonHelpers from '../_common/helpers';
 import commonSelectors from '../_common/selectors';
 
-import DataActions from '../Data/actions';
+import SpatialDataSourcesActions from '../Data/SpatialDataSources/actions';
 import {
 	TILED_VECTOR_LAYER_TYPES,
 	SINGLE_VECTOR_LAYER_TYPES,
@@ -485,14 +485,41 @@ function layerUse(layerState, spatialFilter) {
 				}),
 			};
 
+			const {modifiers, ...restFilter} = commonRelationsFilter;
+			const relationFilter = {
+				...(styleKey ? {styleKey} : {}),
+				...(modifiers && Object.values(modifiers).length > 0 ? modifiers : {}),
+				...(restFilter && Object.values(restFilter).length > 0
+					? restFilter
+					: {}),
+			};
+
+			// Ensure spatial data source at the first step
 			dispatch(
-				DataActions.ensure(
-					styleKey,
-					commonRelationsFilter,
-					spatialFilter,
-					attributeDataFilterExtension
-				)
-			);
+				SpatialDataSourcesActions.ensureIndexed(relationFilter, null, 0, 100)
+			).then(() => {
+				const spatialDataSources =
+					Select.data.spatialDataSources.getIndexed_recompute(
+						// spatialRelationsFilter
+						relationFilter
+					);
+
+				const sdsType = spatialDataSources?.[0]?.data?.type;
+				if (
+					[...TILED_VECTOR_LAYER_TYPES, ...SINGLE_VECTOR_LAYER_TYPES].includes(
+						sdsType
+					)
+				) {
+					// postgis type
+					// If spatial data source is "postgis", then load relations
+					console.log('xxx_data', spatialDataSources, sdsType);
+				} else {
+					// web type
+					// do nothing
+					// FIXME - remove
+					console.log('xxx_data', spatialDataSources, sdsType);
+				}
+			});
 		}
 	};
 }

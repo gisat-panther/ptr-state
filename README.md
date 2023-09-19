@@ -14,6 +14,6 @@
 - add tests for ensureKey
 - remove processPatchResponse
 - remove processResponse
-- BE should always return totalResults instead of total
+- BE should always return correct total length
 - test pagination for requests
 - fix request method -> handling response object vs. array and checking dataType
