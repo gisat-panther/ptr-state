@@ -16,6 +16,7 @@ import commonHelpers from '../_common/helpers';
 import commonSelectors from '../_common/selectors';
 
 import SpatialDataSourcesActions from '../Data/SpatialDataSources/actions';
+import DataActions from '../Data/actions';
 import {
 	TILED_VECTOR_LAYER_TYPES,
 	SINGLE_VECTOR_LAYER_TYPES,
@@ -384,7 +385,7 @@ function use(mapKey, backgroundLayer, layers) {
  * @param layerState {Object} layer definition
  * @param spatialFilter {{level: number}, {tiles: Array}}
  */
-function layerUse(layerState, spatialFilter) {
+function layerUse(layerState) {
 	return (dispatch, getState) => {
 		const state = getState();
 
@@ -473,17 +474,17 @@ function layerUse(layerState, spatialFilter) {
 				);
 			}
 
-			const attributeDataFilterExtension = {
-				...(layerState?.options?.attributeFilter && {
-					attributeFilter: layerState.options.attributeFilter,
-				}),
-				...(layerState?.options?.dataSourceKeys && {
-					dataSourceKeys: layerState.options.dataSourceKeys,
-				}),
-				...(layerState?.options?.featureKeys && {
-					featureKeys: layerState.options.featureKeys,
-				}),
-			};
+			// const attributeDataFilterExtension = {
+			// 	...(layerState?.options?.attributeFilter && {
+			// 		attributeFilter: layerState.options.attributeFilter,
+			// 	}),
+			// 	...(layerState?.options?.dataSourceKeys && {
+			// 		dataSourceKeys: layerState.options.dataSourceKeys,
+			// 	}),
+			// 	...(layerState?.options?.featureKeys && {
+			// 		featureKeys: layerState.options.featureKeys,
+			// 	}),
+			// };
 
 			const {modifiers, ...restFilter} = commonRelationsFilter;
 			const relationFilter = {
@@ -510,9 +511,26 @@ function layerUse(layerState, spatialFilter) {
 						sdsType
 					)
 				) {
-					// postgis type
-					// If spatial data source is "postgis", then load relations
-					console.log('xxx_data', spatialDataSources, sdsType);
+					// separate attributes from vectors
+					// same endpoint? for just attribute data
+					// save attributes
+					// save geometry
+					const sds = spatialDataSources[0];
+					return dispatch(
+						DataActions.newEnsureData(
+							[
+								// ...sds.data.source.attributeColumns,
+								sds.data.source.sqlFeatureIdColumnName,
+							], //at least put featureId
+							sds.data.source.featureIdValues,
+							sds.data.source.sqlTable,
+							sds.data.source.sqlSchema,
+							sds.data.source.sqlGeometryColumnName,
+							sds.data.source.sqlFeatureIdColumnName,
+							sds.key,
+							commonRelationsFilter
+						)
+					);
 				} else {
 					// web type
 					// do nothing

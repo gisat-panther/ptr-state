@@ -1,6 +1,11 @@
 import ActionTypes from '../../../constants/ActionTypes';
 import common, {DEFAULT_INITIAL_STATE} from '../../_common/reducers';
 
+import {
+	TILED_VECTOR_LAYER_TYPES,
+	SINGLE_VECTOR_LAYER_TYPES,
+} from '../constants';
+
 export const INITIAL_STATE = {
 	...DEFAULT_INITIAL_STATE,
 };
@@ -11,18 +16,26 @@ const add = (state, action) => {
 		action.data.forEach(model => {
 			const {
 				key,
-				data: {description, nameDisplay, nameInternal, postgis, web},
+				data: {description, nameDisplay, nameInternal, datasourceType, source},
 			} = {...newData[model.key], ...model};
+
 			newData[key] = {
 				key,
 				data: {
 					description,
 					nameDisplay,
 					nameInternal,
-					...(postgis ? {...postgis} : {}), //FIXME structure
-					...(web ? {...web.configuration, url: web.url} : {}), //FIXME structure, temporary all ata are in web.configuration
+					...([
+						...TILED_VECTOR_LAYER_TYPES,
+						...SINGLE_VECTOR_LAYER_TYPES,
+					].includes(datasourceType)
+						? {source}
+						: {...source}),
 				},
 			};
+
+			newData[model.key].data.type = datasourceType;
+
 			delete newData[model.key].outdated;
 			delete newData[model.key].unreceived;
 		});
