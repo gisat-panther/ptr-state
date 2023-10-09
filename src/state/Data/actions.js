@@ -1348,16 +1348,18 @@ function loadIndexedPage(
  */
 function importGeojson(
 	geoJson,
-	sqlFeatureIdColumnName,
+	featureIdColumnName,
 	spatialDataSourceKey,
-	commonRelationsFilter
+	commonRelationsFilter,
+	sqlFeatureIdColumnName,
+	attributeColumns
 ) {
 	return dispatch => {
 		//PROCCESS SPATIAL DATA
 		const spatialDataByFeatureID = geoJson.features.reduce((acc, feature) => {
 			return {
 				...acc,
-				...{[feature.properties[sqlFeatureIdColumnName]]: feature.geometry},
+				...{[feature.properties[featureIdColumnName]]: feature.geometry},
 			};
 		}, {});
 
@@ -1429,12 +1431,9 @@ function importGeojson(
  * @param {Object} attributeDataFilter Filler object contains modifiers, layerTemplateKey or areaTreeLevelKey, styleKey, and optional values for attributeFilter, dataSourceKeys and featureKeys.
  */
 function newEnsureData(
+	featureIdColumnName,
 	attributeColumns = [],
-	featureIdValues = [],
-	sqlTable = '',
-	sqlSchema = '',
-	sqlGeometryColumnName = 'geometry',
-	sqlFeatureIdColumnName = '',
+	vectorKey,
 	spatialDataSourceKey,
 	commonRelationsFilter
 ) {
@@ -1452,15 +1451,13 @@ function newEnsureData(
 			const localConfig = Select.app.getCompleteLocalConfiguration(getState());
 			const apiPath = 'be-gisdata/vectors'; //???
 
+			// TODO
 			// set loading
 
 			const payload = {
-				attributeColumns,
-				featureIdValues,
-				sqlTable,
-				sqlSchema,
-				sqlGeometryColumnName,
-				sqlFeatureIdColumnName,
+				vectorKey,
+				includeGeometry: true,
+				attributes: [featureIdColumnName, ...attributeColumns],
 			};
 
 			const getDataRequest = request(
@@ -1481,16 +1478,12 @@ function newEnsureData(
 						dispatch(
 							importGeojson(
 								result,
-								sqlFeatureIdColumnName,
-								//attributeFilter => index
-								//attributeDataSource
-								//spatialDataFilter => index
+								featureIdColumnName,
 								spatialDataSourceKey,
-								commonRelationsFilter
+								commonRelationsFilter,
+								attributeColumns
 							)
 						);
-
-						//budou existovat attributeDataSources?
 					}
 				})
 				.catch(error => {

@@ -516,17 +516,14 @@ function layerUse(layerState) {
 					// save attributes
 					// save geometry
 					const sds = spatialDataSources[0];
+					const featureIdColumnName = sds.data.propertyName;
+					// TODO - get attributes from style?
+					const attributes = [];
 					return dispatch(
 						DataActions.newEnsureData(
-							[
-								// ...sds.data.source.attributeColumns,
-								sds.data.source.sqlFeatureIdColumnName,
-							], //at least put featureId
-							sds.data.source.featureIdValues,
-							sds.data.source.sqlTable,
-							sds.data.source.sqlSchema,
-							sds.data.source.sqlGeometryColumnName,
-							sds.data.source.sqlFeatureIdColumnName,
+							featureIdColumnName,
+							attributes,
+							sds.data.vectorKey,
 							sds.key,
 							commonRelationsFilter
 						)

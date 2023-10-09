@@ -1,10 +1,10 @@
 import ActionTypes from '../../../constants/ActionTypes';
 import common, {DEFAULT_INITIAL_STATE} from '../../_common/reducers';
 
-import {
-	TILED_VECTOR_LAYER_TYPES,
-	SINGLE_VECTOR_LAYER_TYPES,
-} from '../constants';
+// import {
+// 	TILED_VECTOR_LAYER_TYPES,
+// 	SINGLE_VECTOR_LAYER_TYPES,
+// } from '../constants';
 
 export const INITIAL_STATE = {
 	...DEFAULT_INITIAL_STATE,
@@ -18,23 +18,20 @@ const add = (state, action) => {
 				key,
 				data: {description, nameDisplay, nameInternal, datasourceType, source},
 			} = {...newData[model.key], ...model};
-
+			// FIXME - remapping vectorGeometry to vector type
+			const datasourceTypeFixed =
+				datasourceType === 'vectorGeometry' ? 'vector' : datasourceType;
 			newData[key] = {
 				key,
 				data: {
 					description,
 					nameDisplay,
 					nameInternal,
-					...([
-						...TILED_VECTOR_LAYER_TYPES,
-						...SINGLE_VECTOR_LAYER_TYPES,
-					].includes(datasourceType)
-						? {source}
-						: {...source}),
+					...source,
 				},
 			};
 
-			newData[model.key].data.type = datasourceType;
+			newData[model.key].data.type = datasourceTypeFixed;
 
 			delete newData[model.key].outdated;
 			delete newData[model.key].unreceived;
