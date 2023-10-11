@@ -2,7 +2,7 @@ import ActionTypes from '../../constants/ActionTypes';
 import common from '../_common/actions';
 import Select from '../Select';
 
-export const dataType = 'layerTemplates';
+export const dataType = 'layerTemplate';
 export const beCategoryPath = 'be-metadata';
 // ============ creators ===========
 

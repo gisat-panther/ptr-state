@@ -1,4 +1,4 @@
-import _, {isEqual} from 'lodash';
+import _, {isEqual, omit} from 'lodash';
 import path from 'path';
 import moment from 'moment';
 
@@ -749,13 +749,17 @@ function ensureIndexed(
 }
 
 function processResponse(response, dataType) {
-	const transformedResponse = response.data
+	const transformedResponse = response
 		.filter(r => r.nodeType === dataType)
 		.map(r => {
-			return {
-				key: r.key,
-				data: r.data || {},
+			const {key, data, ...rest} = r;
+			const entity = {
+				key: key,
+				data: data || rest || {},
 			};
+
+			entity.data = omit(entity.data, ['lastUpdatedAt', 'nodeType']);
+			return entity;
 		});
 
 	return {
@@ -788,14 +792,16 @@ function loadKeysPage(
 		return request(localConfig, apiPath, 'POST', null, payload, null, null)
 			.then(result => {
 				// FIXME - response should have stable structure
-				result = processResponse(result, dataType);
+				result = processResponse(result.body, dataType);
 				if (
 					(result.errors && result.errors[dataType]) ||
 					(result.data && !result.data[dataType])
 				) {
 					throw new Error(result.errors[dataType] || 'no data');
 				} else {
-					dispatch(receiveKeys(actionTypes, result, dataType, keys));
+					dispatch(
+						receiveKeys(actionTypes, result.data[dataType], dataType, keys)
+					);
 				}
 			})
 			.catch(error => {
@@ -818,14 +824,21 @@ function loadKey(
 		return request(localConfig, apiPath, 'GET', null, null, null, null)
 			.then(result => {
 				// FIXME - response should have stable structure
-				result = processResponse({data: result.body}, dataType);
+				// result = processResponse({data: result.data}, dataType);
 				if (
 					(result.errors && result.errors[dataType]) ||
-					(result.data && !result.data[dataType])
+					(result && result.nodeType !== dataType)
 				) {
 					throw new Error(result.errors[dataType] || 'no data');
 				} else {
-					dispatch(receiveKeys(actionTypes, result, dataType, [key]));
+					dispatch(
+						receiveKeys(
+							actionTypes,
+							[{key: result.key, data: result.data}],
+							dataType,
+							[key]
+						)
+					);
 					return result;
 				}
 			})
@@ -862,7 +875,7 @@ function loadIndexedPage(
 		return request(localConfig, apiPath, 'POST', null, payload, null, null)
 			.then(result => {
 				// FIXME - response should have stable structure
-				result = processResponse(result, dataType);
+				result = processResponse(result.data, dataType);
 				if (
 					(result.errors && result.errors[dataType]) ||
 					(result.data && !result.data[dataType])
@@ -978,13 +991,13 @@ function receiveUpdated(
 function receiveKeys(actionTypes, result, dataType, keys) {
 	return dispatch => {
 		// add data to store
-		if (result.data[dataType].length) {
-			dispatch(actionAdd(actionTypes, result.data[dataType]));
+		if (result.length) {
+			dispatch(actionAdd(actionTypes, result));
 		}
 
 		// add unreceived keys
 		_.remove(keys, key => {
-			return _.find(result.data[dataType], {key});
+			return _.find(result, {key});
 		});
 		if (keys.length) {
 			dispatch(actionAddUnreceivedKeys(actionTypes, keys));
