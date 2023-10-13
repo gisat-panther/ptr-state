@@ -821,7 +821,7 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 		if (type === 'wmts') {
 			validType = true;
 			options.url = dataSourceOptions.url || dataSourceOptions.urls?.[0];
-		} else if (type === 'cog') {
+		} else if (type === 'cogBitmap') {
 			validType = true;
 			options.url = dataSourceOptions.url;
 
