@@ -1457,7 +1457,10 @@ function newEnsureData(
 			const payload = {
 				vectorKey,
 				includeGeometry: true,
-				attributes: [featureIdColumnName, ...attributeColumns],
+				attributes: [
+					...(featureIdColumnName ? [featureIdColumnName] : []),
+					...attributeColumns,
+				],
 			};
 
 			const getDataRequest = request(

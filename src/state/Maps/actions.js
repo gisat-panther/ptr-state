@@ -398,7 +398,9 @@ function layerUse(layerState) {
 		if (layerState.layerTemplateKey) {
 			metadataDefinedByKey.layerTemplateKey = layerState.layerTemplateKey;
 			// TODO use layerTemplate here?
-		} else if (layerState.areaTreeLevelKey) {
+		}
+
+		if (layerState.areaTreeLevelKey) {
 			metadataDefinedByKey.areaTreeLevelKey = layerState.areaTreeLevelKey;
 			// TODO use areaTreeLevelKey here?
 		}
@@ -420,18 +422,17 @@ function layerUse(layerState) {
 		// Decouple modifiers from templates
 		const {areaTreeLevelKey, layerTemplateKey, ...modifiers} =
 			mergedMetadataKeys;
-
+		console.log(
+			'xxx_',
+			areaTreeLevelKey,
+			activeMetadataKeys,
+			mergedMetadataKeys
+		);
 		// It converts modifiers from metadataKeys: ["A", "B"] to metadataKey: {in: ["A", "B"]}
 		const modifiersForRequest =
 			commonHelpers.convertModifiersToRequestFriendlyFormat(modifiers);
 		if (layerTemplateKey || areaTreeLevelKey) {
 			let commonRelationsFilter = {};
-			if (areaTreeLevelKey) {
-				commonRelationsFilter = {
-					...(modifiersForRequest && {modifiers: modifiersForRequest}),
-					areaTreeLevelKey,
-				};
-			}
 
 			if (layerTemplateKey) {
 				commonRelationsFilter = {
@@ -460,6 +461,13 @@ function layerUse(layerState) {
 				if (spatialDataSources && !sdsContainsVector) {
 					return;
 				}
+			}
+
+			if (areaTreeLevelKey) {
+				commonRelationsFilter = {
+					...(modifiersForRequest && {modifiers: modifiersForRequest}),
+					areaTreeLevelKey,
+				};
 			}
 
 			const styleKey = layerState.styleKey || null;
@@ -494,7 +502,6 @@ function layerUse(layerState) {
 					? restFilter
 					: {}),
 			};
-
 			// Ensure spatial data source at the first step
 			dispatch(
 				SpatialDataSourcesActions.ensureIndexed(relationFilter, null, 0, 100)
@@ -506,6 +513,7 @@ function layerUse(layerState) {
 					);
 
 				const sdsType = spatialDataSources?.[0]?.data?.type;
+
 				if (
 					[...TILED_VECTOR_LAYER_TYPES, ...SINGLE_VECTOR_LAYER_TYPES].includes(
 						sdsType
@@ -516,18 +524,21 @@ function layerUse(layerState) {
 					// save attributes
 					// save geometry
 					const sds = spatialDataSources[0];
-					const featureIdColumnName = sds.data.propertyName;
+					const featureIdColumnName = sds?.data?.fidColumnName;
+					// const featureIdColumnName = null;
 					// TODO - get attributes from style?
 					const attributes = [];
-					return dispatch(
-						DataActions.newEnsureData(
-							featureIdColumnName,
-							attributes,
-							sds.data.vectorKey,
-							sds.key,
-							commonRelationsFilter
-						)
-					);
+					if (sds) {
+						return dispatch(
+							DataActions.newEnsureData(
+								featureIdColumnName,
+								attributes,
+								sds?.data?.vectorKey,
+								sds?.key,
+								commonRelationsFilter
+							)
+						);
+					}
 				} else {
 					// web type
 					// do nothing

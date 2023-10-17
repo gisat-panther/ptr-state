@@ -1064,7 +1064,9 @@ const getMapLayers = createRecomputeSelector((mapKey, layersState) => {
 					Object.values(spatialRelationsFilter).length > 0
 						? spatialRelationsFilter.modifiers
 						: {}),
-					layerTemplateKey: spatialRelationsFilter.layerTemplateKey,
+					...(spatialRelationsFilter.layerTemplateKey
+						? {layerTemplateKey: spatialRelationsFilter.layerTemplateKey}
+						: {}),
 				};
 				delete relationFilter.modifiers;
 
