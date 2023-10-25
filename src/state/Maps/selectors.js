@@ -830,6 +830,29 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 				style = StylesSelectors.getDefinitionByKey(styleKey);
 			}
 			options.style = style;
+		} else if (type === 'mvt') {
+			validType = true;
+			let selected = null;
+			let style = options?.style;
+
+			if (options?.selected) {
+				selected = SelectionsSelectors.prepareSelectionByLayerStateSelected(
+					options.selected
+				);
+			}
+
+			if (!style && styleKey) {
+				style = StylesSelectors.getDefinitionByKey(styleKey);
+			}
+
+			options = {
+				...options,
+				url: dataSourceOptions.url,
+				...(selected && {selected}),
+				...(style && {style}),
+				fidColumnName: dataSourceOptions.uniqueIdProperty,
+				geometryColumnName,
+			};
 		} else if (type === 'wms') {
 			validType = true;
 			let {url, params, configuration, ...rest} = dataSourceOptions;
