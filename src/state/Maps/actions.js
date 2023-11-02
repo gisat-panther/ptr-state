@@ -219,6 +219,24 @@ const removeMapLayer = (mapKey, layerKey) => {
 	};
 };
 
+// TODO test
+const removeMapLayersByLayerTemplateKey = (mapKey, layerTemplateKey) => {
+	return (dispatch, getState) => {
+		const state = getState();
+		const layersState = Select.maps.getLayersStateByMapKey(
+			state,
+			mapKey,
+		);
+		if (layersState?.length) {
+			layersState.forEach(layer => {
+				if (layer.layerTemplateKey === layerTemplateKey) {
+					dispatch(actionRemoveMapLayer(mapKey, layer.key));
+				}
+			});
+		}
+	};
+}
+
 /**
  * Remove all layers satisfying filter from map
  * @param mapKey {string}
@@ -1163,6 +1181,7 @@ export default {
 	removeMap,
 	removeMapFromSet,
 	removeMapLayer,
+	removeMapLayersByLayerTemplateKey,
 	removeMapLayers,
 	removeMapLayersByFilter,
 	removeAllMapLayers: actionRemoveAllMapLayers,
