@@ -64,7 +64,7 @@ const setActiveKeyAndEnsureDependencies = key => {
 	return (dispatch, getState, options) => {
 		dispatch(setActiveKey(key));
 		if (options) {
-			dispatch(options.ensureDependenciesOfActiveMetadataType('attribute'));
+			dispatch(options.ensureDependenciesOfActiveMetadataType(dataType));
 		}
 	};
 };
@@ -73,7 +73,7 @@ const setActiveKeysAndEnsureDependencies = keys => {
 	return (dispatch, getState, options) => {
 		dispatch(setActiveKeys(keys));
 		if (options) {
-			dispatch(options.ensureDependenciesOfActiveMetadataType('attribute'));
+			dispatch(options.ensureDependenciesOfActiveMetadataType(dataType));
 		}
 	};
 };

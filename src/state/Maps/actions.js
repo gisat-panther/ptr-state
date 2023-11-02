@@ -422,12 +422,7 @@ function layerUse(layerState) {
 		// Decouple modifiers from templates
 		const {areaTreeLevelKey, layerTemplateKey, ...modifiers} =
 			mergedMetadataKeys;
-		console.log(
-			'xxx_',
-			areaTreeLevelKey,
-			activeMetadataKeys,
-			mergedMetadataKeys
-		);
+
 		// It converts modifiers from metadataKeys: ["A", "B"] to metadataKey: {in: ["A", "B"]}
 		const modifiersForRequest =
 			commonHelpers.convertModifiersToRequestFriendlyFormat(modifiers);
