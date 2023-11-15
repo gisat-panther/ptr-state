@@ -1,8 +1,5 @@
 # ptr-state package
 
-
-
-
 # New BE update notes
 
 - ADD BE support for notin filter like it was in ensureIndexed
