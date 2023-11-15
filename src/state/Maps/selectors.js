@@ -1055,9 +1055,8 @@ const getMapLayers = createRecomputeSelector((mapKey, layersState) => {
 			// layer is already defined by the end format suitable for presentational map component
 			if (layerState.type) {
 				if (
-					layerState.type === 'mvt' &&
-					layerState.type === 'vector' &&
-					layerState.options?.selected
+					(layerState.type === 'mvt' && layerState.options?.selected) ||
+					(layerState.type === 'vector' && layerState.options?.selected)
 				) {
 					layerState = {
 						...layerState,
