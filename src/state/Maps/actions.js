@@ -223,10 +223,7 @@ const removeMapLayer = (mapKey, layerKey) => {
 const removeMapLayersByLayerTemplateKey = (mapKey, layerTemplateKey) => {
 	return (dispatch, getState) => {
 		const state = getState();
-		const layersState = Select.maps.getLayersStateByMapKey(
-			state,
-			mapKey,
-		);
+		const layersState = Select.maps.getLayersStateByMapKey(state, mapKey);
 		if (layersState?.length) {
 			layersState.forEach(layer => {
 				if (layer.layerTemplateKey === layerTemplateKey) {
@@ -235,7 +232,7 @@ const removeMapLayersByLayerTemplateKey = (mapKey, layerTemplateKey) => {
 			});
 		}
 	};
-}
+};
 
 /**
  * Remove all layers satisfying filter from map
