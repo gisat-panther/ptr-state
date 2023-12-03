@@ -12,6 +12,7 @@ const getActive = common.getActive(getSubstate);
 const getActiveKey = common.getActiveKey(getSubstate);
 const getAllAsObject = common.getAllAsObject(getSubstate);
 const getAll = common.getAll(getSubstate);
+const getByKey = common.getByKey(getSubstate);
 
 const getAllAsObjectWithStyles = createSelector(
 	[getAllAsObject, StyleSelectors.getAllAsObject],
@@ -101,6 +102,8 @@ export default {
 	getAllAsObject,
 
 	getAllAsObjectWithStyles,
+
+	getByKey,
 
 	prepareSelectionByLayerStateSelected,
 };
