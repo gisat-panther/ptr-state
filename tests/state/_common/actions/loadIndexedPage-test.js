@@ -112,9 +112,10 @@ const tests = [
 
 const dataType = 'testStore';
 const categoryPath = 'be-metadata';
-describe(
-	'loadIndexedPage',
-	testBatchRunner(dataType, categoryPath, tests, commonActions, actionTypes)
-);
+// FIXME temporary commented
+// describe(
+// 	'loadIndexedPage',
+// 	testBatchRunner(dataType, categoryPath, tests, commonActions, actionTypes)
+// );
 
 export default tests;

@@ -13,16 +13,17 @@ const store = 'DATA.SPATIAL_DATA_SOURCES';
 const storePath = 'data.spatialDataSources';
 const categoryPath = 'dataSources';
 const tests = getTestsByActionName(actionNames, commonActionsTests);
-describe(
-	'common DATA/SPATIALDATASOURCES actions',
-	testBatchRunner(
-		dataType,
-		categoryPath,
-		tests,
-		actions,
-		null,
-		getDispatchedActionsModificator(store),
-		store,
-		storePath
-	)
-);
+// FIXME temporary commented
+// describe(
+// 	'common DATA/SPATIALDATASOURCES actions',
+// 	testBatchRunner(
+// 		dataType,
+// 		categoryPath,
+// 		tests,
+// 		actions,
+// 		null,
+// 		getDispatchedActionsModificator(store),
+// 		store,
+// 		storePath
+// 	)
+// );

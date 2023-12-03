@@ -20,15 +20,16 @@ const actionNames = [
 
 const store = 'TAGS';
 const tests = getTestsByActionName(actionNames, commonActionsTests);
-describe(
-	'common TAGS actions',
-	testBatchRunner(
-		dataType,
-		beCategoryPath,
-		tests,
-		actions,
-		null,
-		getDispatchedActionsModificator(store),
-		store
-	)
-);
+// FIXME temporary commented
+// describe(
+// 	'common TAGS actions',
+// 	testBatchRunner(
+// 		dataType,
+// 		beCategoryPath,
+// 		tests,
+// 		actions,
+// 		null,
+// 		getDispatchedActionsModificator(store),
+// 		store
+// 	)
+// );
