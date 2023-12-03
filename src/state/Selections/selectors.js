@@ -70,7 +70,8 @@ const prepareSelectionByLayerStateSelected = createRecomputeSelector(
 
 				if (selectionData.featureKeysFilter) {
 					populatedSelections[key] = {
-						keys: selectionData.featureKeysFilter.keys,
+						...selectionData.featureKeysFilter,
+						distinctItems: selectionData.distinctItems,
 					};
 					if (style) {
 						populatedSelections[key].style = style;
