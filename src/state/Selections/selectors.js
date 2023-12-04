@@ -70,8 +70,13 @@ const prepareSelectionByLayerStateSelected = createRecomputeSelector(
 
 				if (selectionData.featureKeysFilter) {
 					populatedSelections[key] = {
-						keys: selectionData.featureKeysFilter.keys,
+						...selectionData.featureKeysFilter,
 					};
+
+					if (selectionData.distinctItems) {
+						populatedSelections[key].distinctItems = true;
+					}
+
 					if (style) {
 						populatedSelections[key].style = style;
 						populatedSelections[key].hoveredStyle = hoveredStyle;
