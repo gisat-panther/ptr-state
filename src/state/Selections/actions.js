@@ -1,6 +1,7 @@
 import common from '../_common/actions';
 import ActionTypes from '../../constants/ActionTypes';
 import Select from '../Select';
+import helpers from './helpers';
 
 const add = common.add(ActionTypes.SELECTIONS);
 const setActiveKey = common.setActiveKey(ActionTypes.SELECTIONS);
@@ -13,6 +14,29 @@ const setActiveSelectionFeatureKeysFilterKeys = selectionKeys => {
 		let activeSelectionKey = Select.selections.getActiveKey(getState());
 		if (activeSelectionKey && selectionKeys) {
 			dispatch(setFeatureKeysFilterKeys(activeSelectionKey, selectionKeys));
+		}
+	};
+};
+
+/**
+ * @param selectionKey {string} Id of selection, usually uuid
+ * @param featureKeys {Array} list of features
+ */
+const setFeatureKeysFilterKeys = (selectionKey, featureKeys) => {
+	return (dispatch, getState) => {
+		const selection = Select.selections.getByKey(getState(), selectionKey);
+		if (selection) {
+			const distinctItems = selection?.data?.distinctItems;
+			if (distinctItems) {
+				const featureKeysFilter =
+					helpers.getUpdatedFeatureKeysFilterForDistinctItems(
+						selection.data.featureKeysFilter,
+						featureKeys
+					);
+				dispatch(actionSetFeatureKeysFilter(selectionKey, featureKeysFilter));
+			} else {
+				dispatch(actionSetFeatureKeysFilterKeys(selectionKey, featureKeys));
+			}
 		}
 	};
 };
@@ -34,11 +58,19 @@ function clearFeatureKeysFilter(key) {
 	};
 }
 
-function setFeatureKeysFilterKeys(key, featureKeys) {
+function actionSetFeatureKeysFilterKeys(key, featureKeys) {
 	return {
 		type: ActionTypes.SELECTIONS.SET.FEATURE_KEYS_FILTER.KEYS,
 		key,
 		featureKeys,
+	};
+}
+
+function actionSetFeatureKeysFilter(key, featureKeysFilter) {
+	return {
+		type: ActionTypes.SELECTIONS.SET.FEATURE_KEYS_FILTER.SET,
+		key,
+		featureKeysFilter,
 	};
 }
 

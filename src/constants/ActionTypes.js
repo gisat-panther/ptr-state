@@ -621,6 +621,7 @@ export default utils.deepKeyMirror({
 		SET: {
 			FEATURE_KEYS_FILTER: {
 				KEYS: null,
+				SET: null,
 			},
 		},
 		CLEAR: {
