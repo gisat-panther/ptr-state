@@ -12,6 +12,7 @@ const getActive = common.getActive(getSubstate);
 const getActiveKey = common.getActiveKey(getSubstate);
 const getAllAsObject = common.getAllAsObject(getSubstate);
 const getAll = common.getAll(getSubstate);
+const getByKey = common.getByKey(getSubstate);
 
 const getAllAsObjectWithStyles = createSelector(
 	[getAllAsObject, StyleSelectors.getAllAsObject],
@@ -69,8 +70,16 @@ const prepareSelectionByLayerStateSelected = createRecomputeSelector(
 
 				if (selectionData.featureKeysFilter) {
 					populatedSelections[key] = {
-						keys: selectionData.featureKeysFilter.keys,
+						...selectionData.featureKeysFilter,
 					};
+
+					if (selectionData.distinctItems) {
+						populatedSelections[key].distinctItems = true;
+					}
+					if (selectionData.colourPalette) {
+						populatedSelections[key].colourPalette =
+							selectionData.colourPalette;
+					}
 					if (style) {
 						populatedSelections[key].style = style;
 						populatedSelections[key].hoveredStyle = hoveredStyle;
@@ -101,6 +110,7 @@ export default {
 	getAllAsObject,
 
 	getAllAsObjectWithStyles,
+	getByKey,
 
 	prepareSelectionByLayerStateSelected,
 };
