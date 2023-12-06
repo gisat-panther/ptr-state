@@ -76,6 +76,10 @@ const prepareSelectionByLayerStateSelected = createRecomputeSelector(
 					if (selectionData.distinctItems) {
 						populatedSelections[key].distinctItems = true;
 					}
+					if (selectionData.colourPalette) {
+						populatedSelections[key].colourPalette =
+							selectionData.colourPalette;
+					}
 
 					if (style) {
 						populatedSelections[key].style = style;
