@@ -862,6 +862,33 @@ const mapSetUseRegister = (state, mapSetKey) => {
 	}
 };
 
+/**
+ * Set and overwrite metadataModifiers object for map
+ * @param state {Object}
+ * @param mapKey {string} Related mapKey
+ * @param metadataModifiers {Object} New metadataModifiers state object
+ * @return {Object} Updated state
+ */
+const setMetadataModifiersByMapKey = (state, mapKey, metadataModifiers) => {
+	if (mapKey && state.maps[mapKey]?.data) {
+		return {
+			...state,
+			maps: {
+				...state.maps,
+				[mapKey]: {
+					...state.maps[mapKey],
+					data: {
+						...state.maps[mapKey].data,
+						metadataModifiers,
+					},
+				},
+			},
+		};
+	} else {
+		return state;
+	}
+};
+
 export default function tasksReducer(state = INITIAL_STATE, action) {
 	switch (action.type) {
 		case ActionTypes.MAPS.MAP.ADD:
@@ -951,6 +978,12 @@ export default function tasksReducer(state = INITIAL_STATE, action) {
 			return setActiveMapKey(state, action.mapKey);
 		case ActionTypes.MAPS.UPDATE:
 			return update(state, action.data);
+		case ActionTypes.MAPS.MAP.METADATA_MODIFIERS.SET:
+			return setMetadataModifiersByMapKey(
+				state,
+				action.mapKey,
+				action.metadataModifiers
+			);
 		default:
 			return state;
 	}
