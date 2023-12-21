@@ -411,6 +411,7 @@ export default utils.deepKeyMirror({
 		},
 		MAP: {
 			ADD: null,
+			METADATA_MODIFIERS: {SET: null},
 			LAYERS: {
 				ADD: null,
 				ADD_TO_INDEX: null,

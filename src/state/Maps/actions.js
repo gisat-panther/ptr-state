@@ -349,6 +349,26 @@ const mapUseRegister = mapKey => {
 };
 
 /**
+ * Set metadataModifiers for map
+ * @param mapKey {string}
+ * @param metadataModifiers {Object}
+ */
+const setMapMetadataModifiers = (mapKey, metadataModifiers) => {
+	return (dispatch, getState) => {
+		const state = getState();
+		const map = Select.maps.getMapByKey(state, mapKey);
+		if (map) {
+			dispatch(actionSetMapMetadataModifiers(mapKey, metadataModifiers));
+			dispatch(use(mapKey, null, null));
+		} else {
+			dispatch(
+				commonActions.actionGeneralError(`No map exists for mapKey ${mapKey}`)
+			);
+		}
+	};
+};
+
+/**
  * @param mapKey {string}
  * @param backgroundLayer {Object} background layer definition
  * @param layers {Object} layers definition
@@ -1161,6 +1181,14 @@ const actionMapUseRegister = mapKey => {
 	};
 };
 
+const actionSetMapMetadataModifiers = (mapKey, metadataModifiers) => {
+	return {
+		type: ActionTypes.MAPS.MAP.METADATA_MODIFIERS.SET,
+		mapKey,
+		metadataModifiers,
+	};
+};
+
 // ============ export ===========
 export default {
 	addMap,
@@ -1194,6 +1222,7 @@ export default {
 	setMapSetLayers,
 	setMapSetSync,
 	setMapViewport,
+	setMapMetadataModifiers,
 	updateMapAndSetView,
 	updateSetView,
 	updateStateFromView,
