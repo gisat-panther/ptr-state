@@ -1,5 +1,6 @@
 import Select from '../../../../src/state/Select';
 import {assert} from 'chai';
+import {setState} from '@jvitela/recompute';
 import testHelpers from '../../../helpers';
 import {MapsSelectorsState as state} from './_state';
 
@@ -10,7 +11,6 @@ describe('getLayersStateByMapKey', function () {
 			layerTemplateKey: 'layerTemplate2',
 			metadataModifiers: {
 				periodKey: 'period1',
-				scopeKey: 'scope1',
 			},
 			filterByActive: null,
 		},
@@ -21,15 +21,10 @@ describe('getLayersStateByMapKey', function () {
 			styleKey: 'style1',
 			metadataModifiers: {
 				placeKey: 'place1',
-				scopeKey: 'scope1',
+
 				scenarioKeys: ['scenario1', 'scenario2'],
 			},
-			filterByActive: {
-				place: true,
-				period: true,
-				layerTemplateKey: true,
-				applicationKey: true,
-			},
+			filterByActive: null,
 		},
 		{
 			key: 'layerDefinition1',
@@ -45,12 +40,8 @@ describe('getLayersStateByMapKey', function () {
 					],
 				},
 			},
-			filterByActive: {
-				period: true,
-			},
-			metadataModifiers: {
-				scopeKey: 'scope1',
-			},
+			filterByActive: null,
+			metadataModifiers: null,
 		},
 	];
 
@@ -60,7 +51,6 @@ describe('getLayersStateByMapKey', function () {
 			layerTemplateKey: 'layerTemplate2',
 			metadataModifiers: {
 				periodKey: 'period1',
-				scopeKey: 'scope1',
 			},
 			filterByActive: null,
 		},
@@ -71,21 +61,23 @@ describe('getLayersStateByMapKey', function () {
 			styleKey: 'style3',
 			metadataModifiers: {
 				placeKey: 'place2',
-				periodKey: 'period2',
-				scopeKey: 'scope1',
 			},
 			filterByActive: null,
 		},
 	];
 
 	it('should return map layers for map 1', () => {
+		setState(state);
 		const output = Select.maps.getLayersStateByMapKey(state, 'map1');
 		assert.deepStrictEqual(output, expectedResult);
+		setState(null);
 	});
 
 	it('should return map layers for map 2', () => {
+		setState(state);
 		const output = Select.maps.getLayersStateByMapKey(state, 'map2');
 		assert.deepStrictEqual(output, expectedResult2);
+		setState(null);
 	});
 
 	testHelpers.testCache(
@@ -96,6 +88,7 @@ describe('getLayersStateByMapKey', function () {
 	);
 
 	it('should return just map layers, if set layers do not exist', () => {
+		setState(state);
 		const updatedState = {
 			...state,
 			maps: {
@@ -114,9 +107,11 @@ describe('getLayersStateByMapKey', function () {
 		};
 		const output = Select.maps.getLayersStateByMapKey(updatedState, 'map2');
 		assert.deepStrictEqual(output, [expectedResult2[1]]);
+		setState(null);
 	});
 
 	it('should return just set layers, if map layers do not exist', () => {
+		setState(state);
 		const updatedState = {
 			...state,
 			maps: {
@@ -135,9 +130,11 @@ describe('getLayersStateByMapKey', function () {
 		};
 		const output = Select.maps.getLayersStateByMapKey(updatedState, 'map2');
 		assert.deepStrictEqual(output, [expectedResult2[0]]);
+		setState(null);
 	});
 
 	it('should return null, if both set layers and map layers is null', () => {
+		setState(state);
 		const updatedState = {
 			...state,
 			maps: {
@@ -166,5 +163,6 @@ describe('getLayersStateByMapKey', function () {
 		};
 		const output = Select.maps.getLayersStateByMapKey(updatedState, 'map2');
 		assert.isNull(output);
+		setState(null);
 	});
 });

@@ -379,6 +379,16 @@ const getMapSetMetadataModifiersByMapKey = createSelector(
 		return set?.data?.metadataModifiers || null;
 	}
 );
+/**
+ * @param state {Object}
+ * @param mapSetKey {string}
+ */
+const getMapSetMetadataModifiersByMapSetKey = createSelector(
+	[getMapSetByKey],
+	set => {
+		return set?.data?.metadataModifiers || null;
+	}
+);
 
 /**
  * @param state {Object}
@@ -394,6 +404,17 @@ const getMetadataModifiersByMapKey = createCachedSelector(
 		}
 	}
 )((state, mapKey) => mapKey);
+
+/**
+ * @param state {Object}
+ * @param mapSetKey {string}
+ */
+const getMapSetFilterByActiveByMapSetKey = createSelector(
+	[getMapSetByKey],
+	set => {
+		return set?.data?.filterByActive || null;
+	}
+);
 
 /**
  * @param state {Object}
@@ -413,6 +434,86 @@ const getMapSetFilterByActiveByMapKey = createSelector(
 		return set?.data?.filterByActive || null;
 	}
 );
+
+/**
+ * @param state {Object}
+ * @param mapKey {string}
+ */
+const getFilterByMapSetKey = createCachedSelector(
+	[
+		getMapSetMetadataModifiersByMapSetKey,
+		common.getAllActiveKeys,
+		getMapSetFilterByActiveByMapSetKey,
+	],
+	(mapSetMetadataModifiers, allActiveKeys, mapSetFilterByActive) => {
+		const merged = commonHelpers.mergeFilters(
+			allActiveKeys,
+			mapSetFilterByActive,
+			mapSetMetadataModifiers
+		);
+		return merged;
+	}
+)((state, mapSetKey) => mapSetKey);
+
+/**
+ * @param state {Object}
+ * @param mapKey {string}
+ */
+const getMapSetFilterByMapKey = createRecomputeObserver((state, mapKey) => {
+	const mapSet = getMapSetByMapKey(state, mapKey);
+	if (mapSet && mapSet.key) {
+		return getFilterByMapSetKey(state, mapSet.key);
+	} else {
+		return null;
+	}
+});
+
+const transformfilterToActiveKeys = (mapSetFilter = {}) => {
+	if (mapSetFilter) {
+		const mapSetActiveKeys = {
+			...Object.fromEntries(
+				Object.entries(mapSetFilter).map(([key, val]) => {
+					// convert caseKey -> activeCaseKey
+					return [`active${key.charAt(0).toUpperCase()}${key.slice(1)}`, val];
+				})
+			),
+		};
+		return mapSetActiveKeys;
+	} else {
+		return {};
+	}
+};
+
+/**
+ * @param state {Object}
+ * @param mapKey {string}
+ */
+const getFilterByMapKey = createCachedSelector(
+	[
+		getMapMetadataModifiersByMapKey,
+		getMapFilterByActiveByMapKey,
+		common.getAllActiveKeys,
+		(state, mapKey) => mapKey,
+	],
+	(mapMetadataModifiers, mapFilterByActive, activeKeys, mapKey) => {
+		const mapSetFilter = getMapSetFilterByMapKey(mapKey) || {};
+
+		const mapSetActiveKeys = transformfilterToActiveKeys(mapSetFilter);
+
+		const mergedActiveKeys = {
+			...activeKeys,
+			...mapSetActiveKeys,
+		};
+
+		const merged = commonHelpers.mergeFilters(
+			mergedActiveKeys,
+			mapFilterByActive,
+			mapMetadataModifiers
+		);
+
+		return merged;
+	}
+)((state, mapKey) => mapKey);
 
 /**
  * @param state {Object}
@@ -450,18 +551,17 @@ const getBackgroundLayerStateByMapKeyObserver = createRecomputeObserver(
  * @return {Object} Merged mapSetState with metadataModifiers and filterByActive.
  */
 const getMapSetLayersStateWithModifiersByMapKey = createCachedSelector(
-	[
-		getMapSetLayersStateByMapKey,
-		getMapSetMetadataModifiersByMapKey,
-		getMapSetFilterByActiveByMapKey,
-	],
-	(setLayers, metadataModifiers, mapSetFilterByActive) => {
+	[getMapSetLayersStateByMapKey, getFilterByMapKey],
+	(setLayers, metadataModifiers) => {
 		if (setLayers?.length) {
-			return selectorHelpers.mergeModifiersAndFilterByActiveToLayerStructure(
-				setLayers,
-				metadataModifiers,
-				mapSetFilterByActive
-			);
+			return setLayers.map(layer => {
+				const mapSetActiveKeys = transformfilterToActiveKeys(metadataModifiers);
+
+				return selectorHelpers.mergeModifiersAndFilterByActiveToLayerStructure(
+					layer,
+					mapSetActiveKeys
+				);
+			});
 		} else {
 			return null;
 		}
@@ -474,18 +574,17 @@ const getMapSetLayersStateWithModifiersByMapKey = createCachedSelector(
  * @return {Object} Merged mapState with metadataModifiers and filterByActive.
  */
 const getMapLayersStateWithModifiersByMapKey = createCachedSelector(
-	[
-		getMapLayersStateByMapKey,
-		getMetadataModifiersByMapKey,
-		getFilterByActiveByMapKey,
-	],
-	(mapLayers, metadataModifiers, mapFilterByActive) => {
+	[getMapLayersStateByMapKey, getFilterByMapKey],
+	(mapLayers, metadataModifiers) => {
 		if (mapLayers?.length) {
-			return selectorHelpers.mergeModifiersAndFilterByActiveToLayerStructure(
-				mapLayers,
-				metadataModifiers,
-				mapFilterByActive
-			);
+			const mapSetActiveKeys = transformfilterToActiveKeys(metadataModifiers);
+
+			return mapLayers.map(layer => {
+				return selectorHelpers.mergeModifiersAndFilterByActiveToLayerStructure(
+					layer,
+					mapSetActiveKeys
+				);
+			});
 		} else {
 			return null;
 		}
@@ -1158,6 +1257,9 @@ export default {
 	getLayersStateWithMergedFiltersByMapKey,
 	getLayersStateWithMergedFiltersByMapKeyObserver,
 	getMetadataModifiersByMapKey,
+
+	getFilterByMapSetKey,
+	getFilterByMapKey,
 
 	getMapBackgroundLayerStateByMapKey,
 	getMapBackgroundLayer,
