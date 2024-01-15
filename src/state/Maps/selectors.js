@@ -25,7 +25,6 @@ import AppSelectors from '../App/selectors';
 import DataSelectors from '../Data/selectors';
 import SelectionsSelectors from '../Selections/selectors';
 import StylesSelectors from '../Styles/selectors';
-import helpers from './selectorHelpers';
 
 /* === SELECTORS ======================================================================= */
 
@@ -468,7 +467,7 @@ const getMapSetFilterByMapKey = createRecomputeObserver((state, mapKey) => {
 	}
 });
 
-const transformfilterToActiveKeys = (mapSetFilter = {}) => {
+const transformFilterToActiveKeys = (mapSetFilter = {}) => {
 	if (mapSetFilter) {
 		const mapSetActiveKeys = {
 			...Object.fromEntries(
@@ -497,21 +496,21 @@ const getFilterByMapKey = createCachedSelector(
 	],
 	(mapMetadataModifiers, mapFilterByActive, activeKeys, mapKey) => {
 		const mapSetFilter = getMapSetFilterByMapKey(mapKey) || {};
-
-		const mapSetActiveKeys = transformfilterToActiveKeys(mapSetFilter);
+		const mapSetActiveKeys = transformFilterToActiveKeys(mapSetFilter);
 
 		const mergedActiveKeys = {
 			...activeKeys,
 			...mapSetActiveKeys,
 		};
 
-		const merged = commonHelpers.mergeFilters(
-			mergedActiveKeys,
-			mapFilterByActive,
-			mapMetadataModifiers
-		);
+		const merged =
+			commonHelpers.mergeFilters(
+				mergedActiveKeys,
+				mapFilterByActive,
+				mapMetadataModifiers
+			) || {};
 
-		return merged;
+		return {...mapSetFilter, ...merged};
 	}
 )((state, mapKey) => mapKey);
 
@@ -551,15 +550,25 @@ const getBackgroundLayerStateByMapKeyObserver = createRecomputeObserver(
  * @return {Object} Merged mapSetState with metadataModifiers and filterByActive.
  */
 const getMapSetLayersStateWithModifiersByMapKey = createCachedSelector(
-	[getMapSetLayersStateByMapKey, getFilterByMapKey],
-	(setLayers, metadataModifiers) => {
+	[
+		getMapSetLayersStateByMapKey,
+		common.getAllActiveKeys,
+		(state, mapSetKey) => mapSetKey,
+	],
+	(setLayers, activeKeys, mapSetKey) => {
 		if (setLayers?.length) {
+			const metadataModifiers = getMapSetFilterByMapKey(mapSetKey);
 			return setLayers.map(layer => {
-				const mapSetActiveKeys = transformfilterToActiveKeys(metadataModifiers);
+				const mapSetActiveKeys = transformFilterToActiveKeys(metadataModifiers);
+
+				const mergedActiveKeys = {
+					...activeKeys,
+					...mapSetActiveKeys,
+				};
 
 				return selectorHelpers.mergeModifiersAndFilterByActiveToLayerStructure(
 					layer,
-					mapSetActiveKeys
+					mergedActiveKeys
 				);
 			});
 		} else {
@@ -574,15 +583,20 @@ const getMapSetLayersStateWithModifiersByMapKey = createCachedSelector(
  * @return {Object} Merged mapState with metadataModifiers and filterByActive.
  */
 const getMapLayersStateWithModifiersByMapKey = createCachedSelector(
-	[getMapLayersStateByMapKey, getFilterByMapKey],
-	(mapLayers, metadataModifiers) => {
+	[getMapLayersStateByMapKey, getFilterByMapKey, common.getAllActiveKeys],
+	(mapLayers, metadataModifiers, activeKeys) => {
 		if (mapLayers?.length) {
-			const mapSetActiveKeys = transformfilterToActiveKeys(metadataModifiers);
+			const mapSetActiveKeys = transformFilterToActiveKeys(metadataModifiers);
+
+			const mergedActiveKeys = {
+				...activeKeys,
+				...mapSetActiveKeys,
+			};
 
 			return mapLayers.map(layer => {
 				return selectorHelpers.mergeModifiersAndFilterByActiveToLayerStructure(
 					layer,
-					mapSetActiveKeys
+					mergedActiveKeys
 				);
 			});
 		} else {
@@ -769,13 +783,17 @@ const getVisibleTilesByMapKey = createCachedSelector(
 	],
 	(view, mapWidth, mapHeight) => {
 		if (view?.center && view?.boxRange && mapWidth && mapHeight) {
-			const tiles = helpers.getTiles(
+			const tiles = selectorHelpers.getTiles(
 				mapWidth,
 				mapHeight,
 				view.center,
 				view.boxRange
 			);
-			const level = helpers.getZoomLevel(mapWidth, mapHeight, view.boxRange);
+			const level = selectorHelpers.getZoomLevel(
+				mapWidth,
+				mapHeight,
+				view.boxRange
+			);
 
 			return {
 				tiles,
@@ -924,7 +942,7 @@ const getFinalLayerByDataSourceAndLayerState = createRecomputeSelector(
 			validType = true;
 			options.url = dataSourceOptions.url;
 
-			let style = helpers.getDefaultCogStyle();
+			let style = selectorHelpers.getDefaultCogStyle();
 			if (styleKey) {
 				style = StylesSelectors.getDefinitionByKey(styleKey);
 			}

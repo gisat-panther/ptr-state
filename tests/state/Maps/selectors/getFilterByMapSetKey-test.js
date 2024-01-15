@@ -175,4 +175,34 @@ describe('getFilterByMapSetKey-test', function () {
 		const output = Select.maps.getFilterByMapSetKey(customState, 'mapSet1');
 		assert.deepStrictEqual(output, expectedResult);
 	});
+
+	it('should return merged filter by active _7', () => {
+		const customState = {
+			...state,
+			app: {
+				key: 'app1',
+			},
+			maps: {
+				...state.maps,
+				sets: {
+					...state.maps.sets,
+					mapSet1: {
+						...state.maps.sets.mapSet1,
+						data: {
+							metadataModifiers: {
+								caseKey: 'test',
+							},
+							filterByActive: {
+								application: true,
+							},
+						},
+					},
+				},
+			},
+		};
+
+		const expectedResult = {caseKey: 'test', applicationKey: 'app1'};
+		const output = Select.maps.getFilterByMapSetKey(customState, 'mapSet1');
+		assert.deepStrictEqual(output, expectedResult);
+	});
 });
