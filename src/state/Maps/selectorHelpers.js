@@ -55,7 +55,9 @@ const mergeModifiersAndFilterByActiveToLayerStructure = (layer, activeKeys) => {
 	let layerMetadataModifiers = {
 		...(layer.metadataModifiers ? layer.metadataModifiers : {}),
 	};
-	let layerFilterByActive = layer.filterByActive || {};
+	let layerFilterByActive = {
+		...(layer.filterByActive ? layer.filterByActive : {}),
+	};
 
 	const mergedModifiers = commonHelpers.mergeFilters(
 		activeKeys,
@@ -128,6 +130,28 @@ const getPreviousView = (map, set) => {
 		}
 	} else {
 		return null;
+	}
+};
+
+/**
+ * It transform filter object to active keys object.
+ * Filter object has keys named like metadata [caseKey, applicationKey, periodKey...],
+ * transfroem function convert them to [activeCaseKey, activeApplicationKey, activePeriodKey...].
+ * @param {Object} filter
+ * @returns {Object}
+ */
+const transformFilterToActiveKeys = (filter = {}) => {
+	if (filter) {
+		return {
+			...Object.fromEntries(
+				Object.entries(filter).map(([key, val]) => {
+					// example: caseKey -> activeCaseKey
+					return [`active${key.charAt(0).toUpperCase()}${key.slice(1)}`, val];
+				})
+			),
+		};
+	} else {
+		return {};
 	}
 };
 
@@ -221,4 +245,5 @@ export default {
 	mergeBackgroundLayerWithLayers,
 	mergeModifiersAndFilterByActiveToLayerStructure,
 	getDefaultCogStyle,
+	transformFilterToActiveKeys,
 };

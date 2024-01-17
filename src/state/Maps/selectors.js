@@ -339,6 +339,7 @@ const getMapLayerStateByMapKeyAndLayerKey = createSelector(
 );
 
 /**
+ * It find mapSet wher mapKey belongs and return mapSet background layer definition.
  * @param state {Object}
  * @param mapKey {string}
  */
@@ -350,6 +351,7 @@ const getMapSetBackgroundLayerStateByMapKey = createSelector(
 );
 
 /**
+ * It find mapSet wher mapKey belongs and return mapSet layers definition.
  * @param state {Object}
  * @param mapKey {string}
  */
@@ -361,6 +363,7 @@ const getMapSetLayersStateByMapKey = createSelector(
 );
 
 /**
+ * It find map by mapKey and return map metadataModifiers.
  * @param state {Object}
  * @param mapKey {string}
  */
@@ -369,6 +372,7 @@ const getMapMetadataModifiersByMapKey = createSelector([getMapByKey], map => {
 });
 
 /**
+ * It find mapSet wher mapKey belongs and return mapSet metadataModifiers.
  * @param state {Object}
  * @param mapKey {string}
  */
@@ -379,6 +383,7 @@ const getMapSetMetadataModifiersByMapKey = createSelector(
 	}
 );
 /**
+ * It find mapSet by mapSetKey and return metadataModifiers.
  * @param state {Object}
  * @param mapSetKey {string}
  */
@@ -390,6 +395,7 @@ const getMapSetMetadataModifiersByMapSetKey = createSelector(
 );
 
 /**
+ * It merge map and mapSet modifiers which are related to mapKey.
  * @param state {Object}
  * @param mapKey {string}
  */
@@ -405,6 +411,7 @@ const getMetadataModifiersByMapKey = createCachedSelector(
 )((state, mapKey) => mapKey);
 
 /**
+ * Return "filterByActive" object which is in map set definition by "mapSetKey".
  * @param state {Object}
  * @param mapSetKey {string}
  */
@@ -416,6 +423,7 @@ const getMapSetFilterByActiveByMapSetKey = createSelector(
 );
 
 /**
+ * Return "filterByActive" object which is in map definition by "mapKey".
  * @param state {Object}
  * @param mapKey {string}
  */
@@ -424,6 +432,7 @@ const getMapFilterByActiveByMapKey = createSelector([getMapByKey], map => {
 });
 
 /**
+ * Return "filterByActive" object which is in map set definition by "mapKey".
  * @param state {Object}
  * @param mapKey {string}
  */
@@ -435,10 +444,13 @@ const getMapSetFilterByActiveByMapKey = createSelector(
 );
 
 /**
+ * Return "filter" object for mapSet by "mapSetKey".
+ * Filter object is merge of modifiers of mapSet and filled "filterByActive" items of mapSet.
+ * FilterByActive is defined on mapSet and is filled by active metedata on application level.
  * @param state {Object}
  * @param mapKey {string}
  */
-const getFilterByMapSetKey = createCachedSelector(
+const getMapSetFilterByMapSetKey = createCachedSelector(
 	[
 		getMapSetMetadataModifiersByMapSetKey,
 		common.getAllActiveKeys,
@@ -455,48 +467,41 @@ const getFilterByMapSetKey = createCachedSelector(
 )((state, mapSetKey) => mapSetKey);
 
 /**
+ * Return "filter" object for mapSet by "mapKey".
+ * It find mapSet wher mapKey belongs.
+ * Filter object is merge of modifiers of mapSet and filled "filterByActive" items of mapSet.
+ * FilterByActive is defined on mapSet and is filled by active metedata on application level.
  * @param state {Object}
  * @param mapKey {string}
  */
 const getMapSetFilterByMapKey = createRecomputeObserver((state, mapKey) => {
 	const mapSet = getMapSetByMapKey(state, mapKey);
 	if (mapSet && mapSet.key) {
-		return getFilterByMapSetKey(state, mapSet.key);
+		return getMapSetFilterByMapSetKey(state, mapSet.key);
 	} else {
 		return null;
 	}
 });
 
-const transformFilterToActiveKeys = (mapSetFilter = {}) => {
-	if (mapSetFilter) {
-		const mapSetActiveKeys = {
-			...Object.fromEntries(
-				Object.entries(mapSetFilter).map(([key, val]) => {
-					// convert caseKey -> activeCaseKey
-					return [`active${key.charAt(0).toUpperCase()}${key.slice(1)}`, val];
-				})
-			),
-		};
-		return mapSetActiveKeys;
-	} else {
-		return {};
-	}
-};
-
 /**
+ *
+ * Filter object is merge of modifiers of map and filled "filterByActive" items of map.
+ * FilterByActive is defined on map and is filled by active metedata on parent mapSet (only if map belongs to mapSet) and application level.
+ * MapSet modifiers overwrite application modifiers and map overwrite its merge.
  * @param state {Object}
  * @param mapKey {string}
  */
-const getFilterByMapKey = createCachedSelector(
+const getMapFilterByMapKey = createCachedSelector(
 	[
 		getMapMetadataModifiersByMapKey,
 		getMapFilterByActiveByMapKey,
 		common.getAllActiveKeys,
 		(state, mapKey) => mapKey,
 	],
-	(mapMetadataModifiers, mapFilterByActive, activeKeys, mapKey) => {
+	(mapMetadataModifiers, mapFilterByActive, activeKeys = {}, mapKey) => {
 		const mapSetFilter = getMapSetFilterByMapKey(mapKey) || {};
-		const mapSetActiveKeys = transformFilterToActiveKeys(mapSetFilter);
+		const mapSetActiveKeys =
+			selectorHelpers.transformFilterToActiveKeys(mapSetFilter);
 
 		const mergedActiveKeys = {
 			...activeKeys,
@@ -518,21 +523,6 @@ const getFilterByMapKey = createCachedSelector(
  * @param state {Object}
  * @param mapKey {string}
  */
-const getFilterByActiveByMapKey = createCachedSelector(
-	[getMapFilterByActiveByMapKey, getMapSetFilterByActiveByMapKey],
-	(mapFilter, setFilter) => {
-		if (mapFilter && setFilter) {
-			return {...mapFilter, ...setFilter};
-		} else {
-			return setFilter || mapFilter || null;
-		}
-	}
-)((state, mapKey) => mapKey);
-
-/**
- * @param state {Object}
- * @param mapKey {string}
- */
 const getBackgroundLayerStateByMapKey = createCachedSelector(
 	[getMapBackgroundLayerStateByMapKey, getMapSetBackgroundLayerStateByMapKey],
 	(mapBackgroundLayer, setBackgroundLayer) => {
@@ -540,11 +530,15 @@ const getBackgroundLayerStateByMapKey = createCachedSelector(
 	}
 )((state, mapKey) => mapKey);
 
+/**
+ * Observer selector for getBackgroundLayerStateByMapKey
+ */
 const getBackgroundLayerStateByMapKeyObserver = createRecomputeObserver(
 	getBackgroundLayerStateByMapKey
 );
 
 /**
+ * Apply mapSet and application metadataModifiers and filterByActive on mapSet layers definition.
  * @param state {Object}
  * @param mapKey {string}
  * @return {Object} Merged mapSetState with metadataModifiers and filterByActive.
@@ -559,7 +553,8 @@ const getMapSetLayersStateWithModifiersByMapKey = createCachedSelector(
 		if (setLayers?.length) {
 			const metadataModifiers = getMapSetFilterByMapKey(mapSetKey);
 			return setLayers.map(layer => {
-				const mapSetActiveKeys = transformFilterToActiveKeys(metadataModifiers);
+				const mapSetActiveKeys =
+					selectorHelpers.transformFilterToActiveKeys(metadataModifiers);
 
 				const mergedActiveKeys = {
 					...activeKeys,
@@ -578,15 +573,17 @@ const getMapSetLayersStateWithModifiersByMapKey = createCachedSelector(
 )((state, mapKey) => mapKey);
 
 /**
+ * Apply map, mapSet and application metadataModifiers and filterByActive on mapSet layers definition.
  * @param state {Object}
  * @param mapKey {string}
  * @return {Object} Merged mapState with metadataModifiers and filterByActive.
  */
 const getMapLayersStateWithModifiersByMapKey = createCachedSelector(
-	[getMapLayersStateByMapKey, getFilterByMapKey, common.getAllActiveKeys],
+	[getMapLayersStateByMapKey, getMapFilterByMapKey, common.getAllActiveKeys],
 	(mapLayers, metadataModifiers, activeKeys) => {
 		if (mapLayers?.length) {
-			const mapSetActiveKeys = transformFilterToActiveKeys(metadataModifiers);
+			const mapSetActiveKeys =
+				selectorHelpers.transformFilterToActiveKeys(metadataModifiers);
 
 			const mergedActiveKeys = {
 				...activeKeys,
@@ -1267,7 +1264,6 @@ export default {
 	getAttributeRelationsFilterFromLayerState,
 
 	getBackgroundLayerStateByMapKey,
-	getFilterByActiveByMapKey,
 	getFinalLayerByDataSourceAndLayerState,
 	getLayerStateByLayerKeyAndMapKey,
 	getLayersStateByMapKey,
@@ -1276,8 +1272,8 @@ export default {
 	getLayersStateWithMergedFiltersByMapKeyObserver,
 	getMetadataModifiersByMapKey,
 
-	getFilterByMapSetKey,
-	getFilterByMapKey,
+	getMapSetFilterByMapSetKey,
+	getMapFilterByMapKey,
 
 	getMapBackgroundLayerStateByMapKey,
 	getMapBackgroundLayer,

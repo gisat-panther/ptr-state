@@ -295,7 +295,7 @@ describe('getLayersStateByMapKey', function () {
 		];
 
 		setState(updatedState);
-		Select.maps.getFilterByMapKey.clearCache();
+		Select.maps.getMapFilterByMapKey.clearCache();
 		Select.maps.getLayersStateByMapKey.clearCache();
 		const output = Select.maps.getLayersStateByMapKey(updatedState, 'map1');
 		assert.deepStrictEqual(output, expectedResult);

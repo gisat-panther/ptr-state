@@ -35,13 +35,13 @@ const state = {
 	},
 };
 
-describe('getFilterByMapSetKey-test', function () {
+describe('getMapSetFilterByMapSetKey-test', function () {
 	it('should return merged filter by active _1', () => {
 		const expectedResult = {
 			periodKey: '2020',
 			areaTreeLevelKey: 'areaTreeLevelKey1',
 		};
-		const output = Select.maps.getFilterByMapSetKey(state, 'mapSet1');
+		const output = Select.maps.getMapSetFilterByMapSetKey(state, 'mapSet1');
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -70,7 +70,10 @@ describe('getFilterByMapSetKey-test', function () {
 			periodKey: '2020',
 			areaTreeLevelKey: 'areaTreeLevelKey1',
 		};
-		const output = Select.maps.getFilterByMapSetKey(customState, 'mapSet1');
+		const output = Select.maps.getMapSetFilterByMapSetKey(
+			customState,
+			'mapSet1'
+		);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -99,7 +102,10 @@ describe('getFilterByMapSetKey-test', function () {
 			periodKey: '2021',
 			areaTreeLevelKey: 'areaTreeLevelKey1',
 		};
-		const output = Select.maps.getFilterByMapSetKey(customState, 'mapSet1');
+		const output = Select.maps.getMapSetFilterByMapSetKey(
+			customState,
+			'mapSet1'
+		);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -124,7 +130,10 @@ describe('getFilterByMapSetKey-test', function () {
 		};
 
 		const expectedResult = null;
-		const output = Select.maps.getFilterByMapSetKey(customState, 'mapSet1');
+		const output = Select.maps.getMapSetFilterByMapSetKey(
+			customState,
+			'mapSet1'
+		);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -147,7 +156,10 @@ describe('getFilterByMapSetKey-test', function () {
 		};
 
 		const expectedResult = null;
-		const output = Select.maps.getFilterByMapSetKey(customState, 'mapSet1');
+		const output = Select.maps.getMapSetFilterByMapSetKey(
+			customState,
+			'mapSet1'
+		);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -172,7 +184,10 @@ describe('getFilterByMapSetKey-test', function () {
 		};
 
 		const expectedResult = {caseKey: 'test'};
-		const output = Select.maps.getFilterByMapSetKey(customState, 'mapSet1');
+		const output = Select.maps.getMapSetFilterByMapSetKey(
+			customState,
+			'mapSet1'
+		);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 
@@ -202,7 +217,10 @@ describe('getFilterByMapSetKey-test', function () {
 		};
 
 		const expectedResult = {caseKey: 'test', applicationKey: 'app1'};
-		const output = Select.maps.getFilterByMapSetKey(customState, 'mapSet1');
+		const output = Select.maps.getMapSetFilterByMapSetKey(
+			customState,
+			'mapSet1'
+		);
 		assert.deepStrictEqual(output, expectedResult);
 	});
 });

@@ -44,7 +44,7 @@ const state = {
 	},
 };
 
-describe('getFilterByMapKey-test', function () {
+describe('getMapFilterByMapKey-test', function () {
 	it('should return merged filter by active for map in set _1', () => {
 		setState(state);
 
@@ -53,7 +53,7 @@ describe('getFilterByMapKey-test', function () {
 			areaTreeLevelKey: 'areaTreeLevelKey2',
 			caseKey: 'winter',
 		};
-		const output = Select.maps.getFilterByMapKey(state, 'map-1');
+		const output = Select.maps.getMapFilterByMapKey(state, 'map-1');
 		assert.deepStrictEqual(output, expectedResult);
 
 		setState(null);
@@ -87,7 +87,7 @@ describe('getFilterByMapKey-test', function () {
 			areaTreeLevelKey: 'areaTreeLevelKey2',
 			caseKey: 'winter',
 		};
-		const output = Select.maps.getFilterByMapKey(customState, 'map-1');
+		const output = Select.maps.getMapFilterByMapKey(customState, 'map-1');
 		assert.deepStrictEqual(output, expectedResult);
 
 		setState(null);
@@ -108,7 +108,7 @@ describe('getFilterByMapKey-test', function () {
 		setState(state);
 
 		const expectedResult = {};
-		const output = Select.maps.getFilterByMapKey(state, 'map-1');
+		const output = Select.maps.getMapFilterByMapKey(state, 'map-1');
 		assert.deepStrictEqual(output, expectedResult);
 
 		setState(null);
@@ -135,7 +135,7 @@ describe('getFilterByMapKey-test', function () {
 		const expectedResult = {
 			caseKey: 'spring',
 		};
-		const output = Select.maps.getFilterByMapKey(state, 'map-1');
+		const output = Select.maps.getMapFilterByMapKey(state, 'map-1');
 		assert.deepStrictEqual(output, expectedResult);
 
 		setState(null);
@@ -160,7 +160,7 @@ describe('getFilterByMapKey-test', function () {
 		setState(state);
 
 		const expectedResult = {};
-		const output = Select.maps.getFilterByMapKey(state, 'map-1');
+		const output = Select.maps.getMapFilterByMapKey(state, 'map-1');
 		assert.deepStrictEqual(output, expectedResult);
 
 		setState(null);
@@ -188,7 +188,7 @@ describe('getFilterByMapKey-test', function () {
 		setState(state);
 
 		const expectedResult = {caseKey: 'winter'};
-		const output = Select.maps.getFilterByMapKey(state, 'map-1');
+		const output = Select.maps.getMapFilterByMapKey(state, 'map-1');
 		assert.deepStrictEqual(output, expectedResult);
 
 		setState(null);
@@ -220,7 +220,7 @@ describe('getFilterByMapKey-test', function () {
 		setState(state);
 
 		const expectedResult = {caseKey: 'winter', applicationKey: 'app1'};
-		const output = Select.maps.getFilterByMapKey(state, 'map-1');
+		const output = Select.maps.getMapFilterByMapKey(state, 'map-1');
 		assert.deepStrictEqual(output, expectedResult);
 
 		setState(null);

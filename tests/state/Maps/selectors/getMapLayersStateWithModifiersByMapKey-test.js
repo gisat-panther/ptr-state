@@ -116,7 +116,7 @@ describe('getMapLayersStateWithModifiersByMapKey', function () {
 		];
 
 		setState(updatedState);
-		Select.maps.getFilterByMapKey.clearCache();
+		Select.maps.getMapFilterByMapKey.clearCache();
 		Select.maps.getMapLayersStateWithModifiersByMapKey.clearCache();
 		const output = Select.maps.getMapLayersStateWithModifiersByMapKey(
 			updatedState,
@@ -221,7 +221,7 @@ describe('getMapLayersStateWithModifiersByMapKey', function () {
 		];
 
 		setState(updatedState);
-		Select.maps.getFilterByMapKey.clearCache();
+		Select.maps.getMapFilterByMapKey.clearCache();
 		Select.maps.getMapLayersStateWithModifiersByMapKey.clearCache();
 		const output = Select.maps.getMapLayersStateWithModifiersByMapKey(
 			updatedState,
