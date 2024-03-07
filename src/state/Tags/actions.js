@@ -52,6 +52,8 @@ const refreshUses = common.refreshUses(
 	beCategoryPath
 );
 const updateStateFromView = common.updateSubstateFromView(ActionTypes.TAGS);
+const setActiveKey = common.setActiveKey(ActionTypes.TAGS);
+const setActiveKeys = common.setActiveKeys(ActionTypes.TAGS);
 
 // ============ actions ===========
 
@@ -70,4 +72,6 @@ export default {
 	useIndexedClear,
 	clearIndex,
 	updateStateFromView,
+	setActiveKey,
+	setActiveKeys,
 };
